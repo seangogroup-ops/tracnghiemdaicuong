@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Thi Trắc Nghiệm - SNG EDU</title>
+    
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db; 
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        /* HEADER */
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        /* LAYOUT */
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        /* OPTIONS */
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter { 
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0; 
+        }
+        .opt-text { 
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s; 
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        /* ĐÁP ÁN ĐÚNG/SAI */
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box { 
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue); 
+            border-radius: 4px; display: none; font-size: 0.95rem; 
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        /* SIDEBAR - FIX LỖI KHÔNG CUỘN ĐƯỢC */
+        .sidebar-col { 
+            width: 320px; 
+            position: sticky; 
+            top: 80px; 
+            max-height: calc(100vh - 100px); /* Giới hạn chiều cao theo màn hình */
+            overflow-y: auto; /* Cho phép cuộn bên trong sidebar */
+            padding-right: 5px;
+        }
+        
+        /* Tùy chỉnh thanh cuộn cho sidebar */
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn { 
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s; 
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col { 
+                width: 100%; 
+                position: static; 
+                order: 2; 
+                max-height: none; 
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+    
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+Câu 1: Để tái sản xuất sức lao động cần tiêu dùng những sản phẩm như: sản phẩm ăn uống là 50.000 đồng/ngày, đồ gia dụng là 29.200.000 đồng/năm, thỏa mãn nhu cầu văn hóa: 900.000 đồng/tháng. Vậy giá trị sức lao động trong ngày là bao nhiêu?
+*A. 160.000 đồng.
+B. 170.000 đồng
+C. 180.000 đồng.
+D. 200.000 đồng.
+Gt: Chi phí gia dụng ngày là 29.200.000 / 365 = 80.000 đồng. Chi phí văn hóa ngày là 900.000 / 30 = 30.000 đồng. Tổng giá trị sức lao động ngày = 50.000 + 80.000 + 30.000 = 160.000 đồng.
+Câu 2: Công ty A có 10 người lao động, giá trị sức lao động mỗi tháng của một công nhân 5.000.000 đồng, chi phí tư bản bất biến một tháng 90.000.000 đồng, tỷ suất giá trị thặng dư là 50%. Vậy tổng giá trị hàng hóa là bao nhiêu?
+A. 195.000.000 đồng.
+B. 185.000.000 đồng.
+C. 190.000.000 đồng.
+*D. 165.000.000 đồng.
+Gt: Tư bản khả biến V = 10 * 5.000.000 = 50.000.000 đồng. Giá trị thặng dư M = 50% * V = 25.000.000 đồng. Tổng giá trị hàng hóa = C + V + M = 90.000.000 + 50.000.000 + 25.000.000 = 165.000.000 đồng.
+Câu 3: Công ty A có 10 người lao động, giá trị sức lao động mỗi tháng của một công nhân 5.000.000 đồng, mỗi tháng sản xuất được 1000 đơn vị hàng hóa với chi phí tư bản bất biến một tháng 90.000.000 đồng, tỷ suất giá trị thặng dư là 50%. Vậy giá trị của một đơn vị hàng hóa là bao nhiêu?
+A. 185.000 đồng.
+*B. 165.000 đồng
+C. 190.000 đồng.
+D. 195.000 đồng.
+Gt: Tổng giá trị hàng hóa thu được là 165.000.000 đồng. Giá trị một đơn vị hàng hóa = 165.000.000 / 1000 = 165.000 đồng.
+Câu 4: Xí nghiệp A có lượng tư bản đầu tư 10 tỷ đồng, trong đó tư bản bất biến gấp bốn lần tư bản khả biến, tỷ suất giá trị thặng dư 50%. Vậy khối lượng giá trị thặng dư là bao nhiêu?
+A. 900.000.000 đồng.
+B. 700.000.000 đồng.
+C. 500.000.000 đồng.
+*D. 1.000.000.000 đồng.
+Gt: Ta có C = 4V và C + V = 10 tỷ -> 5V = 10 tỷ -> V = 2 tỷ đồng. Khối lượng giá trị thặng dư M = 50% * V = 1 tỷ đồng.
+Câu 5: Ngày làm việc 8 giờ thì tỷ suất giá trị thặng dư 100%. Sau đó nhà tư bản kéo dài ngày làm việc đến 10 giờ. Vậy tỷ suất giá trị thặng dư thay đổi như thế nào nếu giá trị sức lao động không đổi và nhà tư bản sử dụng phương pháp sản xuất giá trị thặng dư nào?
+*A. 150%, sản xuất giá trị thặng dư tuyệt đối.
+B. 150%, sản xuất giá trị thặng dư tương đối.
+C. 300%, sản xuất giá trị thặng dư tuyệt đối.
+D. 300%, sản xuất giá trị thặng dư tương đối.
+Gt: Ngày làm 8 giờ, m' = 100% -> t = t' = 4 giờ. Khi ngày kéo dài thành 10 giờ, t không đổi = 4 giờ -> t' = 6 giờ. Tỷ suất mới m' = (6/4)*100% = 150%. Kéo dài ngày lao động là phương pháp sản xuất giá trị thặng dư tuyệt đối.
+Câu 6: Ngày làm việc 8 giờ, thời gian lao động thặng dư 4 giờ. Sau đó khoa học kỹ thuật phát triển đã được áp dụng vào sản xuất làm cho năng suất lao động ở những ngành sản xuất tư liệu sinh hoạt tăng nên giá trị hàng hóa ở những ngành này giảm hơn trước 2 lần. Vậy tỷ suất giá trị thặng dư thay đổi như thế nào và nhà tư bản sử dụng phương pháp sản xuất giá trị thặng dư nào?
+A. 200%, sản xuất giá trị thặng dư tương đối.
+B. 300%, sản xuất giá trị thặng dư siêu ngạch.
+C. 300%, sản xuất giá trị thặng dư tuyệt đối.
+*D. 300%, sản xuất giá trị thặng dư tương đối.
+Gt: Ban đầu t = 8 - 4 = 4 giờ. Khi giá trị tư liệu sinh hoạt giảm 2 lần, t giảm 2 lần còn 2 giờ -> t' tăng thành 8 - 2 = 6 giờ. Tỷ suất mới m' = (6/2)*100% = 300%. Đây là phương pháp sản xuất giá trị thặng dư tương đối.
+Câu 7: Xí nghiệp A có thời gian chu chuyển một vòng của tư bản 6 tháng. Vậy tốc độ chu chuyển tư bản là bao nhiêu?
+A. 3 vòng/năm.
+B. 1 vòng/năm.
+*C. 2 vòng/năm.
+D. 4 vòng/năm.
+Gt: Tốc độ chu chuyển n = CH / ch = 12 tháng / 6 tháng = 2 vòng/năm.
+Câu 8: Xí nghiệp A có lượng tư bản đầu tư 10 tỷ đồng, trong đó tư bản bất biến gấp bốn lần tư bản khả biến, khối lượng giá trị thặng dư thu được 1.000.000.000 đồng. Vậy tỷ suất giá trị thặng dư là bao nhiêu?
+*A. 50%
+B. 100%.
+C. 150%.
+D. 200%.
+Gt: Tổng đầu tư 10 tỷ với C = 4V -> V = 2 tỷ đồng. Tỷ suất giá trị thặng dư m' = (M / V) * 100% = (1 tỷ / 2 tỷ) * 100% = 50%.
+Câu 9: Công ty A có 10 người lao động, giá trị sức lao động mỗi tháng của một công nhân 5.000.000 đồng, tỷ suất giá trị thặng dư là 50%. Vậy giá trị mới của mỗi người lao động là bao nhiêu?
+A. 850.000 đồng.
+B. 750.000 đồng.
+*C. 7.500.000 đồng.
+D. 8.500.000 đồng.
+Gt: Giá trị mới của một công nhân gồm v + m. Ta có v = 5.000.000 đồng, m = 50% * v = 2.500.000 đồng. Giá trị mới của mỗi người = 5.000.000 + 2.500.000 = 7.500.000 đồng.
+Câu 10: Xí nghiệp A có lượng tư bản đầu tư 10 tỷ đồng, trong đó tư bản bất biến gấp bốn lần tư bản khả biến, tỷ suất giá trị thặng dư 50%, thời gian chu chuyển một vòng của tư bản 6 tháng. Vậy khối lượng giá trị thặng dư xí nghiệp A có được trong năm là bao nhiêu?
+A. 1 tỷ đồng.
+*B. 2 tỷ đồng.
+C. 900.000.000 đồng.
+D. 500.000.000 đồng
+Gt: Tư bản khả biến V = 2 tỷ đồng. Khối lượng giá trị thặng dư 1 vòng chu chuyển M = 50% * 2 tỷ = 1 tỷ đồng. 1 năm chu chuyển 2 vòng (12/6) nên khối lượng thặng dư cả năm = 2 * 1 tỷ = 2 tỷ đồng.
+Câu 11: Tích lũy tư bản là tư bản hóa
+*A. giá trị thặng dư.
+B. giá trị.
+C. giá trị sử dụng.
+D. giá trị trao đổi.
+Gt: Sự chuyển hóa một phần giá trị thặng dư thành tư bản được gọi là tích lũy tư bản.
+Câu 12: Nguồn gốc của tư bản tích lũy là
+A. giá trị hàng hóa.
+*B. giá trị thặng dư.
+C. lợi nhuận bình quan.
+D. lợi nhuận siêu ngạch.
+Gt: Nguồn gốc duy nhất của tích lũy tư bản là bộ phận giá trị thặng dư được đem tư bản hóa.
+Câu 13: Mối quan hệ tỷ lệ giữa số lượng tư liệu sản xuất và số lượng sức lao động là
+A. cấu tạo giá trị của tư bản.
+B. cấu tạo hữu cơ của tư bản.
+C. cấu tạo giá trị sử dụng của tư bản.
+*D. cấu tạo kỹ thuật của tư bản.
+Gt: Xét dưới hình thái hiện vật, tỷ lệ giữa số lượng tư liệu sản xuất và số lượng sức lao động phản ánh cấu tạo kỹ thuật của tư bản.
+Câu 14: Sự tăng thêm quy mô của tư bản cá biệt bằng cách tư bản hóa giá trị thặng dư là
+A. tập trung tư bản.
+B. đầu tư tư bản.
+*C. tích tụ tư bản.
+D. phát triển tư bản.
+Gt: Tích tụ tư bản là sự tăng quy mô tư bản cá biệt bằng cách trích một phần giá trị thặng dư để tái đầu tư mở rộng sản xuất.
+Câu 15: Sự hợp nhất các tư bản cá biệt vào một chỉnh thể tạo thành một tư bản cá biệt lớn hơn là
+*A. tập trung tư bản.
+B. tích lũy tư bản.
+C. tích tụ tư bản.
+D. phát triển tư bản.
+Gt: Tập trung tư bản là sự tăng quy mô tư bản cá biệt dựa trên cơ sở hợp nhất các tư bản cá biệt có sẵn trong xã hội mà không làm tăng quy mô tư bản xã hội.
+Câu 16: C. Mác ký hiệu cấu tạo hữu cơ của tư bản là
+A. c/v.
+B. v/c.
+*C. c/v.
+D. v/m.
+Gt: Cấu tạo hữu cơ của tư bản được kí hiệu là tỷ lệ c/v, phản ánh mối quan hệ giữa tư bản bất biến và tư bản khả biến dưới sự quyết định của cấu tạo kỹ thuật.
+Câu 17: Cấu tạo giá trị được quyết định bởi cấu tạo kỹ thuật và phản ánh sự biến đổi của cấu tạo kỹ thuật của tư bản là
+A. cấu tạo hiện vật của tư bản.
+*B. cấu tạo hữu cơ của tư bản.
+C. cấu tạo hữu hình của tư bản.
+D. cấu tạo vô hình của tư bản.
+Gt: Cấu tạo hữu cơ là cấu tạo giá trị của tư bản do cấu tạo kỹ thuật quyết định và phản ánh những sự thay đổi của cấu tạo kỹ thuật.
+Câu 18: Tích tụ tư bản là sự tăng thêm quy mô tư bản cá biệt bằng cách tư bản hóa
+A. giá trị xã hội.
+B. giá trị cá biệt.
+*C. giá trị thặng dư.
+D. giá trị sử dụng.
+Gt: Bản chất của tích tụ tư bản là quá trình tư bản hóa một phần khối lượng giá trị thặng dư thu được từ hoạt động sản xuất kinh doanh.
+Câu 19: Tích tụ tư bản khác tập trung tư bản ở điểm làm tăng quy mô
+A. tư bản cá biệt.
+B. tư bản sản xuất.
+C. tư bản tiền tệ.
+*D. tư bản xã hội.
+Gt: Tích tụ tư bản làm tăng quy mô của cả tư bản cá biệt lẫn tư bản xã hội, trong khi tập trung tư bản chỉ làm tăng quy mô tư bản cá biệt mà không làm tăng tổng tư bản xã hội.
+Câu 20: Trong quá trình tái sản xuất tư bản chủ nghĩa, quy mô của tư bản cá biệt tăng lên thông qua quá trình tích tụ và
+A. nhập khẩu tư bản.
+*B. tập trung tư bản.
+C. xuất khẩu đầu tư.
+D. tiết kiệm tư bản.
+Gt: Quy mô tư bản cá biệt mở rộng và lớn lên thông qua hai con đường cơ bản là tích tụ tư bản và tập trung tư bản.
+Câu 21: Trong tái sản xuất giản đơn, toàn bộ giá trị thặng dư đã được nhà tư bản tiêu dùng cho
+A. sản xuất.
+*B. cá nhân.
+C. tư bản bất biến.
+D. tư bản khả biến.
+Gt: Tái sản xuất giản đơn là quá trình sản xuất lặp lại với quy mô cũ, do đó toàn bộ giá trị thặng dư bị biến thành quỹ tiêu dùng cá nhân của nhà tư bản.
+Câu 22: Tích tụ tư bản là kết quả trực tiếp của
+A. tập trung tư bản.
+B. tiết kiệm tư bản.
+*C. tích lũy tư bản.
+D. phát triển tư bản.
+Gt: Tích lũy tư bản sinh ra phần giá trị thặng dư phụ thêm để đưa vào sản xuất, việc biến phần này thành tư bản đầu tư làm quy mô lớn lên chính là tích tụ tư bản.
+Câu 23: Tập trung tư bản có thể được thực hiện thông qua sáp nhập các
+A. tư bản cho vay với nhau.
+*B. tư bản cá biệt với nhau.
+C. tư bản công nghiệp với nhau.
+D. tư bản thương nghiệp với nhau.
+Gt: Tập trung tư bản diễn ra bằng con đường tự nguyện sáp nhập hoặc cưỡng bức thâu tóm giữa các tư bản cá biệt với nhau trong nền kinh tế.
+Câu 24: Tích tụ tư bản và tập trung tư bản giống nhau ở điểm nào sau đây?
+A. Có chung hình thức biểu hiện.
+B. Làm tăng quy mô tư bản xã hội.
+*C. Làm tăng quy mô tư bản cá biệt.
+D. Có chung nguồn gốc tích lũy.
+Gt: Cả hai hình thức đều đem lại kết quả cuối cùng là làm tăng quy mô của tư bản cá biệt để tăng cường thế lực kinh tế và cạnh tranh.
+Câu 25: Một trong những hệ quả của tích lũy tư bản là
+A. giảm tích tụ và tập trung tư bản.
+*B. tăng cấu tạo hữu cơ tư bản.
+C. giảm cấu tạo hữu cơ tư bản.
+D. tăng chi phí sản xuất.
+Gt: Tích lũy tư bản dẫn đến việc ứng dụng công nghệ hiện đại hơn, làm tăng tỷ trọng tư bản bất biến (c) so với tư bản khả biến (v), tức làm tăng cấu tạo hữu cơ của tư bản.
+Câu 26: Tăng cấu tạo hữu cơ tư bản là một trong những hệ quả của
+A. tiết kiệm tư bản.
+B. tuần hoàn tư bản.
+C. chu chuyển tư bản.
+*D. tích lũy tư bản.
+Gt: Quá trình tích lũy tư bản đi kèm cải tiến kỹ thuật sẽ trực tiếp làm biến đổi và tăng cấu tạo hữu cơ của tư bản theo thời gian.
+Câu 27: Cấu tạo kỹ thuật của tư bản phản ánh mối quan hệ tỷ lệ giữa số lượng tư liệu sản xuất và số lượng
+*A. sức lao động.
+B. quan hệ sản xuất.
+C. lực lượng sản xuất.
+D. lao động.
+Gt: Cấu tạo kỹ thuật biểu hiện tỷ lệ về mặt hiện vật giữa khối lượng tư liệu sản xuất và số lượng công nhân sử dụng lượng tư liệu sản xuất đó.
+Câu 28: Cấu tạo giá trị của tư bản phản ánh mối quan hệ tỷ lệ giữa tư bản bất biến và
+A. tư bản sản xuất.
+*B. tư bản khả biến.
+C. tư bản tiền tệ.
+D. tư bản lưu động.
+Gt: Xét về mặt giá trị, cấu tạo giá trị phản ánh quan hệ tỷ lệ giữa phần tiền dùng để mua tư liệu sản xuất (c) và phần tiền mua sức lao động (v).
+Câu 29: Tăng chênh lệch giữa thu nhập của nhà tư bản với thu nhập của người lao động làm thuê cả tuyệt đối lẫn tương đối là một trong những hệ quả của
+A. tiết kiệm tư bản.
+B. tuần hoàn tư bản.
+C. chu chuyển tư bản.
+*D. tích lũy tư bản.
+Gt: Tích lũy tư bản làm cho của cải phân hóa ngày càng mạnh, tư sản càng giàu lên nhanh chóng trong khi thu nhập của người lao động tăng chậm hoặc bị bần cùng hóa tương đối.
+Câu 30: Nâng cao tỷ suất giá trị thặng dư, nâng cao năng suất lao động, sử dụng hiệu quả máy móc, đại lượng tư bản ứng trước là những nhân tố ảnh hưởng
+A. quy mô tiết kiệm tư bản.
+B. tốc độ chu chuyển tư bản.
+*C. quy mô tích lũy tư bản.
+D. thời gian chu chuyển tư bản.
+Gt: Khối lượng giá trị thặng dư tạo ra nhiều hay ít phụ thuộc vào m', năng suất lao động, hiệu quả máy móc và quy mô đầu tư, từ đó quyết định quy mô tích lũy.
+Câu 31: Xí nghiệp A có lượng tư bản đầu tư 200.000.000 đồng, cấu tạo hữu cơ của tư bản 4/1, tỷ suất giá trị thặng dư 100%, giá trị thặng dư dành cho tiêu dùng 50%. Vậy lượng giá trị thặng dư tư bản hóa là bao nhiêu?
+A. 30.000.000 đồng.
+B. 25.000.000 đồng.
+*C. 20.000.000 đồng.
+D. 35.000.000 đồng.
+Gt: Ta có C + V = 200 triệu, C/V = 4 -> V = 40 triệu đồng. Giá trị thặng dư M = m' * V = 100% * 40 triệu = 40 triệu đồng. Tỷ lệ tư bản hóa là 100% - 50% = 50%, lượng tư bản hóa = 50% * 40 triệu = 20.000.000 đồng.
+Câu 32: Xí nghiệp A có lượng tư bản đầu tư 200.000.000 đồng, cấu tạo hữu cơ của tư bản 4/1, tỷ suất giá trị thặng dư 100%, giá trị thặng dư được tư bản hóa 50%. Nếu tỷ suất giá trị thặng dư tăng lên 150% thì lượng giá trị thặng dư tư bản hóa tăng lên so với trước là bao nhiêu?
+A. 20.000.000 đồng.
+*B. 10.000.000 đồng.
+C. 30.000.000 đồng.
+D. 35.000.000 đồng.
+Gt: Ban đầu lượng tư bản hóa là 20 triệu đồng. Khi m' = 150%, M = 150% * 40 triệu = 60 triệu đồng -> lượng tư bản hóa mới = 50% * 60 triệu = 30 triệu đồng. Chênh lệch tăng thêm = 30 - 20 = 10.000.000 đồng.
+Câu 33: Xí nghiệp A có chi phí tư bản 100.000.000 đồng, trong đó trả tiền công cho người lao động 40.000.000 đồng. Vậy cấu tạo hữu cơ của tư bản là bao nhiêu?
+A. 7/3.
+B. 4/1.
+*C. 3/2.
+D. 3/1
+Gt: Chi phí khả biến V = 40 triệu, chi phí bất biến C = 100 triệu - 40 triệu = 60 triệu đồng. Cấu tạo hữu cơ c/v = 60/40 = 3/2.
+Câu 34: Xí nghiệp A có lượng tư bản đầu tư lần thứ nhất 200.000.000 đồng, cấu tạo hữu cơ của tư bản 4/1, tỷ suất giá trị thặng dư 100%, giá trị thặng dư được tư bản hóa 50%. Vậy lượng tư bản đầu tư lần thứ hai là bao nhiêu?
+*A. 220.000.000 đồng.
+B. 225.000.000 đồng.
+C. 230.000.000 đồng.
+D. 235.000.000 đồng.
+Gt: Khối lượng thặng dư được tư bản hóa ở chu kỳ một là 20 triệu đồng. Tư bản đầu tư lần hai = Tư bản lần một + phần tư bản hóa = 200 triệu + 20 triệu = 220.000.000 đồng.
+Câu 35: Xí nghiệp A có lượng tư bản đầu tư 200.000.000 đồng, cấu tạo hữu cơ của tư bản là 4/1, tỷ suất giá trị thặng dư 100%, tỷ suất tích lũy tư bản 80%. Hỏi khối lượng giá trị thặng dư tư bản hóa là bao nhiêu?
+A. 30.000.000 đồng.
+*B. 32.000.000 đồng.
+C. 20.000.000 đồng.
+D. 35.000.000 đồng.
+Gt: Tính được V = 40 triệu đồng, M = 40 triệu đồng. Khối lượng giá trị thặng dư tư bản hóa = 80% * 40 triệu = 32.000.000 đồng.
+Câu 36: Xí nghiệp A có lượng tư bản đầu tư 200.000.000 đồng, cấu tạo hữu cơ của tư bản 4/1, tỷ suất giá trị thặng dư 100%, lượng giá trị thặng dư tư bản hóa 20.000.000 đồng. Vậy tỷ suất tích lũy là bao nhiêu?
+A. 150%.
+B. 100%.
+C. 200%.
+*D. 50%.
+Gt: Khối lượng thặng dư tạo ra M = 40 triệu đồng. Tỷ suất tích lũy = (Lượng tư bản hóa / Tổng giá trị thặng dư) * 100% = (20 triệu / 40 triệu) * 100% = 50%.
+Câu 37: Xí nghiệp A có lượng tư bản đầu tư 100.000.000 đồng, cấu tạo hữu cơ của tư bản 4/1, tỷ suất giá trị thặng dư 100%, giá trị thặng dư được tư bản hóa 50%, thì quy mô tư bản sau tích lũy là 110.000.000 đồng. Nếu lượng tư bản đầu tư 200.000.000 đồng thì quy mô tư bản sau tích lũy là
+*A. 220.000.000 đồng.
+B. 250.000.000 đồng.
+C. 200.000.000 đồng.
+D. 300.000.000 đồng.
+Gt: Các tỷ lệ cấu trúc không đổi nên quy mô đầu tư ban đầu tăng gấp đôi (từ 100 triệu lên 200 triệu) thì quy mô tư bản sau tích lũy tăng tỷ lệ thuận gấp đôi: 110 triệu * 2 = 220.000.000 đồng.
+Câu 38: Xí nghiệp A có chi phí tư bản 100.000.000 đồng, cấu tạo hữu cơ của tư bản 3/2. Vậy chi phí tư bản bất biến là bao nhiêu?
+*A. 60.000.000 đồng.
+B. 50.000.000 đồng.
+C. 40.000.000 đồng.
+D. 30.000.000 đồng.
+Gt: Ta có C + V = 100 triệu và C/V = 3/2 -> V = (2/3)C. Thay vào phương trình ta được C + (2/3)C = 100 triệu -> C = 60.000.000 đồng.
+Câu 39: Xí nghiệp A có chi phí tư bản 100.000.000 đồng, cấu tạo hữu cơ của tư bản 3/2. Vậy chi phí tư bản khả biến là bao nhiêu?
+A. 20.000.000 đồng.
+B. 30.000.000 đồng.
+*C. 40.000.000 đồng.
+D. 10.000.000 đồng.
+Gt: Do tổng chi phí tư bản C + V = 100 triệu đồng và chi phí tư bản bất biến C = 60 triệu đồng, nên tư bản khả biến V = 100 triệu - 60 triệu = 40.000.000 đồng.
+Câu 40: Xí nghiệp A có chi phí tư bản 100.000.000 đồng, trong đó chi phí mua tư liệu sản xuất 70.000.000 đồng. Vậy cấu tạo hữu cơ của tư bản là bao nhiêu?
+*A. 7/3.
+B. 4/1.
+C. 3/2.
+D. 3/1
+Gt: Chi phí tư bản bất biến (mua TLSX) C = 70 triệu đồng. Chi phí tư bản khả biến V = 100 triệu - 70 triệu = 30 triệu đồng. Cấu tạo hữu cơ c/v = 70/30 = 7/3.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3600;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+        
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath(); // Render lại công thức trong phần giải thích
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Thi Trắc Nghiệm - SNG EDU</title>
+    
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db; 
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        /* HEADER */
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        /* LAYOUT */
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        /* OPTIONS */
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter { 
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0; 
+        }
+        .opt-text { 
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s; 
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        /* ĐÁP ÁN ĐÚNG/SAI */
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box { 
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue); 
+            border-radius: 4px; display: none; font-size: 0.95rem; 
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        /* SIDEBAR - FIX LỖI KHÔNG CUỘN ĐƯỢC */
+        .sidebar-col { 
+            width: 320px; 
+            position: sticky; 
+            top: 80px; 
+            max-height: calc(100vh - 100px); /* Giới hạn chiều cao theo màn hình */
+            overflow-y: auto; /* Cho phép cuộn bên trong sidebar */
+            padding-right: 5px;
+        }
+        
+        /* Tùy chỉnh thanh cuộn cho sidebar */
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn { 
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s; 
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col { 
+                width: 100%; 
+                position: static; 
+                order: 2; 
+                max-height: none; 
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+    
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+
+
+Câu 1: Thuật ngữ Kinh tế chính trị xuất hiện đầu tiên ở
+A. Châu Á.
+*B. Châu Âu.
+C. Châu Mỹ.
+D. Châu Phi.
+
+Gt: Thuật ngữ "Kinh tế chính trị" xuất hiện đầu tiên ở Châu Âu, do Antoine de Montchrestien đặt ra năm 1615 trong tác phẩm "Traité d'économie politique".
+
+Câu 2: Nhà kinh tế học nào sau đây là đại biểu tiêu biểu của Chủ nghĩa trọng thương?
+*A. Gasparo Scaruffi.
+B. D. Ricardo.
+C. W. Petty.
+D. Jacques Turgot.
+
+Gt: Gasparo Scaruffi là đại biểu tiêu biểu của Chủ nghĩa trọng thương. D. Ricardo và W. Petty là đại biểu Kinh tế chính trị cổ điển Anh; Jacques Turgot thuộc Chủ nghĩa trọng nông.
+
+Câu 3: Nhà kinh tế học Antonso Serra là đại biểu tiêu biểu của
+*A. Chủ nghĩa trọng thương.
+B. Chủ nghĩa trọng nông.
+C. Kinh tế chính trị tầm thường.
+D. Kinh tế chính trị cổ điển Anh.
+
+Gt: Antonio Serra (người Ý) là đại biểu tiêu biểu của Chủ nghĩa trọng thương với tác phẩm "Luận về các nguyên nhân làm cho vương quốc Naples có nhiều vàng bạc" (1613).
+
+Câu 4: C. Mác đã kế thừa trực tiếp những giá trị khoa học của học thuyết kinh tế nào sau đây để phát triển lý luận kinh tế chính trị về phương thức sản xuất tư bản chủ nghĩa?
+A. Chủ nghĩa trọng thương.
+B. Chủ nghĩa trọng nông.
+C. Kinh tế chính trị tầm thường.
+*D. Kinh tế chính trị cổ điển Anh.
+
+Gt: C. Mác kế thừa trực tiếp Kinh tế chính trị cổ điển Anh (A. Smith, D. Ricardo) với lý thuyết giá trị - lao động để xây dựng học thuyết kinh tế về PTSX TBCN.
+
+Câu 5: Phát hiện ra các quy luật kinh tế chi phối các quan hệ giữa người với người trong sản xuất và trao đổi, là mục đích nghiên cứu của
+A. Chủ nghĩa trọng thương.
+B. Chủ nghĩa trọng nông.
+C. Kinh tế chính trị cổ điển Anh.
+*D. Kinh tế chính trị Mác - Lênin.
+
+Gt: Kinh tế chính trị Mác - Lênin có mục đích nghiên cứu các quy luật kinh tế chi phối quan hệ giữa người với người trong sản xuất và trao đổi dưới PTSX TBCN và trong thời kỳ quá độ lên CNXH.
+
+Câu 6: Trên cơ sở nhận thức được mở rộng và ngày càng sâu sắc, người lao động hình thành được năng lực, kỹ năng vận dụng các quy luật kinh tế vào thực tiễn hoạt động lao động là chức năng thực tiễn của
+A. Chủ nghĩa trọng thương.
+B. Chủ nghĩa trọng nông.
+C. Kinh tế chính trị cổ điển Anh.
+*D. Kinh tế chính trị Mác - Lênin.
+
+Gt: Chức năng thực tiễn của Kinh tế chính trị Mác - Lênin là giúp người lao động vận dụng quy luật kinh tế vào thực tiễn lao động sản xuất.
+
+Câu 7: Nhiều giá trị sử dụng khác nhau của hàng hoá được con người phát hiện nhờ vào sự phát triển của nền sản xuất và
+A. sự quản lý của nhà nước.
+*B. khoa học, công nghệ.
+C. thể chế chính trị.
+D. cơ chế kinh tế.
+
+Gt: Giá trị sử dụng của hàng hoá ngày càng được phát hiện phong phú hơn nhờ sự phát triển của khoa học, công nghệ, mở ra các công dụng mới của cùng một vật.
+
+Câu 8: Hàng hoá có hai thuộc tính là do lao động của người sản xuất hàng hoá có tính hai mặt là lao động cụ thể và
+A. lao động cá biệt.
+*B. lao động trừu tượng.
+C. lao động tư nhân.
+D. lao động xã hội.
+
+Gt: Lao động sản xuất hàng hoá có tính hai mặt: lao động cụ thể (tạo ra giá trị sử dụng) và lao động trừu tượng (tạo ra giá trị). Đây là phát hiện của C. Mác.
+
+Câu 9: Cơ sở để so sánh, trao đổi các giá trị sử dụng khác nhau là
+*A. lao động trừu tượng.
+B. lao động cụ thể.
+C. lao động tư nhân.
+D. lao động xã hội.
+
+Gt: Lao động trừu tượng (hao phí lao động thuần tuý về mặt sinh lý) là cơ sở để so sánh và trao đổi các hàng hoá có giá trị sử dụng khác nhau.
+
+Câu 10: Việc sản xuất và trao đổi hàng hoá phải được tiến hành trên cơ sở của hao phí lao động xã hội cần thiết là yêu cầu của quy luật
+*A. giá trị.
+B. cung - cầu.
+C. cạnh tranh.
+D. lưu thông tiền tệ.
+
+Gt: Quy luật giá trị yêu cầu sản xuất và trao đổi hàng hoá phải dựa trên cơ sở hao phí lao động xã hội cần thiết, không phải hao phí lao động cá biệt.
+
+Câu 11: Người sản xuất muốn bán được hàng hoá trên thị trường, muốn được xã hội thừa nhận sản phẩm thì lượng giá trị của một hàng hoá cá biệt phải phù hợp với thời gian lao động xã hội cần thiết, là yêu cầu của quy luật
+*A. giá trị.
+B. cung - cầu.
+C. cạnh tranh.
+D. lưu thông tiền tệ.
+
+Gt: Quy luật giá trị đòi hỏi hàng hoá phải được sản xuất với hao phí lao động cá biệt không vượt quá thời gian lao động xã hội cần thiết thì mới được xã hội thừa nhận.
+
+Câu 12: Giá trị hàng hoá là nội dung, là cơ sở của giá trị
+A. sử dụng.
+*B. trao đổi.
+C. thặng dư.
+D. tiêu dùng.
+
+Gt: Giá trị là lao động xã hội của người sản xuất kết tinh trong hàng hoá, là nội dung và cơ sở của giá trị trao đổi. Giá trị trao đổi là hình thức biểu hiện bên ngoài của giá trị.
+
+Câu 13: Việc phát hiện ra tính hai mặt của lao động sản xuất hàng hoá giúp C. Mác luận giải triệt để và khoa học về nguồn gốc, bản chất của
+A. giá cả.
+*B. giá trị.
+C. giá trị sử dụng.
+D. giá trị thị trường.
+
+Gt: Phát hiện tính hai mặt của lao động sản xuất hàng hoá (lao động cụ thể và lao động trừu tượng) là cơ sở để C. Mác luận giải nguồn gốc và bản chất của giá trị hàng hoá.
+
+Câu 14: Quy luật cạnh tranh điều tiết một cách khách quan mối quan hệ ganh đua kinh tế giữa các chủ thể trong
+A. các nền kinh tế.
+*B. sản xuất và trao đổi hàng hoá.
+C. các chế độ kinh tế.
+D. phương thức sản xuất tư bản chủ nghĩa.
+
+Gt: Quy luật cạnh tranh điều tiết khách quan mối quan hệ ganh đua kinh tế giữa các chủ thể trong quá trình sản xuất và trao đổi hàng hoá.
+
+Câu 15: Kết quả cạnh tranh trong nội bộ ngành là hình thành giá trị thị trường của từng
+A. nền kinh tế.
+B. doanh nghiệp.
+*C. loại hàng hoá.
+D. quốc gia.
+
+Gt: Cạnh tranh trong nội bộ ngành dẫn đến hình thành giá trị thị trường của từng loại hàng hoá (mức hao phí lao động xã hội cần thiết trung bình của ngành).
+
+Câu 16: Vai trò của người tiêu dùng là định hướng
+*A. sản xuất.
+B. lưu thông.
+C. phân phối.
+D. tiêu dùng.
+
+Gt: Người tiêu dùng (thông qua nhu cầu và cầu trên thị trường) có vai trò định hướng sản xuất - quyết định doanh nghiệp sản xuất cái gì, số lượng bao nhiêu.
+
+Câu 17: Giá trị sử dụng của hàng hoá sức lao động nhằm thoả mãn nhu cầu của
+*A. người mua.
+B. người bán.
+C. người sản xuất.
+D. nhà nước.
+
+Gt: Sức lao động là hàng hoá đặc biệt. Giá trị sử dụng của nó (khả năng lao động, tạo ra giá trị mới lớn hơn giá trị bản thân nó) nhằm thoả mãn nhu cầu của người mua (nhà tư bản).
+
+Câu 18: Hình thái tư bản đầu tiên trong tuần hoàn của tư bản là
+A. tư bản sản xuất.
+B. tư bản hàng hoá.
+*C. tư bản tiền tệ.
+D. tư bản cho vay.
+
+Gt: Tuần hoàn tư bản bắt đầu bằng tư bản tiền tệ (T), sau đó chuyển thành tư bản sản xuất (SX), rồi tư bản hàng hoá (H'), cuối cùng trở về hình thái tiền tệ (T').
+
+Câu 19: Ba hình thái kế tiếp nhau của tuần hoàn tư bản là tư bản tiền tệ, tư bản sản xuất,
+*A. tư bản hàng hoá.
+B. tư bản tiền tệ.
+C. tư bản sản xuất.
+D. tư bản cho vay.
+
+Gt: Ba hình thái kế tiếp trong tuần hoàn tư bản: tư bản tiền tệ -> tư bản sản xuất -> tư bản hàng hoá, theo công thức T - H - SX - H' - T'.
+
+Câu 20: Chu chuyển tư bản được đo lường bằng thời gian chu chuyển tư bản hoặc
+A. tốc độ tích luỹ tư bản.
+B. thời gian lưu thông.
+C. thời gian sản xuất.
+*D. tốc độ chu chuyển tư bản.
+
+Gt: Chu chuyển tư bản được đo bằng hai đại lượng: thời gian chu chuyển tư bản (tổng thời gian sản xuất + lưu thông) và tốc độ chu chuyển tư bản (số vòng quay trong năm).
+
+Câu 21: Xí nghiệp A có lượng tư bản đầu tư 100.000.000 đồng, cấu tạo hữu cơ của tư bản 4/1. Vậy giá trị cũ là bao nhiêu?
+A. 40.000.000 đồng.
+B. 10.000.000 đồng.
+*C. 80.000.000 đồng.
+D. 20.000.000 đồng.
+
+Gt: CTHC = c/v = 4/1, tổng = 5 phần. Tư bản bất biến c (giá trị cũ) = 4/5 x 100tr = 80tr đồng. Tư bản khả biến v = 1/5 x 100tr = 20tr đồng.
+
+Câu 22: Quá trình tích luỹ tư bản không ngừng làm tăng cấu tạo hữu cơ của
+*A. tư bản.
+B. tiêu dùng.
+C. hàng hoá.
+D. trao đổi.
+
+Gt: Tích luỹ tư bản gắn liền với tiến bộ kỹ thuật, tăng tư bản bất biến (máy móc) nhanh hơn tư bản khả biến (lao động), dẫn đến cấu tạo hữu cơ của tư bản (c/v) không ngừng tăng lên.
+
+Câu 23: Trình độ khai thác sức lao động là một trong những nhân tố chủ yếu ảnh hưởng đến quy mô
+*A. tích luỹ tư bản.
+B. tiêu dùng hàng hoá.
+C. trao đổi.
+D. phân phối.
+
+Gt: Quy mô tích luỹ tư bản phụ thuộc vào khối lượng giá trị thặng dư và tỷ lệ phân chia thành tích luỹ/tiêu dùng. Trình độ khai thác sức lao động (tỷ suất m') quyết định khối lượng m, từ đó ảnh hưởng quy mô tích luỹ.
+
+Câu 24: Xí nghiệp A có chi phí tư bản 100.000.000 đồng, cấu tạo hữu cơ của tư bản 3/2, tỷ suất giá trị thặng dư 30%. Vậy giá trị mới là bao nhiêu?
+A. 42.000.000 đồng.
+*B. 52.000.000 đồng.
+C. 40.000.000 đồng.
+D. 60.000.000 đồng.
+
+Gt: CTHC = c/v = 3/2, tổng = 5 phần. v = 2/5 x 100tr = 40tr. m = m' x v = 30% x 40tr = 12tr. Giá trị mới = v + m = 40tr + 12tr = 52tr đồng.
+
+Câu 25: Theo quan điểm của P.Samuelson, lợi nhuận là phần thu nhập thặng dư tính bằng hiệu quả giữa tổng doanh thu trừ đi
+A. tổng giá trị hàng hoá.
+*B. tổng chi phí.
+C. giá trị hàng hoá.
+D. giá trị tăng thêm.
+
+Gt: Theo P.Samuelson, lợi nhuận = Tổng doanh thu - Tổng chi phí (bao gồm cả chi phí cơ hội). Đây là cách tiếp cận của kinh tế học hiện đại.
+
+Câu 26: Tỷ suất lợi nhuận phản ánh mức doanh lợi
+A. trao đổi hàng hoá.
+B. tiêu dùng hàng hoá.
+*C. đầu tư tư bản.
+D. cho vay tư bản.
+
+Gt: Tỷ suất lợi nhuận (p' = m/K x 100%) phản ánh mức doanh lợi của đầu tư tư bản, cho biết cứ 100 đơn vị tư bản đầu tư thu được bao nhiêu đơn vị lợi nhuận.
+
+Câu 27: Địa tô là một trong những căn cứ để tính toán giá cả ruộng đất khi thực hiện bán
+A. quyền sử dụng đất.
+B. quyền sở hữu đất.
+*C. đất đai.
+D. hàng hoá.
+
+Gt: Giá cả ruộng đất = Địa tô / Tỷ suất lợi tức ngân hàng. Địa tô là căn cứ chính để xác định giá cả đất đai khi mua bán.
+
+Câu 28: Mảnh đất có diện tích 100m2, giá cả mảnh đất 2 tỷ đồng, tỷ suất ngân hàng nhận gửi hiện hành 7%. Vậy địa tô của mảnh đất là bao nhiêu?
+*A. 140.000.000 đồng.
+B. 120.000.000 đồng.
+C. 130.000.000 đồng.
+D. 170.000.000 đồng.
+
+Gt: Địa tô = Giá cả đất x Tỷ suất lợi tức = 2.000.000.000 x 7% = 140.000.000 đồng.
+
+Câu 29: Trong nền kinh tế thị trường, độc quyền có thể được hình thành một cách tự nhiên, cũng có thể được hình thành bởi
+A. điều kiện tự nhiên.
+B. điều kiện xã hội.
+*C. ý chí của nhà nước.
+D. tư bản thương nghiệp.
+
+Gt: Độc quyền hình thành theo hai con đường: tự nhiên (do cạnh tranh, tích tụ tập trung tư bản) hoặc do ý chí của nhà nước (nhà nước cấp phép độc quyền, bảo hộ).
+
+Câu 30: Độc quyền có thể làm tăng năng suất lao động, nâng cao năng lực cạnh tranh của
+*A. tổ chức độc quyền.
+B. tổ chức chính trị.
+C. nhà nước.
+D. tổ chức xã hội.
+
+Gt: Tổ chức độc quyền với ưu thế về quy mô, vốn, công nghệ có thể đầu tư R&D, nâng cao năng suất và năng lực cạnh tranh của chính tổ chức đó trên thị trường quốc tế.
+
+Câu 31: Tổ chức độc quyền có ưu thế tập trung được sức mạnh kinh tế to lớn, nhất là sức mạnh về
+A. đất đai.
+B. thị trường.
+C. xuất khẩu.
+*D. tài chính.
+
+Gt: Tổ chức độc quyền tập trung sức mạnh kinh tế to lớn, đặc biệt là sức mạnh tài chính (vốn, tín dụng, ngân hàng), tạo nền tảng chi phối toàn bộ nền kinh tế.
+
+Câu 32: Sự kết hợp về nhân sự trong độc quyền nhà nước được thực hiện thông qua các đảng phái. Đứng sau các đảng phái là một lực lượng có quyền lực, đó chính là
+A. các cơ quan quản lý nhà nước về kinh tế.
+B. nhà tư bản kếch xù.
+*C. các hội chủ xí nghiệp độc quyền.
+D. nhà tài phiệt.
+
+Gt: Đứng sau các đảng phái chính trị là các hội chủ xí nghiệp độc quyền - lực lượng tài trợ và chi phối hoạt động chính trị nhằm bảo vệ lợi ích của tư bản độc quyền.
+
+Câu 33: Các tổ chức độc quyền công nghiệp tham gia vào công việc của ngân hàng bằng cách
+A. bán tài sản cho các ngân hàng lớn.
+*B. mua cổ phần của các ngân hàng lớn.
+C. bán cổ phần cho các ngân hàng lớn.
+D. cử đại diện tham gia vào cơ quan quản lý nhà nước.
+
+Gt: Tổ chức độc quyền công nghiệp tham gia vào hoạt động ngân hàng bằng cách mua cổ phần của các ngân hàng lớn, từ đó kiểm soát và chi phối hoạt động ngân hàng.
+
+Câu 34: Trong chủ nghĩa tư bản hiện đại, để cùng tồn tại và cùng phân chia quyền lực giữa các thế lực tư bản độc quyền, tại các nước tư bản phát triển nhất, quan hệ nhân sự xuất hiện cơ chế sau đây?
+A. Thỏa hiệp.
+B. Tham dự.
+*C. Ủy nhiệm.
+D. Phân cấp.
+
+Gt: Cơ chế ủy nhiệm (hay ủy quyền) xuất hiện trong CNTB hiện đại, cho phép các thế lực tư bản độc quyền cùng tồn tại và phân chia quyền lực thông qua việc ủy nhiệm đại diện quản lý.
+
+Câu 35: Thành phần kinh tế nào sau đây được xác định là một động lực quan trọng của nền kinh tế thị trường định hướng xã hội chủ nghĩa ở Việt Nam hiện nay?
+A. Kinh tế nhà nước.
+B. Kinh tế tập thể.
+*C. Kinh tế tư nhân.
+D. Kinh tế có vốn đầu tư nước ngoài.
+
+Gt: Theo Nghị quyết Đại hội XIII của Đảng, kinh tế tư nhân được xác định là một động lực quan trọng của nền kinh tế thị trường định hướng XHCN ở Việt Nam.
+
+Câu 36: Luận giải nào sau đây không đúng về tính tất yếu khách quan của việc phát triển kinh tế thị trường định hướng xã hội chủ nghĩa ở Việt Nam?
+A. Phát triển kinh tế thị trường định hướng xã hội chủ nghĩa là phù hợp với xu hướng phát triển khách quan của Việt Nam trong bối cảnh thế giới hiện nay.
+B. Do tính ưu việt của kinh tế thị trường trong thúc đẩy phát triển Việt Nam theo định hướng xã hội chủ nghĩa.
+C. Kinh tế thị trường định hướng xã hội chủ nghĩa phù hợp với nguyện vọng, mong muốn của nhân dân Việt Nam.
+*D. Kinh tế thị trường là mục tiêu của chủ nghĩa xã hội.
+
+Gt: Kinh tế thị trường không phải là mục tiêu mà là phương tiện, công cụ để xây dựng CNXH. Mục tiêu của CNXH là "dân giàu, nước mạnh, dân chủ, công bằng, văn minh". Đây là luận giải không đúng.
+
+Câu 37: Nội dung nào sau đây không phản ánh đặc trưng của kinh tế thị trường định hướng xã hội chủ nghĩa ở Việt Nam?
+A. Kinh tế thị trường định hướng xã hội chủ nghĩa hướng tới thực hiện mục tiêu "dân giàu, nước mạnh, dân chủ, công bằng, văn minh".
+B. Kinh tế thị trường định hướng xã hội chủ nghĩa là nền kinh tế có nhiều hình thức sở hữu, nhiều thành phần kinh tế, trong đó kinh tế nhà nước giữ vai trò chủ đạo.
+C. Kinh tế thị trường định hướng xã hội chủ nghĩa gắn tăng trưởng kinh tế với công bằng xã hội.
+*D. Kinh tế thị trường định hướng xã hội chủ nghĩa xây dựng trên nền tảng sở hữu tư nhân về tư liệu sản xuất.
+
+Gt: KTTT định hướng XHCN ở Việt Nam xây dựng trên nền tảng sở hữu toàn dân (đất đai, tài nguyên) và sở hữu nhà nước đóng vai trò chủ đạo, không phải nền tảng sở hữu tư nhân như CNTB. Đây là nội dung không phản ánh đặc trưng.
+
+Câu 38: Mục tiêu của công nghiệp hoá, hiện đại hoá nền kinh tế quốc dân ở Việt Nam là nhằm xây dựng
+A. kinh tế thị trường.
+*B. chủ nghĩa xã hội.
+C. kinh tế tri thức.
+D. đội ngũ tri thức.
+
+Gt: CNH, HĐH ở Việt Nam nhằm mục tiêu tổng quát là xây dựng chủ nghĩa xã hội - tạo nền tảng vật chất kỹ thuật cho chế độ xã hội chủ nghĩa.
+
+Câu 39: Cách mạng công nghiệp lần thứ tư làm thay đổi hệ thống sản xuất, chuyển sản xuất từ
+A. tập trung sang độc quyền.
+B. cạnh tranh sang độc quyền.
+C. phân cấp sang tập trung.
+*D. tập trung sang phân cấp.
+
+Gt: Cách mạng công nghiệp lần thứ tư (với AI, IoT, in 3D...) cho phép sản xuất linh hoạt, phi tập trung hoá, chuyển từ mô hình sản xuất tập trung sang phân cấp (sản xuất phân tán, cá nhân hoá).
+
+Câu 40: Chủ thể làm lực lượng nòng cốt của hội nhập quốc tế là
+A. các cơ quan quản lý nhà nước.
+*B. đội ngũ trí thức.
+C. giai cấp công nhân.
+D. doanh nghiệp và đội ngũ doanh nhân.
+
+Gt: Đội ngũ trí thức là lực lượng nòng cốt trong hội nhập quốc tế, có vai trò tiên phong trong tiếp thu, ứng dụng khoa học công nghệ và tri thức toàn cầu vào phát triển đất nước.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3600;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+        
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath(); // Render lại công thức trong phần giải thích
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

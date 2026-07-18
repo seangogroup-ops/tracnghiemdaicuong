@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Thi Trắc Nghiệm - SNG EDU</title>
+    
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db; 
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        /* HEADER */
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        /* LAYOUT */
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        /* OPTIONS */
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter { 
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0; 
+        }
+        .opt-text { 
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s; 
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        /* ĐÁP ÁN ĐÚNG/SAI */
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box { 
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue); 
+            border-radius: 4px; display: none; font-size: 0.95rem; 
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        /* SIDEBAR - FIX LỖI KHÔNG CUỘN ĐƯỢC */
+        .sidebar-col { 
+            width: 320px; 
+            position: sticky; 
+            top: 80px; 
+            max-height: calc(100vh - 100px); /* Giới hạn chiều cao theo màn hình */
+            overflow-y: auto; /* Cho phép cuộn bên trong sidebar */
+            padding-right: 5px;
+        }
+        
+        /* Tùy chỉnh thanh cuộn cho sidebar */
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn { 
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s; 
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col { 
+                width: 100%; 
+                position: static; 
+                order: 2; 
+                max-height: none; 
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+    
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+
+
+Câu 1: Về mặt lịch sử, cho đến nay, loài người đã và đang trải qua bao nhiêu cuộc cách mạng công nghiệp?
+*A. 4
+B. 5
+C. 3
+D. 2
+Gt: Loài người đã trải qua ba cuộc cách mạng công nghiệp và đang bắt đầu cuộc cách mạng công nghiệp lần thứ tư (Xem trang 225, giáo trình Kinh tế chính trị Mác - Lênin, 2021).
+
+Câu 2: Nghiên cứu về cách mạng công nghiệp lần thứ nhất, C. Mác đã khái quát tính quy luật của cách mạng công nghiệp qua ba giai đoạn phát triển là:
+A. đại công nghiệp, công trường thủ công và hiệp tác giản đơn.
+*B. hiệp tác giản đơn, công trường thủ công và đại công nghiệp.
+C. công trường thủ công, hiệp tác giản đơn và đại công nghiệp.
+D. hiệp tác giản đơn, đại công nghiệp và công trường thủ công.
+Gt: Trình tự phát triển theo quy luật từ thấp đến cao là hiệp tác giản đơn, công trường thủ công và đại công nghiệp (Trang 226, 227).
+
+Câu 3: Liên kết giữa thế giới thực và ảo, để thực hiện công việc thông minh và hiệu quả nhất là đặc trưng của cách mạng công nghiệp:
+A. lần thứ nhất.
+B. lần thứ hai.
+C. lần thứ ba.
+*D. lần thứ tư.
+Gt: Đây là đặc trưng cốt lõi của cuộc cách mạng công nghiệp lần thứ tư (Trang 229, giáo trình Kinh tế chính trị Mác - Lênin, 2021).
+
+Câu 4: Sử dụng công nghệ thông tin và máy tính để tự động hóa sản xuất là đặc trưng của cách mạng công nghiệp:
+A. lần thứ nhất.
+B. lần thứ hai.
+*C. lần thứ ba.
+D. lần thứ tư.
+Gt: Đặc trưng của cách mạng công nghiệp lần thứ ba là ứng dụng công nghệ thông tin và máy tính (Trang 229).
+
+Câu 5: Sử dụng năng lượng điện và động cơ điện, để tạo ra dây chuyền sản xuất hàng loạt là đặc trưng của cách mạng công nghiệp:
+A. lần thứ nhất.
+*B. lần thứ hai.
+C. lần thứ ba.
+D. lần thứ tư.
+Gt: Năng lượng điện và sản xuất hàng loạt gắn liền với cách mạng công nghiệp lần thứ hai (Trang 229).
+
+Câu 6: Sử dụng năng lượng nước và hơi nước để cơ khí hóa sản xuất là đặc trưng của cách mạng công nghiệp:
+*A. lần thứ nhất.
+B. lần thứ hai.
+C. lần thứ ba.
+D. lần thứ tư.
+Gt: Đây là đặc trưng cơ bản nhất của cuộc cách mạng công nghiệp lần thứ nhất (Trang 229).
+
+Câu 7: Những bước phát triển nhảy vọt về chất trình độ của tư liệu lao động trên cơ sở những phát minh đột phá về kỹ thuật và công nghệ... là khái niệm về:
+A. công nghiệp hóa, hiện đại hóa.
+B. phát triển bền vững.
+*C. cách mạng công nghiệp.
+D. hội nhập kinh tế quốc tế.
+Gt: Đây là định nghĩa đầy đủ về cách mạng công nghiệp (Trang 225, giáo trình Kinh tế chính trị Mác - Lênin, 2021).
+
+Câu 8: Công nghiệp hóa là quá trình chuyển đổi nền sản xuất xã hội từ dựa trên lao động thủ công là chính sang nền sản xuất dựa chủ yếu trên lao động bằng máy móc nhằm:
+A. xây dựng nền kinh tế hiện đại.
+B. thúc đẩy nền kinh tế phát triển cao.
+*C. tạo ra năng suất lao động xã hội cao.
+D. xây dựng cơ sở hạ tầng hiện đại.
+Gt: Mục đích cốt lõi của công nghiệp hóa là nâng cao năng suất lao động xã hội (Trang 242).
+
+Câu 9: "Quá trình chuyển đổi căn bản, toàn diện các hoạt động sản xuất kinh doanh... nhằm tạo ra năng suất lao động xã hội cao" là khái niệm về:
+A. cách mạng công nghiệp.
+*B. công nghiệp hóa, hiện đại hóa.
+C. phát triển bền vững.
+D. phát triển theo chiều sâu.
+Gt: Đây là khái niệm đầy đủ về quá trình công nghiệp hóa, hiện đại hóa (Trang 246).
+
+Câu 10: Quá trình chuyển đổi nền sản xuất xã hội từ lao động thủ công sang lao động bằng máy móc để tạo ra năng suất cao là khái niệm về:
+A. hiện đại hóa.
+B. công nghiệp hóa.
+*C. công nghiệp hóa, hiện đại hóa.
+D. cơ khí hóa, điện khí hóa.
+Gt: Đây là cách định nghĩa ngắn gọn về bản chất của công nghiệp hóa, hiện đại hóa (Trang 246).
+
+Câu 11: Một đặc điểm chủ yếu của công nghiệp hóa, hiện đại hóa ở Việt Nam là thực hiện mục tiêu:
+A. "dân giàu, nước mạnh, xã hội văn minh, dân chủ, bình đẳng".
+B. "dân giàu, nước mạnh, văn minh, bình đẳng, công bằng".
+*C. "dân giàu, nước mạnh, dân chủ, công bằng, văn minh".
+D. "dân giàu, nước mạnh, bình đẳng, công bằng, dân chủ".
+Gt: Mục tiêu xuyên suốt là xây dựng xã hội "dân giàu, nước mạnh, dân chủ, công bằng, văn minh" (Trang 249).
+
+Câu 12: Đặc điểm chủ yếu của công nghiệp hóa, hiện đại hóa ở Việt Nam là tiến hành trong điều kiện kinh tế thị trường:
+A. định hướng phát triển bền vững.
+B. định hướng tăng trưởng bền vững.
+C. định hướng phát triển theo chiều sâu.
+*D. định hướng xã hội chủ nghĩa.
+Gt: CNH, HĐH tại Việt Nam luôn gắn liền với định hướng chính trị xã hội chủ nghĩa (Trang 249).
+
+Câu 13: Đặc điểm chủ yếu của công nghiệp hóa, hiện đại hóa ở Việt Nam là gắn liền với:
+A. tăng trưởng xanh.
+B. tăng trưởng bền vững.
+*C. phát triển kinh tế tri thức.
+D. phát triển nền kinh tế mới.
+Gt: Đây là một đặc điểm quan trọng trong bối cảnh cuộc cách mạng công nghiệp hiện đại (Trang 249).
+
+Câu 14: Đối với các nước kém phát triển quá độ lên CNXH như Việt Nam, xây dựng cơ sở vật chất - kỹ thuật cho CNXH phải thực hiện từ đầu thông qua:
+A. hợp tác quốc tế.
+B. phát triển kinh tế tri thức.
+C. cơ khí hóa, điện khí hóa.
+*D. công nghiệp hoá, hiện đại hoá.
+Gt: Đây là con đường tất yếu để tạo ra nền tảng vật chất cho xã hội mới (Trang 247).
+
+Câu 15: Nội dung CNH, HĐH ở Việt Nam là tạo lập điều kiện để chuyển đổi từ nền sản xuất - xã hội lạc hậu sang:
+*A. nền sản xuất - xã hội tiến bộ.
+B. nền sản xuất - xã hội hiện đại.
+C. nền kinh tế thị trường.
+D. nền kinh tế tri thức.
+Gt: Tạo lập tiền đề để thực hiện bước chuyển mình sang xã hội tiến bộ (Trang 249).
+
+Câu 16: Một nội dung của CNH, HĐH ở Việt Nam là thực hiện nhiệm vụ chuyển đổi từ nền sản xuất - xã hội lạc hậu sang:
+A. nền kinh tế thị trường.
+B. nền sản xuất - xã hội tiến bộ.
+*C. nền sản xuất - xã hội hiện đại.
+D. nền kinh tế tri thức.
+Gt: Chuyển đổi căn bản trình độ sản xuất sang hướng hiện đại (Trang 249, giáo trình Kinh tế chính trị Mác - Lênin, 2021).
+
+Câu 17: Một nhiệm vụ để chuyển đổi nền sản xuất hiện đại là từng bước hoàn thiện quan hệ sản xuất phù hợp với trình độ phát triển của:
+A. nền sản xuất.
+*B. lực lượng sản xuất.
+C. phương thức sản xuất.
+D. tư liệu sản xuất.
+Gt: Quan hệ sản xuất phải luôn phù hợp với sự phát triển của lực lượng sản xuất (Trang 250).
+
+Câu 18: Nhiệm vụ chuyển đổi sang nền sản xuất hiện đại bao gồm chuyển dịch cơ cấu kinh tế theo hướng:
+A. các nước đang phát triển.
+B. phát triển bền vững.
+C. các nước phát triển.
+*D. hiện đại, hợp lý và hiệu quả.
+Gt: Cơ cấu kinh tế phải dịch chuyển sang các ngành có năng suất và hiệu quả cao (Trang 253).
+
+Câu 19: Để CNH, HĐH thích ứng với cách mạng công nghiệp 4.0, cần hoàn thiện thể chế và xây dựng nền kinh tế trên nền tảng:
+A. của các nước đi trước.
+B. của các nước phát triển.
+*C. đổi mới, sáng tạo.
+D. phát triển.
+Gt: Đổi mới sáng tạo là nhân tố quyết định trong thời đại công nghệ số (Trang 255).
+
+Câu 20: Nội dung nào sau đây KHÔNG phải là nhiệm vụ ứng phó với tác động tiêu cực của cách mạng công nghiệp 4.0?
+A. Thực hiện chuyển đổi số nền kinh tế và quản trị xã hội.
+B. Đẩy mạnh công nghiệp hoá, hiện đại hoá nông nghiệp, nông thôn.
+C. Phát triển nguồn nhân lực chất lượng cao.
+*D. Phát triển các loại hình du lịch và dịch vụ.
+Gt: Các nhiệm vụ ứng phó tập trung vào hạ tầng, số hóa, nông nghiệp và nhân lực (Trang 256 - 259).
+
+Câu 21: Một trong những điều kiện của hội nhập kinh tế quốc tế là sự tương đồng giữa các nước về:
+A. chế độ kinh tế.
+*B. thể chế kinh tế.
+C. chế độ chính trị.
+D. thể chế chính trị.
+Gt: Thể chế kinh tế tương đồng giúp việc phối hợp và giao thương thuận lợi hơn (Trang 275).
+
+Câu 22: Một vấn đề ảnh hưởng lớn đến hội nhập kinh tế quốc tế của Việt Nam hiện nay là:
+*A. cơ chế thị trường chưa hoàn thiện.
+B. cơ chế thị trường chưa ổn định.
+C. kinh tế thị trường ở trình độ sơ khai.
+D. kinh tế thị trường còn chưa đầy đủ.
+Gt: Đây là một rào cản nội tại cần khắc phục để hội nhập sâu rộng (Trang 276).
+
+Câu 23: Một rào cản đối với hội nhập kinh tế quốc tế của Việt Nam là hệ thống luật pháp, chính sách:
+A. chưa phù hợp.
+*B. chưa đồng bộ.
+C. chưa đầy đủ.
+D. chưa ổn định.
+Gt: Hệ thống pháp luật thiếu đồng bộ gây khó khăn cho các hoạt động kinh tế quốc tế (Trang 276).
+
+Câu 24: Một trong những vấn đề có ảnh hưởng lớn đến hội nhập kinh tế quốc tế của Việt Nam hiện nay là:
+A. môi trường kinh tế còn hạn chế.
+*B. môi trường cạnh tranh còn nhiều hạn chế.
+C. môi trường xã hội còn phức tạp.
+D. môi trường chính trị còn nhiều bất ổn.
+Gt: Năng lực cạnh tranh thấp là thách thức lớn khi tham gia sân chơi toàn cầu (Trang 276).
+
+Câu 25: Biện pháp xây dựng nền kinh tế độc lập tự chủ đi đôi với hội nhập quốc tế là hoàn thiện đường lối chung và:
+A. đường lối chính trị, xây dựng và phát triển đất nước.
+B. các chính sách ưu tiên phát triển kinh tế.
+C. các chính sách ưu tiên hội nhập kinh tế quốc tế.
+*D. đường lối kinh tế, xây dựng và phát triển đất nước.
+Gt: Đường lối kinh tế đúng đắn là kim chỉ nam cho sự phát triển bền vững (Trang 279).
+
+Câu 26: Để xây dựng nền kinh tế độc lập, tự chủ và hội nhập quốc tế, Việt Nam cần đẩy mạnh:
+A. xây dựng nền kinh tế độc lập, tự chủ.
+B. phát triển kinh tế thị trường.
+*C. công nghiệp hóa, hiện đại hóa đất nước.
+D. phát triển kinh tế tri thức.
+Gt: CNH, HĐH là giải pháp then chốt để tăng cường sức mạnh nội sinh (Trang 279, 280).
+
+Câu 27: Để đẩy mạnh CNH, HĐH, một biện pháp cần tập trung là cơ cấu lại nền kinh tế, chuyển sang tăng trưởng theo:
+A. chiều rộng.
+B. hướng bền vững.
+C. hướng hiện đại.
+*D. chiều sâu.
+Gt: Tăng trưởng theo chiều sâu dựa trên năng suất và công nghệ là hướng đi bền vững (Trang 279).
+
+Câu 28: Một giải pháp hội nhập hiệu quả là thực hiện thành công ba đột phá chiến lược gồm cải cách thể chế, phát triển hạ tầng và:
+*A. phát triển nguồn nhân lực.
+B. phát triển kinh tế.
+C. phát triển xã hội.
+D. cải cách chính trị.
+Gt: Nhân lực là nhân tố quyết định sự thành bại của quá trình phát triển (Trang 280).
+
+Câu 29: Tiến trình hội nhập kinh tế quốc tế được chia theo mức độ từ thấp đến cao là:
+*A. PTA, FTA, CU, Thị trường chung.
+B. FTA, CU, Thị trường chung, PTA.
+C. CU, Thị trường chung, PTA, FTA.
+D. Thị trường chung, PTA, FTA, CU.
+Gt: Đây là trình tự liên kết kinh tế quốc tế theo cấp độ sâu rộng dần (Trang 263).
+
+Câu 30: Quan điểm xây dựng nền kinh tế tự chủ dựa trên làm chủ công nghệ được nêu rõ trong chiến lược giai đoạn:
+A. 2000.
+B. 2001 - 2010.
+C. 2011 - 2020.
+*D. 2021 - 2030.
+Gt: Đây là định hướng mới nhất được khẳng định trong chiến lược phát triển kinh tế xã hội mười năm tới (Trang 279).
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3600;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+        
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath(); // Render lại công thức trong phần giải thích
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>
