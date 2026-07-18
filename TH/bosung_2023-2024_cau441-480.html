@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bổ sung 2023-2024 - Thi Trắc Nghiệm - SNG EDU</title>
+    
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db; 
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        /* HEADER */
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        /* LAYOUT */
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        /* OPTIONS */
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter { 
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0; 
+        }
+        .opt-text { 
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s; 
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        /* ĐÁP ÁN ĐÚNG/SAI */
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box { 
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue); 
+            border-radius: 4px; display: none; font-size: 0.95rem; 
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        /* SIDEBAR - FIX LỖI KHÔNG CUỘN ĐƯỢC */
+        .sidebar-col { 
+            width: 320px; 
+            position: sticky; 
+            top: 80px; 
+            max-height: calc(100vh - 100px); /* Giới hạn chiều cao theo màn hình */
+            overflow-y: auto; /* Cho phép cuộn bên trong sidebar */
+            padding-right: 5px;
+        }
+        
+        /* Tùy chỉnh thanh cuộn cho sidebar */
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn { 
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s; 
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col { 
+                width: 100%; 
+                position: static; 
+                order: 2; 
+                max-height: none; 
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+    
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+
+Câu 1: Triết học là "yêu mến sự thông thái", đây là quan niệm của
+A. triết học Trung Quốc cổ đại.
+*B. triết học Hy Lạp cổ đại.
+C. triết học Ấn Độ cổ đại.
+D. triết học cổ điển Đức.
+
+Gt: Thuật ngữ "philosophia" (yêu mến sự thông thái) bắt nguồn từ Hy Lạp cổ đại.
+
+Câu 2: Theo quan điểm duy vật biện chứng, cơ sở trực tiếp hình thành thế giới quan là
+*A. tri thức.
+B. kinh nghiệm.
+C. văn hóa.
+D. xã hội.
+
+Gt: Thế giới quan được hình thành trực tiếp từ tri thức của con người về thế giới.
+
+Câu 3: Tác phẩm nào sau đây của C. Mác và Ph. Ăngghen chứa đựng lời kêu gọi vô sản thế giới đoàn kết lại?
+A. Sự khốn cùng của triết học.
+B. Gia đình thần thánh.
+*C. Tuyên ngôn của Đảng Cộng sản.
+D. Hệ tư tưởng Đức.
+
+Gt: "Tuyên ngôn của Đảng Cộng sản" kết thúc bằng lời kêu gọi vô sản tất cả các nước đoàn kết lại.
+
+Câu 4: Theo quan điểm duy vật biện chứng, phong trào đấu tranh của giai cấp vô sản vào những năm 30, 40 của thế kỷ XIX chứng tỏ rằng
+A. giai cấp vô sản là một lực lượng chính trị độc lập.
+B. giai cấp nông dân là một lực lượng chính trị độc lập.
+*C. giai cấp vô sản là một lực lượng chính trị - xã hội độc lập.
+D. giai cấp vô sản cần liên minh với đội tiên phong của phong kiến và tư sản.
+
+Gt: Các phong trào công nhân giai đoạn này chứng tỏ giai cấp vô sản đã trở thành lực lượng chính trị - xã hội độc lập.
+
+Câu 5: Giữa thế kỷ XIX, những người theo chủ nghĩa Đácuyn xã hội đã vận dụng học thuyết tiến hóa để giải thích vấn đề
+A. vật lý.
+B. hóa học.
+C. cơ học.
+*D. sinh học.
+
+Gt: Học thuyết tiến hóa của Đácuyn là thành tựu của khoa học sinh học, được xã hội học vận dụng (chủ nghĩa Đácuyn xã hội).
+
+Câu 6: Theo quan điểm duy vật biện chứng, đứng im mang tính chất
+*A. tương đối.
+B. tuyệt đối.
+C. bất biến.
+D. vô hạn.
+
+Gt: Đứng im chỉ là tương đối, tạm thời, còn vận động mới là tuyệt đối.
+
+Câu 7: V.I. Lênin khẳng định thuộc tính cơ bản nhất để phân biệt vật chất và ý thức là thuộc tính
+*A. tồn tại khách quan.
+B. tồn tại chủ quan.
+C. phản ánh.
+D. cảm giác.
+
+Gt: Vật chất là thực tại khách quan tồn tại độc lập với ý thức, đây là thuộc tính cơ bản nhất để phân biệt vật chất với ý thức.
+
+Câu 8: Theo quan điểm duy vật biện chứng, muốn hiểu đúng bản chất của ý thức cần xem xét trong mối quan hệ qua lại với
+A. bản chất.
+*B. vật chất.
+C. tinh thần.
+D. sáng tạo.
+
+Gt: Ý thức là sự phản ánh của vật chất, chỉ hiểu đúng bản chất ý thức khi đặt trong quan hệ với vật chất.
+
+Câu 9: Về mặt triết học, câu tục ngữ "Có thực mới vực được đạo" thể hiện quan điểm của trường phái nào sau đây?
+A. Chủ nghĩa duy tâm.
+B. Chủ nghĩa nhị nguyên.
+*C. Chủ nghĩa duy vật.
+D. Chủ nghĩa duy lý.
+
+Gt: Câu tục ngữ khẳng định vật chất (cái thực) là cái có trước, quyết định, thể hiện lập trường duy vật.
+
+Câu 10: Theo quan điểm duy vật biện chứng, cái riêng, cái chung, cái đơn nhất luôn tồn tại
+*A. khách quan.
+B. chủ quan.
+C. bất biến.
+D. hữu hạn.
+
+Gt: Cái riêng, cái chung, cái đơn nhất là các phạm trù tồn tại khách quan trong mối liên hệ biện chứng với nhau.
+
+Câu 11: Theo quan điểm duy vật biện chứng, nguyên nhân và kết quả
+A. là bất biến.
+*B. có thể chuyển hóa lẫn nhau.
+C. không chuyển hóa lẫn nhau.
+D. tách rời nhau.
+
+Gt: Trong chuỗi liên hệ nhân quả, nguyên nhân và kết quả có thể chuyển hóa vị trí cho nhau.
+
+Câu 12: Theo quan điểm duy vật biện chứng, muốn loại bỏ một hiện tượng (kết quả) không mong muốn thì phải
+A. kiểm tra lại hiện tượng đó.
+B. căn cứ vào nguyên nhân của nó.
+*C. loại bỏ nguyên nhân sinh ra nó.
+D. loại bỏ những điều kiện của nó.
+
+Gt: Muốn loại bỏ kết quả không mong muốn, phải loại bỏ nguyên nhân sinh ra nó.
+
+Câu 13: Theo quan điểm duy vật biện chứng, khi hình thức không còn phù hợp với nội dung thì nó sẽ
+A. vẫn tồn tại lâu dài cùng nội dung.
+B. vẫn thúc đẩy nội dung phát triển.
+C. thúc đẩy ít nhiều đối với sự phát triển của nội dung.
+*D. cản trở sự phát triển của nội dung.
+
+Gt: Khi hình thức lạc hậu so với nội dung đã thay đổi thì nó trở thành yếu tố kìm hãm, cản trở nội dung phát triển.
+
+Câu 14: Theo quan điểm duy vật biện chứng, nguyên nhân nào sau đây quyết định sự thay đổi từ hình thái kinh tế - xã hội này sang hình thái kinh tế - xã hội khác?
+A. Tính ngẫu nhiên.
+B. Nguyên nhân bên ngoài.
+*C. Nguyên nhân bên trong (mâu thuẫn nội tại của xã hội).
+D. Yếu tố con người tác động từ bên ngoài.
+
+Gt: Sự thay thế các hình thái kinh tế - xã hội là kết quả của mâu thuẫn nội tại bên trong lòng xã hội đó (giữa lực lượng sản xuất và quan hệ sản xuất).
+
+Câu 15: Theo quan điểm duy vật biện chứng, sự thay đổi của sự vật, hiện tượng được bắt đầu từ sự thay đổi về
+A. chất.
+*B. lượng.
+C. điểm nút.
+D. bước nhảy.
+
+Gt: Sự phát triển bắt đầu từ những thay đổi dần dần về lượng trước khi dẫn đến thay đổi về chất.
+
+Câu 16: Theo quan điểm duy vật biện chứng, việc phân loại mâu thuẫn thành mâu thuẫn bên trong và mâu thuẫn bên ngoài là dựa vào căn cứ nào sau đây?
+A. Sự tồn tại và phát triển của toàn bộ sự vật.
+B. Vai trò của mâu thuẫn đối với sự tồn tại và phát triển của sự vật.
+*C. Quan hệ giữa các mặt đối lập với một sự vật, hiện tượng.
+D. Tính chất của các lợi ích cơ bản trong quan hệ giai cấp.
+
+Gt: Căn cứ vào quan hệ giữa các mặt đối lập với sự vật đang xét để phân loại mâu thuẫn bên trong, bên ngoài.
+
+Câu 17: Theo V.I. Lênin, sự phát triển là một cuộc đấu tranh giữa
+A. sự chuyển hóa của các mặt đối lập.
+B. sự thống nhất của các mặt đối lập.
+C. các sự vật với nhau.
+*D. các mặt đối lập.
+
+Gt: Lênin coi phát triển là cuộc đấu tranh giữa các mặt đối lập, đó là nguồn gốc, động lực của sự phát triển.
+
+Câu 18: Theo quan điểm duy vật biện chứng, hành động đúng của con người khi thúc đẩy sự vật phát triển cần phải có quan điểm nào sau đây?
+A. Phủ định hoàn toàn cái cũ.
+B. Kế thừa toàn bộ cái cũ.
+*C. Phủ định mặt lạc hậu, lỗi thời và kế thừa những mặt tích cực, tiến bộ của cái cũ.
+D. Không phủ định mặt lạc hậu, lỗi thời và chỉ kế thừa những mặt tích cực, tiến bộ của cái cũ.
+
+Gt: Phủ định biện chứng đòi hỏi vừa phủ định cái lạc hậu vừa kế thừa yếu tố tích cực của cái cũ.
+
+Câu 19: "Có công mài sắt có ngày nên kim" là biểu hiện của quy luật nào sau đây?
+A. Quy luật cạnh tranh.
+B. Phủ định của phủ định.
+C. Mâu thuẫn.
+*D. Lượng - Chất.
+
+Gt: Câu tục ngữ thể hiện sự tích lũy dần về lượng (mài) dẫn đến thay đổi về chất (thành kim).
+
+Câu 20: Vòng đời của bướm: Trứng - Nhộng - Sâu (Tằm) - Bướm là biểu hiện của quy luật nào sau đây?
+*A. Phủ định của phủ định.
+B. Mâu thuẫn.
+C. Lượng - chất.
+D. Quy luật cạnh tranh.
+
+Gt: Vòng đời trải qua các giai đoạn phủ định liên tiếp, quay lại điểm xuất phát trên cơ sở cao hơn, thể hiện quy luật phủ định của phủ định.
+
+Câu 21: Hoạt động nhằm biến đổi các quan hệ xã hội mà cao nhất là biến đổi các hình thái kinh tế - xã hội là nội dung của dạng hoạt động thực tiễn nào sau đây?
+A. Sản xuất vật chất.
+*B. Chính trị - xã hội.
+C. Thực nghiệm khoa học.
+D. Văn hóa - xã hội.
+
+Gt: Hoạt động chính trị - xã hội hướng đến cải biến các quan hệ xã hội, cao nhất là các hình thái kinh tế - xã hội.
+
+Câu 22: Nội dung nào sau đây không phải là nguyên tắc lý luận nhận thức của chủ nghĩa duy vật biện chứng?
+A. Thừa nhận thế giới vật chất tồn tại khách quan, độc lập với ý thức con người.
+B. Công nhận ý thức nói chung là hình ảnh chủ quan của thế giới khách quan.
+*C. Dựa vào hoạt động sáng tạo thuần túy của bộ óc người, tách rời hiện thực khách quan.
+D. Lấy thực tiễn làm tiêu chuẩn để kiểm tra tính đúng, sai của nhận thức.
+
+Gt: Chủ nghĩa duy vật biện chứng không thừa nhận nhận thức là sáng tạo thuần túy của ý thức tách rời hiện thực khách quan.
+
+Câu 23: Aristotle khẳng định: "Vật thể khác nhau về trọng lượng thì sẽ khác nhau về tốc độ rơi." Về sau, thực nghiệm khoa học đã bác bỏ khẳng định này. Điều đó cho thấy tiêu chuẩn nào sau đây dùng để kiểm tra chân lý?
+A. Lý luận logic là tiêu chuẩn để kiểm tra chân lý.
+*B. Thực tiễn là tiêu chuẩn để kiểm tra chân lý.
+C. Niềm tin đối với khoa học là tiêu chuẩn để kiểm tra chân lý.
+D. Hoạt động của cá nhân là cơ sở để kiểm tra chân lý.
+
+Gt: Chỉ có thực tiễn (thực nghiệm khoa học) mới có thể kiểm tra và bác bỏ một luận điểm sai lầm, khẳng định thực tiễn là tiêu chuẩn của chân lý.
+
+Câu 24: Theo quan điểm duy vật lịch sử, những yếu tố vật chất của sản xuất mà con người dựa vào để lao động tác động lên, nhằm biến đổi cho phù hợp với mục đích sử dụng của con người là
+*A. đối tượng lao động.
+B. phân công lao động.
+C. tổ chức lao động.
+D. phân phối sản phẩm.
+
+Gt: Đối tượng lao động là yếu tố vật chất mà con người tác động vào trong quá trình lao động.
+
+Câu 25: Theo quan điểm duy vật lịch sử, yếu tố vật chất của sản xuất mà con người trực tiếp sử dụng để tác động vào đối tượng lao động nhằm biến đổi chúng theo mục đích của mình được gọi là
+A. người lao động.
+B. đối tượng lao động.
+*C. công cụ lao động.
+D. phương tiện lao động.
+
+Gt: Công cụ lao động là yếu tố con người trực tiếp sử dụng để tác động, biến đổi đối tượng lao động.
+
+Câu 26: Theo quan điểm duy vật lịch sử, hoạt động đặc trưng riêng có của con người và xã hội loài người là hoạt động
+*A. sản xuất.
+B. văn hóa.
+C. chính trị.
+D. tôn giáo.
+
+Gt: Sản xuất vật chất là hoạt động đặc trưng, phân biệt con người với các loài động vật khác.
+
+Câu 27: Theo quan điểm duy vật lịch sử, tư liệu sản xuất bao gồm tư liệu lao động và
+A. công cụ lao động.
+*B. đối tượng lao động.
+C. người lao động.
+D. phương tiện lao động.
+
+Gt: Tư liệu sản xuất gồm tư liệu lao động (trong đó có công cụ lao động) và đối tượng lao động.
+
+Câu 28: Theo quan điểm duy vật lịch sử, bộ phận nào sau đây quyết định năng suất lao động?
+A. Phương tiện lao động.
+*B. Công cụ lao động.
+C. Tổ chức sản xuất.
+D. Đối tượng lao động.
+
+Gt: Công cụ lao động là yếu tố động nhất, cách mạng nhất, quyết định năng suất lao động.
+
+Câu 29: Sự chuyển biến của xã hội loài người qua các giai đoạn phát triển khác nhau được quyết định bởi
+A. đấu tranh giai cấp.
+*B. phương thức sản xuất.
+C. ý thức xã hội.
+D. kiến trúc thượng tầng.
+
+Gt: Sự thay thế của các phương thức sản xuất là cơ sở quyết định sự vận động, phát triển của các hình thái kinh tế - xã hội.
+
+Câu 30: C. Mác viết: "Cơ sở kinh tế thay đổi thì toàn bộ kiến trúc thượng tầng đồ sộ cũng bị đảo lộn ít nhiều nhanh chóng." Luận điểm này khẳng định
+*A. cơ sở hạ tầng quyết định kiến trúc thượng tầng.
+B. kiến trúc thượng tầng quyết định cơ sở hạ tầng.
+C. cơ sở hạ tầng và kiến trúc thượng tầng tồn tại độc lập với nhau.
+D. cơ sở hạ tầng phụ thuộc vào kiến trúc thượng tầng.
+
+Gt: Câu nói khẳng định vai trò quyết định của cơ sở hạ tầng đối với kiến trúc thượng tầng.
+
+Câu 31: Theo chủ nghĩa duy vật lịch sử, nhà nước cuối cùng trong lịch sử là nhà nước
+*A. vô sản.
+B. tư sản.
+C. phong kiến.
+D. chủ nô.
+
+Gt: Nhà nước vô sản là kiểu nhà nước cuối cùng, tồn tại trong thời kỳ quá độ trước khi nhà nước tự tiêu vong.
+
+Câu 32: Chủ nghĩa Mác - Lênin khẳng định, khi xã hội có mâu thuẫn giai cấp và đấu tranh giai cấp không thể điều hòa được thì tổ chức nào sau đây ra đời?
+A. Công đoàn.
+B. Đoàn thanh niên.
+*C. Nhà nước.
+D. Mặt trận.
+
+Gt: Nhà nước ra đời khi mâu thuẫn giai cấp trong xã hội trở nên không thể điều hòa được.
+
+Câu 33: Theo chủ nghĩa duy vật lịch sử, xét về mặt bản chất, sự thay đổi căn bản về chất trong mọi lĩnh vực của đời sống xã hội được gọi là
+*A. cách mạng xã hội.
+B. đấu tranh giai cấp.
+C. cải cách xã hội.
+D. cải tạo xã hội.
+
+Gt: Cách mạng xã hội là sự biến đổi căn bản về chất trong toàn bộ các lĩnh vực của đời sống xã hội.
+
+Câu 34: Chủ nghĩa Mác - Lênin khẳng định, sự tồn tại của nhà nước chứng tỏ mâu thuẫn giai cấp là
+*A. không thể điều hòa được.
+B. có thể điều hòa được.
+C. vừa mới xuất hiện.
+D. chuẩn bị kết thúc.
+
+Gt: Nhà nước là sản phẩm và biểu hiện của mâu thuẫn giai cấp không thể điều hòa được.
+
+Câu 35: Triết học Mác - Lênin khẳng định, trong hệ tư tưởng xã hội, quan trọng nhất là các quan điểm, các học thuyết và
+*A. tư tưởng.
+B. lý tưởng.
+C. tình cảm.
+D. truyền thống.
+
+Gt: Hệ tư tưởng xã hội bao gồm hệ thống các quan điểm, học thuyết và tư tưởng.
+
+Câu 36: Theo chủ nghĩa duy vật lịch sử, so với ý thức lý luận thì ý thức xã hội thông thường lại
+*A. phong phú hơn.
+B. sâu sắc hơn.
+C. phức tạp hơn.
+D. trừu tượng hơn.
+
+Gt: Ý thức xã hội thông thường phản ánh sinh động, trực tiếp đời sống hàng ngày nên phong phú hơn, dù chưa đạt trình độ hệ thống hóa, khái quát hóa như ý thức lý luận.
+
+Câu 37: Chủ nghĩa duy vật lịch sử cho rằng, hệ tư tưởng là giai đoạn phát triển cao hơn của ý thức xã hội, là sự nhận thức lý luận về
+*A. tồn tại xã hội.
+B. tâm lý xã hội.
+C. ý thức cá nhân.
+D. ý thức cộng đồng.
+
+Gt: Hệ tư tưởng là sự phản ánh, nhận thức lý luận, tự giác về tồn tại xã hội.
+
+Câu 38: Chủ nghĩa Mác - Lênin khẳng định, về phương diện sinh học, con người là thực thể
+A. văn hóa.
+*B. sinh vật.
+C. xã hội.
+D. kinh tế.
+
+Gt: Về phương diện sinh học, con người là một thực thể sinh vật, sản phẩm của giới tự nhiên.
+
+Câu 39: Theo chủ nghĩa Mác - Lênin, điều kiện tiên quyết, cần thiết và chủ yếu quyết định sự hình thành, phát triển của con người cả về phương diện sinh học lẫn phương diện xã hội là
+A. ngôn ngữ.
+*B. lao động.
+C. những giá trị vật chất.
+D. những giá trị tinh thần.
+
+Gt: Lao động là điều kiện quyết định để hình thành con người cả về mặt sinh học lẫn mặt xã hội.
+
+Câu 40: Luận giải theo chủ nghĩa duy vật lịch sử về việc hình thành nên tính cách, nhân cách con người là nhấn mạnh sự tác động của
+A. bản chất tự nhiên.
+*B. bản chất xã hội.
+C. yếu tố kinh tế.
+D. yếu tố văn hóa.
+
+Gt: Chủ nghĩa duy vật lịch sử nhấn mạnh bản chất con người là tổng hòa các quan hệ xã hội, nên nhân cách con người chịu tác động quyết định bởi bản chất xã hội, môi trường sống xung quanh.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3600;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+        
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath(); // Render lại công thức trong phần giải thích
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

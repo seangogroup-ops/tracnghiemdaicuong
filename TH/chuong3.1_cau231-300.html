@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 3.1 - Thi Trắc Nghiệm - SNG EDU</title>
+    
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db; 
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        /* HEADER */
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        /* LAYOUT */
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        /* OPTIONS */
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter { 
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0; 
+        }
+        .opt-text { 
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s; 
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        /* ĐÁP ÁN ĐÚNG/SAI */
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box { 
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue); 
+            border-radius: 4px; display: none; font-size: 0.95rem; 
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        /* SIDEBAR - FIX LỖI KHÔNG CUỘN ĐƯỢC */
+        .sidebar-col { 
+            width: 320px; 
+            position: sticky; 
+            top: 80px; 
+            max-height: calc(100vh - 100px); /* Giới hạn chiều cao theo màn hình */
+            overflow-y: auto; /* Cho phép cuộn bên trong sidebar */
+            padding-right: 5px;
+        }
+        
+        /* Tùy chỉnh thanh cuộn cho sidebar */
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn { 
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s; 
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col { 
+                width: 100%; 
+                position: static; 
+                order: 2; 
+                max-height: none; 
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+    
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+
+Câu 1: Theo quan điểm duy vật lịch sử, phương thức sản xuất là thể thống nhất của các nhân tố nào sau đây?
+*A. Quan hệ sản xuất và lực lượng sản xuất.
+B. Tồn tại xã hội và ý thức xã hội.
+C. Cơ sở hạ tầng và kiến trúc thượng tầng.
+D. Thực tiễn và lý luận.
+
+Gt: Phương thức sản xuất là sự thống nhất giữa lực lượng sản xuất và quan hệ sản xuất.
+
+Câu 2: Theo quan điểm duy vật lịch sử, cấu trúc của lực lượng sản xuất bao gồm người lao động và
+A. công cụ lao động.
+*B. tư liệu sản xuất.
+C. đối tượng lao động.
+D. năng suất lao động.
+
+Gt: Lực lượng sản xuất gồm người lao động và tư liệu sản xuất (bao gồm công cụ lao động, đối tượng lao động).
+
+Câu 3: Theo quan điểm duy vật lịch sử, mặt tự nhiên của phương thức sản xuất là
+A. cơ sở hạ tầng.
+B. kiến trúc thượng tầng.
+*C. lực lượng sản xuất.
+D. quan hệ sản xuất.
+
+Gt: Lực lượng sản xuất thể hiện mối quan hệ giữa con người với tự nhiên, là mặt tự nhiên của phương thức sản xuất.
+
+Câu 4: Theo quan điểm duy vật lịch sử, mặt xã hội của phương thức sản xuất là
+A. lực lượng sản xuất.
+B. cơ sở hạ tầng.
+C. kiến trúc thượng tầng.
+*D. quan hệ sản xuất.
+
+Gt: Quan hệ sản xuất thể hiện mối quan hệ giữa người với người, là mặt xã hội của phương thức sản xuất.
+
+Câu 5: Theo quan điểm duy vật lịch sử, phạm trù nào sau đây là sự thống nhất giữa lực lượng sản xuất và quan hệ sản xuất?
+*A. Phương thức sản xuất.
+B. Tư liệu sản xuất.
+C. Cơ sở hạ tầng.
+D. Kiến trúc thượng tầng.
+
+Gt: Phương thức sản xuất là sự thống nhất giữa lực lượng sản xuất và quan hệ sản xuất.
+
+Câu 6: Theo triết học Mác - Lênin, muốn thay đổi một chế độ xã hội thì phải thay đổi
+A. lực lượng sản xuất.
+*B. quan hệ sản xuất.
+C. công cụ lao động.
+D. tư liệu sản xuất.
+
+Gt: Chế độ xã hội được quy định bởi quan hệ sản xuất thống trị; muốn thay đổi chế độ xã hội phải thay đổi quan hệ sản xuất.
+
+Câu 7: Theo quan điểm duy vật lịch sử, toàn bộ những quan hệ sản xuất hợp thành một cơ cấu kinh tế của một xã hội nhất định là
+A. lực lượng sản xuất.
+B. tư liệu sản xuất.
+*C. cơ sở hạ tầng.
+D. quan hệ sản xuất.
+
+Gt: Đây là định nghĩa của phạm trù cơ sở hạ tầng.
+
+Câu 8: Theo quan điểm của triết học Mác - Lênin, nhân tố quyết định sự tồn tại và phát triển của xã hội là sản xuất
+A. tinh thần.
+B. quan hệ xã hội.
+C. bản thân con người.
+*D. vật chất.
+
+Gt: Sản xuất vật chất là nhân tố quyết định sự tồn tại, phát triển của xã hội.
+
+Câu 9: Trong các hình thức của sản xuất xã hội, hình thức nào sau đây là nền tảng?
+*A. Sản xuất vật chất.
+B. Sản xuất các quan hệ xã hội.
+C. Sản xuất bản thân con người.
+D. Sản xuất tinh thần.
+
+Gt: Sản xuất vật chất là nền tảng của các hình thức sản xuất xã hội khác.
+
+Câu 10: Một bộ phận của tự nhiên tham gia vào sản xuất vật chất là
+*A. đối tượng lao động.
+B. phân công lao động.
+C. tổ chức lao động.
+D. phân phối sản phẩm.
+
+Gt: Đối tượng lao động là bộ phận của giới tự nhiên mà con người tác động vào trong quá trình sản xuất.
+
+Câu 11: Theo quan điểm duy vật lịch sử, quan hệ sản xuất thúc đẩy sự phát triển lực lượng sản xuất khi quan hệ sản xuất
+A. lạc hậu hơn so với trình độ của lực lượng sản xuất.
+*B. phù hợp với trình độ phát triển của lực lượng sản xuất.
+C. tiến bộ hơn so với trình độ của lực lượng sản xuất.
+D. khoa học hơn trình độ của lực lượng sản xuất.
+
+Gt: Quan hệ sản xuất phù hợp với trình độ lực lượng sản xuất sẽ thúc đẩy lực lượng sản xuất phát triển.
+
+Câu 12: Theo chủ nghĩa duy vật lịch sử, tiêu chuẩn khách quan để phân biệt các thời đại kinh tế là
+*A. công cụ lao động.
+B. sản phẩm lao động.
+C. đối tượng lao động.
+D. người lao động.
+
+Gt: Công cụ lao động là tiêu chuẩn khách quan để phân biệt các thời đại kinh tế khác nhau.
+
+Câu 13: Theo quan điểm duy vật lịch sử, con người khác động vật ở chỗ biết
+A. ăn, uống, đi lại.
+B. ghi nhớ và tái hiện các hoạt động.
+*C. chế tạo và sử dụng công cụ lao động.
+D. cảm xúc và vận động.
+
+Gt: Khả năng chế tạo và sử dụng công cụ lao động là đặc trưng cơ bản phân biệt con người với động vật.
+
+Câu 14: Theo chủ nghĩa duy vật lịch sử, giữa lực lượng sản xuất và quan hệ sản xuất thì lực lượng sản xuất quyết định quan hệ sản xuất và
+*A. quan hệ sản xuất tác động trở lại lực lượng sản xuất.
+B. quan hệ sản xuất tác động ngang bằng với lực lượng sản xuất.
+C. quan hệ sản xuất tồn tại tách biệt với lực lượng sản xuất.
+D. quan hệ sản xuất quyết định lực lượng sản xuất.
+
+Gt: Lực lượng sản xuất quyết định quan hệ sản xuất, nhưng quan hệ sản xuất cũng có tác động trở lại lực lượng sản xuất.
+
+Câu 15: Theo chủ nghĩa duy vật lịch sử, trong mối quan hệ giữa tồn tại xã hội và ý thức xã hội thì
+A. tồn tại xã hội quyết định ý thức xã hội.
+B. ý thức xã hội và tồn tại xã hội tác động ngang bằng nhau.
+C. ý thức xã hội quyết định tồn tại xã hội.
+*D. tồn tại xã hội và ý thức xã hội tác động biện chứng với nhau.
+
+Gt: Tồn tại xã hội quyết định ý thức xã hội, đồng thời ý thức xã hội có tính độc lập tương đối, tác động biện chứng trở lại.
+
+Câu 16: Theo chủ nghĩa duy vật lịch sử, trong xã hội có giai cấp, ý thức xã hội luôn luôn mang bản chất của
+*A. giai cấp thống trị.
+B. các tầng lớp trung gian.
+C. giai cấp bị trị.
+D. các giai cấp.
+
+Gt: Trong xã hội có giai cấp, ý thức xã hội thống trị mang bản chất của giai cấp thống trị.
+
+Câu 17: Yếu tố cách mạng nhất trong lực lượng sản xuất là
+A. người lao động.
+*B. công cụ lao động.
+C. phương tiện lao động.
+D. tư liệu lao động.
+
+Gt: Công cụ lao động là yếu tố động, cách mạng nhất, thường xuyên biến đổi trong lực lượng sản xuất.
+
+Câu 18: Quy luật xã hội nào sau đây giữ vai trò quyết định đối với sự vận động, phát triển của xã hội?
+A. Tồn tại xã hội quyết định ý thức xã hội.
+B. Đấu tranh giai cấp trong các xã hội có đối kháng giai cấp.
+*C. Quan hệ sản xuất phù hợp với trình độ phát triển của lực lượng sản xuất.
+D. Cơ sở hạ tầng quyết định kiến trúc thượng tầng.
+
+Gt: Quy luật quan hệ sản xuất phù hợp với trình độ phát triển của lực lượng sản xuất là quy luật cơ bản, quyết định sự vận động, phát triển của xã hội.
+
+Câu 19: Cấu trúc của một hình thái kinh tế - xã hội gồm các yếu tố cơ bản hợp thành nào sau đây?
+*A. Quan hệ sản xuất, lực lượng sản xuất và kiến trúc thượng tầng.
+B. Quan hệ sản xuất, cơ sở hạ tầng và kiến trúc thượng tầng.
+C. Cơ sở hạ tầng và kiến trúc thượng tầng.
+D. Lĩnh vực vật chất và lĩnh vực tinh thần.
+
+Gt: Hình thái kinh tế - xã hội gồm lực lượng sản xuất, quan hệ sản xuất (cơ sở hạ tầng) và kiến trúc thượng tầng.
+
+Câu 20: Theo chủ nghĩa duy vật lịch sử, cơ sở hạ tầng của xã hội là
+A. toàn bộ đời sống vật chất của xã hội.
+*B. toàn bộ các quan hệ sản xuất hợp thành cơ cấu kinh tế của xã hội.
+C. toàn bộ cơ sở vật chất, kỹ thuật của xã hội.
+D. toàn bộ hạ tầng cơ sở của xã hội.
+
+Gt: Đây là định nghĩa của phạm trù cơ sở hạ tầng.
+
+Câu 21: Phạm trù nào sau đây thể hiện mặt quan điểm, tư tưởng của mỗi xã hội?
+A. Cơ sở hạ tầng.
+B. Quan hệ sản xuất.
+*C. Kiến trúc thượng tầng.
+D. Tồn tại xã hội.
+
+Gt: Kiến trúc thượng tầng bao gồm các quan điểm, tư tưởng và các thiết chế tương ứng của xã hội.
+
+Câu 22: Các thiết chế như nhà nước, đảng phái chính trị, thuộc phạm trù nào sau đây?
+A. Cơ sở hạ tầng.
+B. Lực lượng sản xuất.
+C. Quan hệ sản xuất.
+*D. Kiến trúc thượng tầng.
+
+Gt: Nhà nước, đảng phái chính trị là các thiết chế thuộc kiến trúc thượng tầng.
+
+Câu 23: Phạm trù nào sau đây thể hiện mối quan hệ giữa con người với tự nhiên trong quá trình sản xuất?
+*A. Lực lượng sản xuất.
+B. Tư liệu sản xuất.
+C. Quan hệ sản xuất.
+D. Phương thức sản xuất.
+
+Gt: Lực lượng sản xuất thể hiện mối quan hệ giữa con người với tự nhiên.
+
+Câu 24: Phạm trù nào sau đây thể hiện mối quan hệ giữa người với người trong quá trình sản xuất?
+A. Lực lượng sản xuất.
+B. Tư liệu sản xuất.
+*C. Quan hệ sản xuất.
+D. Phương thức sản xuất.
+
+Gt: Quan hệ sản xuất thể hiện mối quan hệ giữa người với người trong sản xuất.
+
+Câu 25: Tiêu chuẩn khách quan nào sau đây dùng để phân biệt các chế độ xã hội trong lịch sử?
+A. Quan hệ sản xuất.
+*B. Phương thức sản xuất.
+C. Lực lượng sản xuất.
+D. Chính trị, tư tưởng.
+
+Gt: Phương thức sản xuất là tiêu chuẩn khách quan để phân biệt các chế độ xã hội, các hình thái kinh tế - xã hội.
+
+Câu 26: Trong quan hệ sản xuất, quan hệ nào sau đây giữ vai trò quyết định?
+A. Tổ chức quá trình sản xuất.
+*B. Sở hữu tư liệu sản xuất.
+C. Phân phối sản phẩm lao động.
+D. Quản lý quá trình sản xuất.
+
+Gt: Quan hệ sở hữu về tư liệu sản xuất là quan hệ xuất phát, quyết định các quan hệ khác trong quan hệ sản xuất.
+
+Câu 27: Trong quá trình sản xuất vật chất, con người sử dụng yếu tố nào sau đây để tác động vào tự nhiên nhằm tạo ra của cải vật chất phục vụ nhu cầu con người?
+*A. Công cụ lao động.
+B. Tình cảm.
+C. Đối tượng lao động.
+D. Ý chí.
+
+Gt: Công cụ lao động là phương tiện con người dùng để tác động vào đối tượng lao động, tạo ra của cải vật chất.
+
+Câu 28: Quan niệm nào sau đây không đúng khi nói đến phạm trù quan hệ sản xuất?
+*A. Thể hiện mối quan hệ giữa con người và tự nhiên trong sản xuất vật chất.
+B. Thống nhất của sở hữu tư liệu sản xuất, tổ chức quản lý sản xuất và phân phối sản phẩm.
+C. Phù hợp với tính chất và trình độ của lực lượng sản xuất sẽ thúc đẩy sản xuất phát triển.
+D. Thể hiện mối quan hệ giữa người với người trong quá trình sản xuất vật chất.
+
+Gt: Quan hệ con người - tự nhiên là đặc trưng của lực lượng sản xuất, không phải quan hệ sản xuất.
+
+Câu 29: Quan niệm nào sau đây không đúng khi nói đến phạm trù lực lượng sản xuất?
+A. Thể thống nhất hữu cơ giữa người lao động với tư liệu sản xuất.
+*B. Thể hiện mối quan hệ giữa người và người trong quá trình sản xuất.
+C. Có vai trò quyết định trong mối quan hệ biện chứng với quan hệ sản xuất.
+D. Thể hiện mối quan hệ giữa người và tự nhiên trong quá trình sản xuất vật chất.
+
+Gt: Quan hệ người - người là đặc trưng của quan hệ sản xuất, không phải lực lượng sản xuất.
+
+Câu 30: Yếu tố nào sau đây quyết định nội dung của phương thức sản xuất?
+A. Quan hệ sản xuất.
+B. Kiến trúc thượng tầng.
+*C. Lực lượng sản xuất.
+D. Cơ sở hạ tầng.
+
+Gt: Lực lượng sản xuất là yếu tố quyết định nội dung, tính chất của phương thức sản xuất.
+
+Câu 31: Yếu tố nào sau đây quyết định đến sự biến đổi của quan hệ sản xuất?
+A. Sự phong phú của đối tượng lao động.
+B. Các tổ chức chính trị.
+C. Các tổ chức tôn giáo.
+*D. Trình độ của lực lượng sản xuất.
+
+Gt: Trình độ phát triển của lực lượng sản xuất quyết định sự biến đổi của quan hệ sản xuất.
+
+Câu 32: Sự biến đổi có tính chất cách mạng của kiến trúc thượng tầng là do sự thay đổi của
+*A. quan hệ sản xuất thống trị.
+B. quan hệ sản xuất trung gian.
+C. lực lượng sản xuất.
+D. chính quyền nhà nước.
+
+Gt: Cơ sở hạ tầng (quan hệ sản xuất thống trị) thay đổi sẽ dẫn đến sự biến đổi của kiến trúc thượng tầng.
+
+Câu 33: Theo chủ nghĩa duy vật lịch sử, phạm trù cơ sở hạ tầng đề cập đến lĩnh vực nào sau đây của xã hội?
+A. Chính trị.
+*B. Kinh tế.
+C. Văn hóa.
+D. Giáo dục.
+
+Gt: Cơ sở hạ tầng thuộc lĩnh vực kinh tế của xã hội.
+
+Câu 34: Theo chủ nghĩa duy vật lịch sử, phạm trù kiến trúc thượng tầng đề cập đến lĩnh vực nào sau đây của xã hội?
+*A. Chính trị.
+B. Kinh tế.
+C. Tiêu dùng.
+D. Sản xuất.
+
+Gt: Kiến trúc thượng tầng thuộc lĩnh vực chính trị, tư tưởng của xã hội.
+
+Câu 35: Theo chủ nghĩa duy vật lịch sử, nguyên nhân sâu xa nào sau đây dẫn đến sự phát triển các hình thái kinh tế - xã hội?
+A. Ý muốn của thượng đế.
+B. Sự phát triển của quan hệ sản xuất.
+*C. Sự phát triển của lực lượng sản xuất.
+D. Ý muốn chủ quan của con người.
+
+Gt: Sự phát triển của lực lượng sản xuất là nguyên nhân sâu xa dẫn đến sự phát triển của các hình thái kinh tế - xã hội.
+
+Câu 36: Theo chủ nghĩa duy vật lịch sử, trong kiến trúc thượng tầng của một xã hội có giai cấp, yếu tố nào sau đây tác động mạnh mẽ và trực tiếp tới cơ sở hạ tầng?
+*A. Nhà nước.
+B. Khoa học.
+C. Gia đình.
+D. Tôn giáo.
+
+Gt: Nhà nước là yếu tố có quyền lực mạnh nhất, tác động trực tiếp, mạnh mẽ nhất tới cơ sở hạ tầng.
+
+Câu 37: Khuynh hướng không ngừng biến đổi, phát triển của sản xuất bao giờ cũng bắt đầu từ sự biến đổi, phát triển của
+A. kiến trúc thượng tầng.
+B. cơ sở hạ tầng.
+C. quan hệ sản xuất.
+*D. lực lượng sản xuất.
+
+Gt: Lực lượng sản xuất là yếu tố động, luôn biến đổi trước, kéo theo sự biến đổi của quan hệ sản xuất.
+
+Câu 38: Sự tác động tích cực trở lại của ý thức xã hội đối với tồn tại xã hội là thể hiện tính chất nào sau đây của ý thức xã hội?
+A. Hướng định của ý thức xã hội.
+B. Phụ thuộc của ý thức xã hội.
+C. Vượt trước của ý thức xã hội.
+*D. Độc lập tương đối của ý thức xã hội.
+
+Gt: Đây là biểu hiện của tính độc lập tương đối của ý thức xã hội.
+
+Câu 39: Tồn tại xã hội quyết định ý thức xã hội nhưng đồng thời ý thức xã hội cũng có tính độc lập tương đối của nó là quan điểm của
+A. chủ nghĩa duy vật.
+B. chủ nghĩa duy vật siêu hình.
+C. chủ nghĩa duy tâm.
+*D. chủ nghĩa duy vật lịch sử.
+
+Gt: Đây là quan điểm biện chứng của chủ nghĩa duy vật lịch sử về mối quan hệ tồn tại xã hội - ý thức xã hội.
+
+Câu 40: Trong quan hệ sản xuất, quan hệ nào sau đây quyết định đến quy mô, tốc độ, hiệu quả của nền sản xuất?
+A. Phân phối sản phẩm lao động xã hội.
+B. Quan hệ của các yếu tố kỹ thuật, công nghệ.
+*C. Tổ chức, quản lý sản xuất.
+D. Sở hữu tư liệu sản xuất.
+
+Gt: Tổ chức, quản lý sản xuất tác động trực tiếp đến quy mô, tốc độ, hiệu quả của nền sản xuất.
+
+Câu 41: Hoạt động nào sau đây giữ vai trò là cơ sở của sự tồn tại và phát triển của xã hội loài người?
+*A. Sản xuất vật chất.
+B. Sản xuất khoa học, công nghệ.
+C. Sản xuất ra bản thân con người.
+D. Sản xuất tinh thần.
+
+Gt: Sản xuất vật chất là cơ sở của sự tồn tại và phát triển của xã hội loài người.
+
+Câu 42: Phạm trù nào sau đây chỉ cách thức con người tiến hành quá trình sản xuất vật chất ở những giai đoạn lịch sử nhất định của xã hội loài người?
+A. Phương thức trao đổi.
+*B. Phương thức sản xuất.
+C. Phương thức tiêu dùng.
+D. Phương thức phân phối.
+
+Gt: Đây là định nghĩa của phạm trù phương thức sản xuất.
+
+Câu 43: Yếu tố nào sau đây trong tư liệu sản xuất quyết định sự biến đổi của lực lượng sản xuất?
+*A. Công cụ lao động.
+B. Phương tiện lao động.
+C. Tư liệu lao động.
+D. Đối tượng lao động.
+
+Gt: Công cụ lao động là yếu tố động, cách mạng nhất, quyết định sự biến đổi của lực lượng sản xuất.
+
+Câu 44: Quan hệ nào sau đây là quan hệ xuất phát, cơ bản, đặc trưng cho quan hệ sản xuất?
+*A. Sở hữu về tư liệu sản xuất.
+B. Hợp tác sản xuất.
+C. Phân phối sản phẩm.
+D. Tổ chức, quản lý sản xuất.
+
+Gt: Quan hệ sở hữu về tư liệu sản xuất là quan hệ xuất phát, cơ bản, đặc trưng nhất trong quan hệ sản xuất.
+
+Câu 45: Quan hệ sản xuất là "hình thức phát triển" của lực lượng sản xuất. Điều đó có nghĩa là quan hệ sản xuất
+*A. phù hợp với trình độ phát triển của lực lượng sản xuất.
+B. lạc hậu với trình độ phát triển của lực lượng sản xuất.
+C. tiến bộ hơn so với trình độ phát triển của lực lượng sản xuất.
+D. không phù hợp với trình độ phát triển của lực lượng sản xuất.
+
+Gt: Quan hệ sản xuất là "hình thức phát triển" của lực lượng sản xuất khi nó phù hợp với trình độ của lực lượng sản xuất.
+
+Câu 46: Khi quan hệ sản xuất trở thành "xiềng xích" và kìm hãm lực lượng sản xuất phát triển, điều đó có nghĩa là quan hệ sản xuất
+*A. không phù hợp với trình độ phát triển của lực lượng sản xuất.
+B. tiến bộ hơn so với trình độ phát triển của lực lượng sản xuất.
+C. vượt trước trình độ phát triển của lực lượng sản xuất.
+D. phù hợp với trình độ phát triển của lực lượng sản xuất.
+
+Gt: Khi quan hệ sản xuất lỗi thời, không còn phù hợp, nó trở thành "xiềng xích" kìm hãm lực lượng sản xuất.
+
+Câu 47: Yếu tố nào sau đây trong kiến trúc thượng tầng có quan hệ trực tiếp với cơ sở hạ tầng?
+A. Triết học.
+B. Nghệ thuật.
+C. Tôn giáo.
+*D. Chính trị.
+
+Gt: Các thiết chế chính trị, pháp luật có quan hệ trực tiếp với cơ sở hạ tầng.
+
+Câu 48: Yếu tố nào sau đây trong kiến trúc thượng tầng có quan hệ gián tiếp với cơ sở hạ tầng?
+*A. Nghệ thuật.
+B. Nhà nước.
+C. Pháp luật.
+D. Chính trị.
+
+Gt: Nghệ thuật, triết học, tôn giáo có quan hệ gián tiếp hơn với cơ sở hạ tầng so với chính trị, pháp luật, nhà nước.
+
+Câu 49: Trong kiến trúc thượng tầng của xã hội có giai cấp, yếu tố có quyền lực mạnh nhất là
+*A. nhà nước.
+B. nghệ thuật.
+C. tôn giáo.
+D. đạo đức.
+
+Gt: Nhà nước là yếu tố có quyền lực mạnh nhất trong kiến trúc thượng tầng của xã hội có giai cấp.
+
+Câu 50: Xét đến cùng, nhân tố nào sau đây đóng vai trò quyết định đối với kiến trúc thượng tầng?
+A. Văn hóa.
+B. Chính trị.
+C. Pháp luật.
+*D. Kinh tế.
+
+Gt: Xét đến cùng, cơ sở hạ tầng (kinh tế) quyết định kiến trúc thượng tầng.
+
+Câu 51: Quá trình đổi mới ở Việt Nam dựa trên nguyên tắc nào sau đây?
+*A. Kết hợp đổi mới kinh tế với đổi mới chính trị.
+B. Kết hợp đúng đắn trong đổi mới các quan hệ xã hội.
+C. Đổi mới chính trị trước, đổi mới kinh tế sau.
+D. Đổi mới kinh tế trước, đổi mới chính trị sau.
+
+Gt: Việt Nam thực hiện đổi mới toàn diện, kết hợp đổi mới kinh tế với đổi mới chính trị.
+
+Câu 52: Tư liệu sản xuất đặc trưng trong phương thức sản xuất phong kiến là
+*A. đất đai.
+B. xí nghiệp, nhà xưởng.
+C. máy móc cơ khí.
+D. hầm mỏ.
+
+Gt: Đất đai là tư liệu sản xuất chủ yếu, đặc trưng của phương thức sản xuất phong kiến.
+
+Câu 53: Khoa học trở thành lực lượng sản xuất trực tiếp là khi
+A. khoa học thúc đẩy sản xuất.
+*B. tri thức khoa học kết tinh vào các yếu tố của lực lượng sản xuất.
+C. làm cho lực lượng sản xuất năng động.
+D. khoa học điều tiết sản xuất.
+
+Gt: Khoa học trở thành lực lượng sản xuất trực tiếp khi tri thức khoa học kết tinh vào công cụ, người lao động, đối tượng lao động.
+
+Câu 54: Khi công nghệ cao, công nghệ thông tin, trí tuệ nhân tạo được ứng dụng rộng rãi trong sản xuất là đặc trưng của nền kinh tế nào sau đây?
+*A. Kinh tế tri thức.
+B. Kinh tế thị trường khoa học.
+C. Kinh tế trí tuệ.
+D. Kinh tế số.
+
+Gt: Đây là đặc trưng của nền kinh tế tri thức.
+
+Câu 55: Vận dụng chủ nghĩa duy vật lịch sử vào sự nghiệp xây dựng chủ nghĩa xã hội ở Việt Nam, Đảng ta xác định
+A. chủ động xây dựng lực lượng sản xuất trước, sau đó xây dựng quan hệ sản xuất phù hợp.
+B. tập trung nguồn lực xây dựng quan hệ sản xuất xã hội chủ nghĩa.
+*C. kết hợp đồng thời xây dựng lực lượng sản xuất với xác lập quan hệ sản xuất mới phù hợp.
+D. chủ động xây dựng quan hệ sản xuất trước, sau đó xây dựng lực lượng sản xuất phù hợp.
+
+Gt: Đảng ta chủ trương kết hợp đồng thời phát triển lực lượng sản xuất với xây dựng quan hệ sản xuất phù hợp.
+
+Câu 56: Thời đại đồ đồng tương ứng với hình thái kinh tế - xã hội nào sau đây?
+*A. Chiếm hữu nô lệ.
+B. Tư bản chủ nghĩa.
+C. Phong kiến.
+D. Cộng sản nguyên thủy.
+
+Gt: Thời đại đồ đồng gắn với sự xuất hiện của xã hội chiếm hữu nô lệ.
+
+Câu 57: Tính chất xã hội hóa của lực lượng sản xuất được bắt đầu từ hình thái kinh tế - xã hội nào sau đây?
+A. Chiếm hữu nô lệ.
+B. Phong kiến.
+*C. Tư bản chủ nghĩa.
+D. Cộng sản nguyên thủy.
+
+Gt: Tính xã hội hóa của lực lượng sản xuất bắt đầu rõ nét từ hình thái kinh tế - xã hội tư bản chủ nghĩa (đại công nghiệp).
+
+Câu 58: Xây dựng chủ nghĩa xã hội ở Việt Nam cần bắt đầu từ trình độ phát triển của yếu tố nào sau đây?
+A. Cơ sở hạ tầng.
+B. Kiến trúc thượng tầng.
+*C. Lực lượng sản xuất.
+D. Quan hệ sản xuất.
+
+Gt: Việc xây dựng CNXH phải xuất phát từ trình độ thực tế của lực lượng sản xuất hiện có.
+
+Câu 59: Thực chất của quan hệ biện chứng giữa cơ sở hạ tầng và kiến trúc thượng tầng là quan hệ giữa
+*A. kinh tế và chính trị.
+B. đời sống vật chất và đời sống tinh thần.
+C. khoa học và đạo đức.
+D. tồn tại xã hội với ý thức xã hội.
+
+Gt: Cơ sở hạ tầng thuộc lĩnh vực kinh tế, kiến trúc thượng tầng thuộc lĩnh vực chính trị, tư tưởng.
+
+Câu 60: Phạm trù hình thái kinh tế - xã hội dùng để chỉ
+A. một hình thái kinh tế - xã hội cụ thể.
+B. xã hội cộng sản chủ nghĩa.
+C. xã hội tư bản chủ nghĩa.
+*D. các hình thái kinh tế - xã hội trong lịch sử.
+
+Gt: Phạm trù hình thái kinh tế - xã hội là khái niệm chung, dùng để chỉ các hình thái kinh tế - xã hội khác nhau trong lịch sử.
+
+Câu 61: C. Mác viết: "Tôi coi sự phát triển của những hình thái kinh tế - xã hội là một quá trình lịch sử - tự nhiên". Luận điểm này không được hiểu theo nghĩa nào sau đây?
+*A. Quá trình phát triển của các hình thái kinh tế - xã hội tuân theo quy luật chủ quan.
+B. Sự phát triển của các hình thái kinh tế - xã hội bị chi phối bởi điều kiện lịch sử cụ thể của mỗi quốc gia.
+C. Quá trình phát triển của các hình thái kinh tế - xã hội tuân theo quy luật khách quan.
+D. Sự phát triển của các hình thái kinh tế - xã hội không phụ thuộc ý thức chủ quan của con người.
+
+Gt: "Quá trình lịch sử - tự nhiên" nghĩa là tuân theo quy luật khách quan, không phải quy luật chủ quan.
+
+Câu 62: Chủ trương thực hiện nhất quán cơ cấu kinh tế nhiều thành phần ở Việt Nam hiện nay là biểu hiện của sự vận dụng đúng đắn quy luật nào sau đây?
+*A. Sự phù hợp của quan hệ sản xuất với trình độ của lực lượng sản xuất.
+B. Đấu tranh giai cấp.
+C. Cơ sở hạ tầng quyết định kiến trúc thượng tầng.
+D. Tồn tại xã hội quyết định ý thức xã hội.
+
+Gt: Cơ cấu kinh tế nhiều thành phần phù hợp với trình độ đa dạng của lực lượng sản xuất hiện nay ở Việt Nam.
+
+Câu 63: Con đường xây dựng chủ nghĩa xã hội ở Việt Nam bỏ qua giai đoạn phát triển tư bản chủ nghĩa là
+A. chưa phù hợp với điều kiện hoàn cảnh cụ thể của Việt Nam sau khi giành được độc lập.
+*B. phù hợp với quá trình lịch sử - tự nhiên, thể hiện sự vận dụng sáng tạo của Đảng ta.
+C. không tuân theo quy luật khách quan chi phối sự vận động của lịch sử.
+D. trái với tiến trình lịch sử - tự nhiên trong sự phát triển của các hình thái kinh tế - xã hội.
+
+Gt: Đây là sự vận dụng sáng tạo quy luật phát triển lịch sử - tự nhiên phù hợp với điều kiện Việt Nam.
+
+Câu 64: Quốc gia nào sau đây trong lịch sử đã từng phát triển bỏ qua một vài hình thái kinh tế - xã hội?
+*A. Mỹ và Việt Nam.
+B. Nhật Bản và Italia.
+C. Ucraina và Ôxtrâylia.
+D. Đức và Anh.
+
+Gt: Mỹ và Việt Nam là các ví dụ về quốc gia phát triển bỏ qua một số hình thái kinh tế - xã hội trong lịch sử.
+
+Câu 65: Theo C. Mác, yếu tố nào sau đây là "sợi dây xuyên suốt toàn bộ lịch sử nhân loại"?
+*A. Lực lượng sản xuất.
+B. Quan hệ sản xuất.
+C. Đấu tranh giai cấp.
+D. Phương thức sản xuất.
+
+Gt: C. Mác coi sự phát triển của lực lượng sản xuất là sợi dây xuyên suốt lịch sử nhân loại.
+
+Câu 66: Với việc phát hiện ra chủ nghĩa duy vật lịch sử, C. Mác đã bước đầu đặt cơ sở lý luận cho
+A. đạo đức học.
+B. mỹ học.
+*C. chủ nghĩa cộng sản khoa học.
+D. kinh tế chính trị học.
+
+Gt: Chủ nghĩa duy vật lịch sử là cơ sở lý luận, phương pháp luận cho chủ nghĩa cộng sản khoa học.
+
+Câu 67: C. Mác đã viết: "Cái cối xay quay bằng tay đưa lại xã hội có lãnh chúa phong kiến, cái cối xay chạy bằng hơi nước đưa lại xã hội có nhà tư bản công nghiệp". Luận điểm này khẳng định
+*A. vai trò quyết định của lực lượng sản xuất đối với quan hệ sản xuất.
+B. vai trò quyết định của quan hệ sản xuất đối với lực lượng sản xuất.
+C. lực lượng sản xuất và quan hệ sản xuất tồn tại độc lập.
+D. cơ sở hạ tầng quyết định kiến trúc thượng tầng.
+
+Gt: Công cụ lao động (lực lượng sản xuất) thay đổi kéo theo sự thay đổi của quan hệ sản xuất, chế độ xã hội.
+
+Câu 68: Ph. Ăngghen viết: "Điểm khác biệt căn bản giữa xã hội loài người với xã hội loài vật là ở chỗ: loài vật may lắm chỉ hái lượm, trong khi con người lại sản xuất". Luận điểm này được hiểu theo nghĩa
+*A. sản xuất là hoạt động riêng có của con người và xã hội loài người.
+B. sản xuất là hoạt động không ngừng sáng tạo ra giá trị tinh thần.
+C. sản xuất là hoạt động không ngừng sáng tạo ra giá trị vật chất.
+D. hái lượm là điểm khác biệt giữa con người và loài vật.
+
+Gt: Ăngghen nhấn mạnh sản xuất là hoạt động đặc trưng, riêng có của con người, khác với loài vật chỉ hái lượm.
+
+Câu 69: V.I. Lênin viết: "Lực lượng sản xuất hàng đầu của toàn thể nhân loại là công nhân, là người lao động". Luận điểm này được hiểu theo nghĩa
+A. đánh giá cao vai trò sức lao động của công nhân.
+B. người lao động của nhân loại là giai cấp công nhân.
+C. đánh giá cao vai trò tiền phong của lực lượng sản xuất.
+*D. người lao động là nhân tố hàng đầu của lực lượng sản xuất.
+
+Gt: Lênin khẳng định người lao động là nhân tố hàng đầu, quan trọng nhất trong lực lượng sản xuất.
+
+Câu 70: Nước Đức nửa đầu thế kỷ XIX kinh tế không phát triển bằng nước Anh, Pháp nhưng triết học Đức phát triển hơn triết học Anh, Pháp. Ví dụ này minh họa cho nội dung nào sau đây?
+A. Ý thức xã hội có tính kế thừa trong sự phát triển của mình.
+B. Sự tác động qua lại giữa các hình thái ý thức xã hội trong sự phát triển của chúng.
+*C. Ý thức xã hội có thể vượt trước tồn tại xã hội.
+D. Ý thức xã hội thường lạc hậu so với tồn tại xã hội.
+
+Gt: Triết học Đức phát triển vượt trội dù kinh tế lạc hậu hơn là minh chứng cho tính vượt trước của ý thức xã hội so với tồn tại xã hội.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3600;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+        
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath(); // Render lại công thức trong phần giải thích
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

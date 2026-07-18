@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 3.3 - Thi Trắc Nghiệm - SNG EDU</title>
+    
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db; 
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        /* HEADER */
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        /* LAYOUT */
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        /* OPTIONS */
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter { 
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0; 
+        }
+        .opt-text { 
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s; 
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        /* ĐÁP ÁN ĐÚNG/SAI */
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box { 
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue); 
+            border-radius: 4px; display: none; font-size: 0.95rem; 
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        /* SIDEBAR - FIX LỖI KHÔNG CUỘN ĐƯỢC */
+        .sidebar-col { 
+            width: 320px; 
+            position: sticky; 
+            top: 80px; 
+            max-height: calc(100vh - 100px); /* Giới hạn chiều cao theo màn hình */
+            overflow-y: auto; /* Cho phép cuộn bên trong sidebar */
+            padding-right: 5px;
+        }
+        
+        /* Tùy chỉnh thanh cuộn cho sidebar */
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn { 
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s; 
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col { 
+                width: 100%; 
+                position: static; 
+                order: 2; 
+                max-height: none; 
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+    
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+
+Câu 1: Theo chủ nghĩa duy vật lịch sử, vai trò của ý thức cá nhân đối với ý thức xã hội là
+A. cân bằng ý thức xã hội.
+B. ý thức cá nhân quyết định ý thức xã hội.
+*C. phương thức tồn tại và biểu hiện của ý thức xã hội.
+D. điều chỉnh ý thức xã hội.
+
+Gt: Ý thức cá nhân là phương thức tồn tại và biểu hiện cụ thể của ý thức xã hội.
+
+Câu 2: Theo chủ nghĩa duy vật lịch sử, những giá trị phổ biến nhất của ý thức đạo đức mang tính
+*A. nhân loại.
+B. dân tộc.
+C. giai cấp.
+D. xã hội.
+
+Gt: Những giá trị đạo đức phổ biến, chung nhất mang tính nhân loại (như lòng nhân ái, trung thực).
+
+Câu 3: Theo nội dung về mối quan hệ giữa tồn tại xã hội và ý thức xã hội trong triết học Mác - Lênin, tư tưởng trọng nam khinh nữ trong xã hội Việt Nam hiện nay là biểu hiện
+A. sự quyết định của tồn tại xã hội đối với ý thức xã hội.
+B. tính vượt trước của ý thức xã hội đối với tồn tại xã hội.
+*C. tính lạc hậu hơn của ý thức xã hội so với tồn tại xã hội.
+D. sự chi phối của ý thức xã hội đối với tồn tại xã hội.
+
+Gt: Tư tưởng trọng nam khinh nữ là tàn dư cũ, lạc hậu hơn so với tồn tại xã hội hiện nay.
+
+Câu 4: Trong chủ nghĩa duy vật lịch sử, theo trình độ phản ánh, kết cấu của ý thức xã hội bao gồm
+A. tôn giáo và nghệ thuật.
+*B. tâm lý xã hội và hệ tư tưởng.
+C. kinh nghiệm và tư duy.
+D. văn hóa và đạo đức.
+
+Gt: Theo trình độ phản ánh, ý thức xã hội gồm tâm lý xã hội và hệ tư tưởng.
+
+Câu 5: Phạm trù triết học dùng để chỉ toàn bộ sinh hoạt vật chất và những điều kiện sinh hoạt vật chất của xã hội gọi là
+A. ý thức khoa học.
+B. ý thức đạo đức.
+*C. tồn tại xã hội.
+D. ý thức xã hội.
+
+Gt: Đây là định nghĩa của phạm trù tồn tại xã hội.
+
+Câu 6: Theo chủ nghĩa duy vật lịch sử, căn cứ để lý giải chính xác về ý thức xã hội là
+A. quan điểm của tập thể.
+B. quan điểm của cá nhân.
+*C. tồn tại xã hội.
+D. nhận định của các giai cấp cơ bản.
+
+Gt: Tồn tại xã hội quyết định ý thức xã hội, nên là căn cứ để lý giải chính xác ý thức xã hội.
+
+Câu 7: Theo chủ nghĩa duy vật lịch sử, ý thức đạo đức bao gồm hệ thống những tri thức về giá trị và định hướng giá trị đạo đức, những tình cảm và lý tưởng đạo đức, trong đó quan trọng nhất là
+*A. tình cảm đạo đức.
+B. tri thức về giá trị.
+C. sự định hướng giá trị đạo đức.
+D. lý tưởng đạo đức.
+
+Gt: Tình cảm đạo đức là yếu tố quan trọng nhất trong cấu trúc ý thức đạo đức.
+
+Câu 8: Theo chủ nghĩa duy vật lịch sử, ý thức xã hội tác động trở lại tồn tại xã hội chủ yếu thông qua
+A. hoạt động nhận thức của con người.
+B. hoạt động tinh thần.
+C. hoạt động giáo dục.
+*D. hoạt động thực tiễn của con người.
+
+Gt: Ý thức xã hội chỉ tác động trở lại tồn tại xã hội thông qua hoạt động thực tiễn của con người.
+
+Câu 9: Theo chủ nghĩa duy vật lịch sử, nguyên nhân dẫn đến tính lạc hậu của ý thức xã hội là
+*A. phản ánh chậm hơn so với tồn tại xã hội.
+B. kìm hãm nhau của các hình thái ý thức xã hội.
+C. tính bảo thủ của ý thức xã hội.
+D. tính bảo thủ của ý thức cá nhân.
+
+Gt: Ý thức xã hội thường phản ánh chậm hơn so với sự biến đổi của tồn tại xã hội, dẫn đến tính lạc hậu.
+
+Câu 10: Theo chủ nghĩa duy vật lịch sử, nguồn gốc hình thành của ý thức thẩm mỹ là từ
+*A. lao động sản xuất.
+B. hoạt động chính trị.
+C. hoạt động tôn giáo.
+D. lao động nghệ thuật.
+
+Gt: Ý thức thẩm mỹ có nguồn gốc từ lao động sản xuất của con người.
+
+Câu 11: Theo chủ nghĩa duy vật lịch sử, những quan điểm tư tưởng không gắn với các thiết chế xã hội tương ứng thì thuộc phạm trù nào sau đây?
+A. Ý thức cộng đồng.
+B. Ý thức giai cấp bị trị.
+*C. Ý thức cá nhân.
+D. Ý thức của giai cấp thống trị.
+
+Gt: Quan điểm, tư tưởng không gắn với thiết chế xã hội thuộc về ý thức cá nhân, tâm lý xã hội tự phát, không phải hệ tư tưởng có tổ chức.
+
+Câu 12: Theo chủ nghĩa duy vật lịch sử, nội dung nào sau đây không phải hình thái ý thức xã hội?
+A. Ý thức chính trị.
+*B. Ý thức cầm quyền.
+C. Ý thức đạo đức.
+D. Ý thức tôn giáo.
+
+Gt: "Ý thức cầm quyền" không phải là một hình thái ý thức xã hội theo phân loại của triết học Mác - Lênin.
+
+Câu 13: Theo chủ nghĩa duy vật lịch sử, hình thái ý thức chính trị xuất hiện trong xã hội có giai cấp và nhà nước, nó thể hiện
+*A. trực tiếp và rõ nhất lợi ích giai cấp.
+B. gián tiếp và rõ nhất lợi ích giai cấp.
+C. thái độ chính trị của các đảng phái, tổ chức chính trị.
+D. thái độ của nhà quản lý đối với đấu tranh giai cấp.
+
+Gt: Ý thức chính trị thể hiện trực tiếp và rõ nhất lợi ích giai cấp trong xã hội có giai cấp.
+
+Câu 14: Theo chủ nghĩa duy vật lịch sử, ý thức xã hội tác động tích cực trở lại tồn tại xã hội, là thể hiện tính chất nào sau đây của ý thức xã hội?
+*A. Độc lập tương đối.
+B. Vượt trước.
+C. Lạc hậu hơn.
+D. Độc lập tuyệt đối.
+
+Gt: Sự tác động trở lại tồn tại xã hội là biểu hiện của tính độc lập tương đối của ý thức xã hội.
+
+Câu 15: Phạm trù triết học dùng để chỉ mặt tinh thần của đời sống xã hội, là một bộ phận hợp thành của văn hóa xã hội gọi là
+*A. ý thức xã hội.
+B. tồn tại xã hội.
+C. ý thức đạo đức.
+D. ý thức khoa học.
+
+Gt: Đây là định nghĩa của phạm trù ý thức xã hội.
+
+Câu 16: Theo chủ nghĩa duy vật lịch sử, hình thái ý thức xã hội nào sau đây phản ánh các mối quan hệ kinh tế bằng ngôn ngữ pháp luật?
+*A. Ý thức pháp quyền.
+B. Ý thức đạo đức.
+C. Ý thức khoa học.
+D. Ý thức chính trị.
+
+Gt: Ý thức pháp quyền phản ánh các quan hệ kinh tế, xã hội dưới hình thức pháp luật.
+
+Câu 17: Theo chủ nghĩa duy vật lịch sử, trong xã hội có giai cấp, ý thức xã hội mang tính giai cấp là do
+A. sự truyền bá tư tưởng của giai cấp bị trị.
+B. sự truyền bá tư tưởng của giai cấp thống trị.
+C. sinh hoạt văn hóa tinh thần khác nhau.
+*D. điều kiện vật chất, lợi ích và địa vị của các giai cấp khác nhau.
+
+Gt: Ý thức xã hội mang tính giai cấp do sự khác biệt về điều kiện vật chất, lợi ích, địa vị của các giai cấp.
+
+Câu 18: Theo chủ nghĩa duy vật lịch sử, hình thái ý thức xã hội nào sau đây có tác động trực tiếp đến kinh tế?
+A. Ý thức pháp quyền.
+*B. Ý thức chính trị.
+C. Ý thức thẩm mỹ.
+D. Ý thức đạo đức.
+
+Gt: Ý thức chính trị có tác động trực tiếp, mạnh mẽ nhất đến kinh tế thông qua đường lối, chính sách.
+
+Câu 19: Theo chủ nghĩa duy vật lịch sử, trong xã hội có phân chia giai cấp thì nghệ thuật mang tính giai cấp và chịu sự chi phối của các quan điểm chính trị, của các quan hệ
+A. luật pháp.
+*B. kinh tế.
+C. đạo đức.
+D. văn hóa.
+
+Gt: Nghệ thuật trong xã hội có giai cấp chịu sự chi phối của quan điểm chính trị và quan hệ kinh tế.
+
+Câu 20: Theo chủ nghĩa duy vật lịch sử, bộ phận nào sau đây giữ vai trò quyết định trong ý thức xã hội?
+A. Ý thức tập thể.
+B. Ý thức cá nhân.
+*C. Hệ tư tưởng.
+D. Tâm lý xã hội.
+
+Gt: Hệ tư tưởng là bộ phận phản ánh có hệ thống, tự giác, giữ vai trò chỉ đạo trong ý thức xã hội.
+
+Câu 21: Theo chủ nghĩa duy vật lịch sử, một trong những con đường hình thành ý thức lý luận là sự khái quát hóa những
+A. phạm trù.
+B. nguyên lý cơ bản.
+C. quy luật.
+*D. tư tưởng.
+
+Gt: Ý thức lý luận hình thành từ sự khái quát hóa những tư tưởng, kinh nghiệm thực tiễn của con người.
+
+Câu 22: Theo chủ nghĩa duy vật lịch sử, sự phản ánh hư ảo sức mạnh của giới tự nhiên bên ngoài lẫn các quan hệ xã hội vào đầu óc con người là
+*A. ý thức tôn giáo.
+B. ý thức cá nhân.
+C. ý thức truyền thống.
+D. ý thức xã hội.
+
+Gt: Đây là định nghĩa đặc trưng của ý thức tôn giáo.
+
+Câu 23: Sự phản ánh trực tiếp điều kiện sinh sống hàng ngày của tồn tại xã hội là đặc điểm của
+A. ý thức chính trị.
+*B. tâm lý xã hội.
+C. ý thức lý luận.
+D. hệ tư tưởng.
+
+Gt: Tâm lý xã hội phản ánh trực tiếp, tự phát điều kiện sinh sống hàng ngày.
+
+Câu 24: Theo chủ nghĩa duy vật lịch sử, một trong những tính độc lập tương đối của ý thức xã hội so với tồn tại xã hội là
+*A. ý thức xã hội có thể vượt trước so với tồn tại xã hội.
+B. ý thức xã hội không chịu sự quyết định của tồn tại xã hội.
+C. thay đổi theo ý muốn chủ quan của con người.
+D. ý thức xã hội quyết định tồn tại xã hội.
+
+Gt: Tính vượt trước là một trong những biểu hiện của tính độc lập tương đối của ý thức xã hội.
+
+Câu 25: Khi xây dựng các giả thuyết khoa học, nhà nghiên cứu thường vận dụng nội dung nào sau đây của ý thức xã hội?
+A. Lạc hậu hơn tồn tại xã hội.
+*B. Vượt trước tồn tại xã hội.
+C. Sự tương tác qua lại giữa các hình thái ý thức xã hội.
+D. Độc lập tuyệt đối với tồn tại xã hội.
+
+Gt: Xây dựng giả thuyết khoa học là vận dụng tính vượt trước của ý thức xã hội so với tồn tại xã hội.
+
+Câu 26: Theo chủ nghĩa duy vật lịch sử, những tri thức phản ánh sinh động, trực tiếp thực tiễn là
+*A. tri thức thông thường.
+B. tri thức về tâm lý xã hội.
+C. tri thức khoa học.
+D. tri thức chung của tập thể.
+
+Gt: Tri thức thông thường (kinh nghiệm) phản ánh sinh động, trực tiếp thực tiễn hàng ngày.
+
+Câu 27: Theo chủ nghĩa duy vật lịch sử, mối quan hệ giữa hệ tư tưởng của giai cấp thống trị và hệ tư tưởng của giai cấp bị trị là
+*A. tác động qua lại với nhau.
+B. tác động ngang nhau.
+C. quyết định một chiều.
+D. hỗ trợ cùng phát triển.
+
+Gt: Các hệ tư tưởng của giai cấp thống trị và bị trị có sự tác động qua lại lẫn nhau trong quá trình phát triển.
+
+Câu 28: Theo chủ nghĩa duy vật lịch sử, "những tri thức, quan niệm của con người được hình thành một cách trực tiếp trong các hoạt động hàng ngày nhưng chưa được hệ thống hóa, tổng hợp và khái quát hóa" gọi là
+A. tồn tại xã hội.
+B. ý thức lý luận.
+*C. ý thức xã hội thông thường.
+D. hệ tư tưởng.
+
+Gt: Đây là định nghĩa của ý thức xã hội thông thường.
+
+Câu 29: Theo chủ nghĩa duy vật lịch sử, kết quả của sự tổng kết, sự khái quát hóa các kinh nghiệm xã hội để hình thành nên những quan điểm, tư tưởng về chính trị, pháp luật, triết học, đạo đức, nghệ thuật, tôn giáo được gọi là
+A. ý thức lý luận.
+B. ý thức giai cấp.
+*C. hệ tư tưởng.
+D. tâm lý xã hội.
+
+Gt: Đây là định nghĩa của hệ tư tưởng.
+
+Câu 30: Theo chủ nghĩa duy vật lịch sử, hình thức đặc biệt và cao nhất của ý thức xã hội là
+A. tôn giáo.
+B. nghệ thuật.
+*C. triết học.
+D. đạo đức.
+
+Gt: Triết học được coi là hình thức đặc biệt và cao nhất của ý thức xã hội, mang tính khái quát cao nhất.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3600;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+        
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath(); // Render lại công thức trong phần giải thích
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

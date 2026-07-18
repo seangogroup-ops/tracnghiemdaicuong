@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 2.2.c - Thi Trắc Nghiệm - SNG EDU</title>
+    
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db; 
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        /* HEADER */
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        /* LAYOUT */
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        /* OPTIONS */
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter { 
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0; 
+        }
+        .opt-text { 
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s; 
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        /* ĐÁP ÁN ĐÚNG/SAI */
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box { 
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue); 
+            border-radius: 4px; display: none; font-size: 0.95rem; 
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        /* SIDEBAR - FIX LỖI KHÔNG CUỘN ĐƯỢC */
+        .sidebar-col { 
+            width: 320px; 
+            position: sticky; 
+            top: 80px; 
+            max-height: calc(100vh - 100px); /* Giới hạn chiều cao theo màn hình */
+            overflow-y: auto; /* Cho phép cuộn bên trong sidebar */
+            padding-right: 5px;
+        }
+        
+        /* Tùy chỉnh thanh cuộn cho sidebar */
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn { 
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s; 
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col { 
+                width: 100%; 
+                position: static; 
+                order: 2; 
+                max-height: none; 
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+    
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+
+Câu 1: Phạm trù triết học nào sau đây dùng để chỉ về mặt quy mô, trình độ, số lượng các thuộc tính, đại lượng, tốc độ và nhịp điệu sự vận động, phát triển của sự vật, hiện tượng?
+A. Chất.
+B. Mâu thuẫn.
+C. Bước nhảy.
+*D. Lượng.
+
+Gt: Đây là định nghĩa của phạm trù lượng.
+
+Câu 2: Quy luật chuyển hóa từ những thay đổi về lượng dẫn đến những thay đổi về chất và ngược lại thể hiện
+A. khuynh hướng chung nhất của sự vận động và phát triển.
+*B. cách thức chung nhất của sự vận động và phát triển.
+C. nguyên nhân của sự vận động và phát triển.
+D. động lực của sự vận động và phát triển.
+
+Gt: Quy luật lượng - chất chỉ ra cách thức của sự vận động, phát triển.
+
+Câu 3: Theo quan điểm duy vật biện chứng, độ là khái niệm chỉ mối liên hệ thống nhất và quy định lẫn nhau giữa lượng với chất; là giới hạn tồn tại của sự vật, hiện tượng mà trong đó sự thay đổi về lượng chưa dẫn đến sự
+A. thay đổi hình thức của sự vật.
+*B. thay đổi về chất.
+C. hình thành bản chất mới.
+D. hình thành sự vật mới.
+
+Gt: Độ là giới hạn mà lượng thay đổi nhưng chất chưa đổi.
+
+Câu 4: Phạm trù triết học nào sau đây dùng để chỉ giai đoạn chuyển hóa cơ bản về chất của sự vật hiện tượng do những thay đổi về lượng trước đó gây ra, là bước ngoặt cơ bản trong sự biến đổi về lượng?
+*A. Bước nhảy.
+B. Điểm nút.
+C. Độ.
+D. Chất.
+
+Gt: Bước nhảy là giai đoạn chuyển hóa về chất do lượng đổi gây ra.
+
+Câu 5: Theo quan điểm duy vật biện chứng, phạm trù lượng có đặc trưng
+*A. dễ thay đổi.
+B. khó thay đổi.
+C. ổn định tương đối.
+D. bất biến.
+
+Gt: Lượng là mặt dễ biến đổi hơn so với chất.
+
+Câu 6: Theo quan điểm duy vật biện chứng, căn cứ vào quy mô, nhịp điệu của bước nhảy, có bước nhảy nào sau đây?
+A. Dần dần.
+*B. Toàn bộ.
+C. Tức thời.
+D. Không căn bản.
+
+Gt: Căn cứ quy mô, nhịp điệu có bước nhảy toàn bộ và bước nhảy cục bộ (bước nhảy toàn bộ là một loại theo tiêu chí này).
+
+Câu 7: Phạm trù triết học nào sau đây dùng để chỉ tính quy định khách quan vốn có của sự vật, hiện tượng; là sự thống nhất hữu cơ của các thuộc tính, yếu tố tạo nên sự vật, hiện tượng làm cho sự vật, hiện tượng là nó mà không phải là sự vật, hiện tượng khác?
+A. Lượng.
+B. Độ.
+C. Bước nhảy.
+*D. Chất.
+
+Gt: Đây là định nghĩa của phạm trù chất.
+
+Câu 8: Phạm trù triết học nào sau đây dùng để chỉ sự liên hệ, tác động theo cách vừa thống nhất, vừa đấu tranh; vừa đòi hỏi, vừa loại trừ, vừa chuyển hóa lẫn nhau giữa các mặt đối lập?
+A. Mặt đối lập.
+*B. Mâu thuẫn biện chứng.
+C. Thống nhất của các mặt đối lập.
+D. Đấu tranh của các mặt đối lập.
+
+Gt: Đây là định nghĩa của mâu thuẫn biện chứng.
+
+Câu 9: Theo quan điểm duy vật biện chứng, mâu thuẫn nào sau đây tồn tại trong suốt quá trình vận động và phát triển của sự vật hiện tượng?
+A. Mâu thuẫn chủ yếu.
+B. Mâu thuẫn không cơ bản.
+*C. Mâu thuẫn cơ bản.
+D. Mâu thuẫn thứ yếu.
+
+Gt: Mâu thuẫn cơ bản tồn tại xuyên suốt quá trình vận động, phát triển của sự vật.
+
+Câu 10: Theo quan điểm duy vật biện chứng, đấu tranh của các mặt đối lập là
+A. tạm thời.
+*B. tuyệt đối.
+C. tương đối.
+D. vừa tuyệt đối vừa tương đối.
+
+Gt: Đấu tranh giữa các mặt đối lập mang tính tuyệt đối, diễn ra liên tục.
+
+Câu 11: Theo quan điểm duy vật biện chứng, quy luật thống nhất và đấu tranh của các mặt đối lập thể hiện
+A. khuynh hướng của sự vận động và phát triển.
+B. cách thức của sự vận động và phát triển.
+*C. nguyên nhân, động lực của sự vận động và phát triển.
+D. hình thức của sự vận động và phát triển.
+
+Gt: Quy luật mâu thuẫn chỉ ra nguồn gốc, động lực của sự vận động, phát triển.
+
+Câu 12: Theo quan điểm duy vật biện chứng, quy luật nào sau đây giữ vị trí là hạt nhân của phép biện chứng duy vật?
+*A. Quy luật thống nhất và đấu tranh giữa các mặt đối lập.
+B. Quy luật chuyển hóa từ những thay đổi về lượng dẫn đến những thay đổi về chất và ngược lại.
+C. Quy luật phủ định của phủ định.
+D. Quy luật thống nhất giữa tự nhiên và xã hội.
+
+Gt: Quy luật mâu thuẫn (thống nhất và đấu tranh giữa các mặt đối lập) là hạt nhân của phép biện chứng.
+
+Câu 13: Theo quan điểm duy vật biện chứng, sự tác động qua lại giữa các mặt, các khuynh hướng đối lập nằm trong chính mỗi sự vật, hiện tượng; có vai trò quy định trực tiếp quá trình vận động và phát triển của sự vật, hiện tượng là mâu thuẫn
+A. bên ngoài.
+*B. bên trong.
+C. chủ yếu.
+D. thứ yếu.
+
+Gt: Mâu thuẫn bên trong quy định trực tiếp sự vận động, phát triển của sự vật.
+
+Câu 14: Sự tác động giữa các mặt đối lập theo hướng bài trừ, phủ định lẫn nhau và sự tác động đó cũng không tách rời sự khác nhau, thống nhất, đồng nhất là
+A. dung hòa các mặt đối lập.
+B. chi phối giữa các mặt đối lập.
+C. chuyển hóa của các mặt đối lập.
+*D. đấu tranh của các mặt đối lập.
+
+Gt: Đấu tranh của các mặt đối lập là sự tác động theo hướng bài trừ, phủ định lẫn nhau.
+
+Câu 15: Theo quan điểm duy vật biện chứng, quy luật phủ định của phủ định thể hiện
+*A. khuynh hướng, hình thức, kết quả sự vận động và phát triển.
+B. cách thức sự vận động và phát triển.
+C. nguyên nhân và động lực sự vận động và phát triển.
+D. đặc điểm sự vận động và phát triển.
+
+Gt: Quy luật phủ định của phủ định chỉ ra khuynh hướng, hình thức và kết quả của sự phát triển.
+
+Câu 16: Theo V.I. Lênin, sự phát triển của sự vật, hiện tượng trong thế giới là diễn ra theo đường
+A. tròn khép kín.
+B. gấp khúc.
+*C. xoáy ốc.
+D. thẳng tắp.
+
+Gt: Lênin ví con đường phát triển như đường xoáy ốc, có tính kế thừa và đi lên.
+
+Câu 17: Theo quan điểm duy vật biện chứng, phủ định biện chứng là khái niệm dùng để chỉ sự phủ định làm
+A. mất đi hoàn toàn cái cũ.
+B. cho cái cũ thành cái mới.
+C. cho cái cũ mất đi về mặt hình thức.
+*D. tiền đề, tạo điều kiện cho sự phát triển.
+
+Gt: Phủ định biện chứng là tiền đề, điều kiện cho sự phát triển tiếp theo.
+
+Câu 18: Đặc điểm của kế thừa biện chứng là duy trì các yếu tố tích cực của sự vật, hiện tượng bị phủ định dưới dạng
+A. ý muốn chủ quan.
+*B. vượt bỏ.
+C. nguyên xi.
+D. loại bỏ hoàn toàn vĩnh viễn.
+
+Gt: Kế thừa biện chứng giữ lại yếu tố tích cực dưới dạng "vượt bỏ" (Aufheben) - vừa loại bỏ vừa giữ lại và nâng cao.
+
+Câu 19: Theo quan điểm duy vật biện chứng, trong quy luật phủ định của phủ định thì khái quát sau: hạt thóc - cây lúa - hạt thóc gọi là
+*A. chu kỳ của sự phát triển.
+B. thời điểm của sự phát triển.
+C. bước nhảy của sự phát triển.
+D. phát triển mang tính tiệm tiến.
+
+Gt: Chuỗi biến đổi lặp lại theo hình thức mới, cao hơn được gọi là một chu kỳ phát triển.
+
+Câu 20: Theo quan điểm duy vật biện chứng, phủ định biện chứng diễn ra trong tự nhiên, xã hội và tư duy là thể hiện tính
+A. vượt trước.
+B. chỉnh thể.
+*C. phổ biến.
+D. đặc thù.
+
+Gt: Phủ định biện chứng diễn ra ở mọi lĩnh vực, thể hiện tính phổ biến.
+
+Câu 21: Theo quan điểm duy vật biện chứng, việc không chú ý thỏa đáng quá trình tích lũy về lượng ở mức độ cần thiết cho sự biến đổi về chất là biểu hiện của tư tưởng
+*A. nôn nóng.
+B. bảo thủ.
+C. máy móc.
+D. định kiến.
+
+Gt: Không chú ý tích lũy đủ lượng mà muốn thay đổi chất ngay là biểu hiện tư tưởng nôn nóng, tả khuynh.
+
+Câu 22: Theo quan điểm duy vật biện chứng, việc không dám thực hiện những bước nhảy cần thiết khi tích lũy về lượng đã đạt đến giới hạn độ là biểu hiện của tư tưởng
+A. nôn nóng.
+*B. bảo thủ.
+C. máy móc.
+D. định kiến.
+
+Gt: Không dám thực hiện bước nhảy khi đã đủ điều kiện là biểu hiện tư tưởng bảo thủ, hữu khuynh.
+
+Câu 23: Theo quan điểm duy vật biện chứng, điều kiện khách quan và chủ quan để thực hiện lượng đổi dẫn đến chất đổi chỉ có trong lĩnh vực
+A. tự nhiên.
+*B. xã hội.
+C. vật lý.
+D. sinh học.
+
+Gt: Nhân tố chủ quan (ý thức, hoạt động con người) chỉ xuất hiện trong lĩnh vực xã hội.
+
+Câu 24: Theo quan điểm duy vật biện chứng, mâu thuẫn tồn tại trong bản thân các sự vật và quá trình, mâu thuẫn thường xuyên nảy sinh và tự giải quyết. Luận điểm này khẳng định mâu thuẫn có tính
+A. đặc thù.
+B. phủ định.
+C. kế thừa.
+*D. khách quan.
+
+Gt: Mâu thuẫn tồn tại khách quan trong bản thân sự vật, không phụ thuộc vào ý thức con người.
+
+Câu 25: Theo quan điểm duy vật biện chứng, muốn thay đổi về chất của sự vật thì trước hết phải
+*A. tích lũy về lượng.
+B. kiểm tra bước nhảy.
+C. quan sát điểm nút.
+D. làm cho lượng ổn định.
+
+Gt: Chất chỉ thay đổi khi lượng đã tích lũy đến một mức độ nhất định.
+
+Câu 26: Theo quan điểm duy vật biện chứng, sự thay đổi của chất ở mỗi sự vật hiện tượng là do lượng thay đổi đạt tới điểm nút và thông qua
+*A. bước nhảy.
+B. độ.
+C. môi trường.
+D. giới hạn của chất.
+
+Gt: Chất biến đổi thông qua bước nhảy khi lượng đạt đến điểm nút.
+
+Câu 27: Theo quan điểm duy vật biện chứng, phạm trù chất dùng để phân biệt sự khác nhau giữa các sự vật, hiện tượng và
+A. quá trình tồn tại của chúng.
+*B. các hình thái tồn tại của chúng.
+C. biểu hiện vận động của chúng.
+D. các yếu tố cấu thành chúng.
+
+Gt: Chất phân biệt sự vật này với sự vật khác qua các hình thái tồn tại của chúng.
+
+Câu 28: Theo quan điểm duy vật biện chứng, ranh giới giữa mâu thuẫn chủ yếu và mâu thuẫn thứ yếu là
+A. tuyệt đối.
+*B. tương đối.
+C. phụ thuộc vào hành động của con người.
+D. tùy vào sự nhận thức của con người.
+
+Gt: Mâu thuẫn chủ yếu và thứ yếu có thể chuyển hóa cho nhau, ranh giới chỉ tương đối.
+
+Câu 29: Theo quan điểm duy vật biện chứng, quy luật thống nhất và đấu tranh giữa các mặt đối lập bao gồm tính khách quan, tính đa dạng và tính
+A. ổn định.
+B. đặc thù.
+C. vượt trước.
+*D. phổ biến.
+
+Gt: Mâu thuẫn có ba tính chất: khách quan, phổ biến, đa dạng.
+
+Câu 30: Theo quan điểm duy vật biện chứng, mâu thuẫn nổi lên hàng đầu ở một giai đoạn phát triển của sự vật và chi phối các mâu thuẫn khác trong giai đoạn đó gọi là mâu thuẫn
+A. đối kháng.
+B. thứ yếu.
+*C. chủ yếu.
+D. cơ bản.
+
+Gt: Mâu thuẫn chủ yếu là mâu thuẫn nổi bật, chi phối các mâu thuẫn khác trong một giai đoạn phát triển.
+
+Câu 31: Theo quan điểm duy vật biện chứng, thống nhất giữa các mặt đối lập là có tính tương đối, tạm thời, còn đấu tranh giữa các mặt đối lập là có tính
+A. kế thừa.
+B. chủ quan.
+C. đa dạng.
+*D. tuyệt đối.
+
+Gt: Thống nhất là tương đối, tạm thời; đấu tranh là tuyệt đối, vĩnh viễn.
+
+Câu 32: Quan điểm duy vật biện chứng khẳng định quan hệ giữa thống nhất và đấu tranh của các mặt đối lập là
+*A. thống nhất có tính tương đối, đấu tranh có tính tuyệt đối.
+B. thống nhất có tính tuyệt đối, đấu tranh có tính tương đối.
+C. thống nhất vừa có tính tương đối vừa có tính tuyệt đối.
+D. đấu tranh vừa có tính tương đối vừa có tính tuyệt đối.
+
+Gt: Đây là luận điểm kinh điển: thống nhất tương đối, đấu tranh tuyệt đối.
+
+Câu 33: "Sự phát triển là một cuộc 'đấu tranh' giữa các mặt đối lập". Khẳng định này là của nhà triết học nào sau đây?
+A. C. Mác.
+B. Ph. Ăngghen.
+*C. V.I. Lênin.
+D. G.W.F. Hêghen.
+
+Gt: Luận điểm nổi tiếng này là của V.I. Lênin.
+
+Câu 34: Theo quan điểm duy vật biện chứng, việc nhận thức và giải quyết mâu thuẫn trong thực tiễn cần phải có quan điểm lịch sử - cụ thể là do mâu thuẫn có tính
+A. phổ biến.
+B. khách quan.
+*C. đa dạng, phong phú.
+D. phát triển.
+
+Gt: Vì mâu thuẫn rất đa dạng, phong phú nên giải quyết mâu thuẫn cần quan điểm lịch sử - cụ thể.
+
+Câu 35: Theo quan điểm duy vật biện chứng, tư tưởng phủ định của phủ định biện chứng là mang tính
+A. đặc thù.
+B. vượt trước.
+C. đa dạng.
+*D. khách quan.
+
+Gt: Phủ định biện chứng mang tính khách quan, tự thân của sự vật.
+
+Câu 36: Theo quan điểm duy vật biện chứng, phủ định của phủ định là điều kiện, tiền đề để
+A. kế thừa nguyên xi cái cũ.
+B. cái cũ mất đi hoàn toàn.
+*C. cái mới ra đời trên cơ sở của cái cũ.
+D. cái mới tồn tại vĩnh viễn.
+
+Gt: Phủ định của phủ định là điều kiện để cái mới ra đời trên cơ sở kế thừa cái cũ.
+
+Câu 37: Theo quan điểm duy vật biện chứng, phủ định biện chứng là sự phủ định mà về mặt hình thức thường được biểu hiện ra là hai lần phủ định cơ bản với
+*A. hai hình thái tồn tại cơ bản của nó.
+B. ba hình thái tồn tại cơ bản của nó.
+C. bốn hình thái tồn tại cơ bản của nó.
+D. năm hình thái tồn tại cơ bản của nó.
+
+Gt: Về hình thức, phủ định biện chứng biểu hiện qua hai lần phủ định với hai hình thái cơ bản.
+
+Câu 38: Theo V.I. Lênin: từ khẳng định đến phủ định - từ sự phủ định đến "sự thống nhất" với cái bị khẳng định. Cái bị khẳng định được hiểu là
+A. cái phủ định.
+*B. cái khẳng định.
+C. cái phản ánh.
+D. cái được phản ánh.
+
+Gt: "Cái bị khẳng định" chính là cái khẳng định ban đầu, đối tượng của quá trình phủ định.
+
+Câu 39: Khái quát về con đường phát triển của sự vật hiện tượng trong thế giới, V.I. Lênin khẳng định sự phát triển hình như diễn lại những giai đoạn đã qua, nhưng dưới một hình thức khác, ở một
+A. trình độ tương ứng.
+B. không gian khác.
+C. hình thức khác.
+*D. trình độ cao hơn.
+
+Gt: Phát triển theo hình xoáy ốc, lặp lại giai đoạn cũ nhưng ở trình độ cao hơn.
+
+Câu 40: Theo quan điểm duy vật biện chứng, điều kiện khách quan và chủ quan để cái mới ra đời trên cơ sở của cái cũ chỉ có trong lĩnh vực
+*A. xã hội.
+B. tự nhiên.
+C. hóa học.
+D. vật lý.
+
+Gt: Nhân tố chủ quan chỉ tồn tại trong lĩnh vực xã hội.
+
+Câu 41: Trong tự nhiên, vòng đời phát triển của bướm - trứng - nhộng - tằm - bướm là biểu hiện của quy luật nào sau đây trong triết học Mác - Lênin?
+A. Quy luật lượng - chất.
+B. Quy luật mâu thuẫn.
+*C. Quy luật phủ định của phủ định.
+D. Quy luật phổ biến.
+
+Gt: Vòng đời lặp lại theo chu kỳ mới là biểu hiện quy luật phủ định của phủ định.
+
+Câu 42: Sự phát triển của các hình thái kinh tế - xã hội từ cộng sản nguyên thủy - chiếm hữu nô lệ - phong kiến - tư bản chủ nghĩa - cộng sản chủ nghĩa là biểu hiện của quy luật nào sau đây?
+A. Quy luật lượng - chất.
+B. Quy luật mâu thuẫn.
+C. Quy luật xã hội.
+*D. Quy luật phủ định của phủ định.
+
+Gt: Sự phát triển tuần tự các hình thái kinh tế - xã hội thể hiện quy luật phủ định của phủ định.
+
+Câu 43: Giới hạn trong tự nhiên được con người phản ánh vào trong tư duy và qua hoạt động thực tiễn, con người tạo ra ngôi nhà là biểu hiện của quy luật nào sau đây của phép biện chứng duy vật?
+A. Quy luật mâu thuẫn.
+B. Quy luật lượng - chất.
+*C. Quy luật phủ định của phủ định.
+D. Quy luật đặc thù.
+
+Gt: Quá trình con người phản ánh và cải tạo tự nhiên tạo ra cái mới trên cơ sở cái cũ thể hiện quy luật phủ định của phủ định.
+
+Câu 44: Nhà tư bản thuê công nhân vận hành tư liệu sản xuất của mình để sản xuất hàng hóa là biểu hiện của quy luật nào sau đây của phép biện chứng duy vật?
+A. Quy luật lượng - chất.
+B. Quy luật phủ định của phủ định.
+*C. Quy luật mâu thuẫn.
+D. Quy luật xã hội.
+
+Gt: Quan hệ tư bản - lao động làm thuê thể hiện mâu thuẫn giữa hai giai cấp, tức quy luật mâu thuẫn.
+
+Câu 45: Theo quan điểm triết học Mác - Lênin, trình tự nào sau đây thể hiện sự vận động, phát triển theo quy luật phủ định của phủ định trong lịch sử chủ nghĩa duy vật?
+*A. Chủ nghĩa duy vật chất phác - chủ nghĩa duy vật siêu hình - chủ nghĩa duy vật biện chứng.
+B. Chủ nghĩa duy vật chất phác - chủ nghĩa duy tâm - chủ nghĩa duy vật.
+C. Chủ nghĩa duy tâm - chủ nghĩa duy vật - chủ nghĩa duy tâm khách quan.
+D. Chủ nghĩa duy vật - chủ nghĩa duy tâm - chủ nghĩa duy vật biện chứng.
+
+Gt: Ba giai đoạn phát triển của chủ nghĩa duy vật (chất phác - siêu hình - biện chứng) là ví dụ điển hình của quy luật phủ định của phủ định.
+
+Câu 46: Nội dung nào sau đây thể hiện quy luật phủ định của phủ định trong triết học Mác - Lênin?
+A. Nhận thức - thực tiễn - tự nhiên.
+B. Ý thức - phản ánh - ý thức.
+*C. Thực tiễn - nhận thức - thực tiễn.
+D. Nhận thức - tự nhiên - thực tiễn.
+
+Gt: Chu trình thực tiễn - nhận thức - thực tiễn (ở trình độ cao hơn) là biểu hiện của quy luật phủ định của phủ định.
+
+Câu 47: Ví dụ nào sau đây là thể hiện của quy luật lượng - chất trong triết học Mác - Lênin?
+A. Thuận vợ thuận chồng, tát biển Đông cũng cạn.
+*B. Một cây làm chẳng nên non, ba cây chụm lại nên hòn núi cao.
+C. Thương cho roi cho vọt, ghét cho ngọt cho bùi.
+D. Đèn nhà ai nấy tỏ, ngõ nhà ai nấy rạng.
+
+Gt: "Một cây - ba cây" thể hiện tích lũy về lượng (số lượng cây) dẫn đến biến đổi về chất (sức mạnh, thành núi).
+
+Câu 48: Theo quan điểm duy vật lịch sử, hình thái kinh tế - xã hội tư bản chủ nghĩa thay thế cho hình thái kinh tế - xã hội phong kiến là bước nhảy nào sau đây trong quy luật lượng - chất?
+A. Dần dần.
+*B. Toàn bộ.
+C. Cục bộ.
+D. Tức thời.
+
+Gt: Sự thay thế hình thái kinh tế - xã hội là bước nhảy toàn bộ, làm biến đổi căn bản chất của xã hội.
+
+Câu 49: Việc vận dụng kinh tế thị trường vào xây dựng và phát triển kinh tế ở Việt Nam theo định hướng xã hội chủ nghĩa là bước nhảy nào sau đây trong quy luật lượng - chất?
+A. Dần dần.
+B. Toàn bộ.
+*C. Cục bộ.
+D. Tức thời.
+
+Gt: Đây là bước nhảy cục bộ, chỉ làm thay đổi một số mặt, lĩnh vực của đời sống kinh tế - xã hội.
+
+Câu 50: Việc đun nước ở thể lỏng từ trạng thái bình thường lên đến 90 độ C là biểu hiện của nội dung nào sau đây trong quy luật lượng - chất?
+A. Lượng thay đổi làm cho chất đổi.
+B. Lượng thay đổi đạt đến bước nhảy.
+*C. Lượng đổi nhưng chất căn bản chưa đổi.
+D. Lượng và chất tách rời nhau.
+
+Gt: Ở 90 độ C nước vẫn ở thể lỏng (chưa đến điểm sôi 100 độ), nên lượng đổi nhưng chất căn bản chưa đổi.
+
+Câu 51: Việc gia tăng phương tiện cơ giới sử dụng động cơ đốt trong ở các thành phố dẫn đến ô nhiễm không khí là biểu hiện của quy luật nào sau đây?
+*A. Quy luật lượng - chất.
+B. Quy luật mâu thuẫn.
+C. Quy luật phủ định của phủ định.
+D. Quy luật đặc thù.
+
+Gt: Sự tích lũy dần về lượng (số phương tiện) dẫn đến biến đổi về chất (ô nhiễm không khí).
+
+Câu 52: Kinh tế Việt Nam chuyển từ cơ chế kế hoạch hóa, tập trung sang cơ chế thị trường định hướng xã hội chủ nghĩa là biểu hiện của phạm trù nào trong quy luật lượng - chất?
+A. Độ.
+B. Điểm nút.
+*C. Bước nhảy.
+D. Lượng.
+
+Gt: Sự chuyển đổi cơ chế kinh tế là một bước nhảy về chất trong quy luật lượng - chất.
+
+Câu 53: Yếu tố nào sau đây được xác định thuộc về phạm trù chất theo nghĩa triết học khi thể hiện sự khác biệt của chủ nghĩa xã hội với chủ nghĩa tư bản?
+A. Công nghiệp hóa, hiện đại hóa.
+*B. Chế độ sở hữu công cộng về tư liệu sản xuất.
+C. Kinh tế thị trường định hướng xã hội chủ nghĩa.
+D. Kinh tế tri thức.
+
+Gt: Chế độ sở hữu công cộng về tư liệu sản xuất là đặc trưng về chất, phân biệt CNXH với CNTB.
+
+Câu 54: Mâu thuẫn giữa thực dân Pháp với dân tộc Việt Nam trong giai đoạn 1930 - 1945 là thuộc loại mâu thuẫn nào sau đây?
+A. Mâu thuẫn cơ bản.
+B. Mâu thuẫn không cơ bản.
+C. Mâu thuẫn thứ yếu.
+*D. Mâu thuẫn chủ yếu.
+
+Gt: Trong giai đoạn này, mâu thuẫn dân tộc với thực dân Pháp là mâu thuẫn chủ yếu, nổi bật, chi phối các mâu thuẫn khác.
+
+Câu 55: Mâu thuẫn giữa hệ thống xã hội chủ nghĩa với tư bản chủ nghĩa trên thế giới thuộc loại mâu thuẫn nào sau đây?
+*A. Mâu thuẫn đối kháng.
+B. Mâu thuẫn cơ bản.
+C. Mâu thuẫn thứ yếu.
+D. Mâu thuẫn không cơ bản.
+
+Gt: Đây là mâu thuẫn giữa hai giai cấp, hai hệ thống có lợi ích căn bản đối lập nhau, tức mâu thuẫn đối kháng.
+
+Câu 56: Quan hệ nào sau đây là mặt đối lập trong quy luật mâu thuẫn?
+A. Gió và bão.
+B. Sấm và chớp.
+*C. Nắng và mưa.
+D. Mây và gió.
+
+Gt: Nắng và mưa là hai mặt đối lập nhau về bản chất hiện tượng thời tiết, tạo thành mâu thuẫn.
+
+Câu 57: Trường hợp nào sau đây thể hiện mặt đối lập trong quy luật mâu thuẫn?
+A. Kinh tế hàng hóa và kinh tế thị trường.
+*B. Sở hữu tư nhân và sở hữu công cộng.
+C. Sở hữu tập thể và sở hữu nhà nước.
+D. Kinh tế tự cung, tự cấp và kinh tế thị trường.
+
+Gt: Sở hữu tư nhân và sở hữu công cộng là hai mặt đối lập căn bản trong quan hệ sản xuất.
+
+Câu 58: Trường hợp nào sau đây không phải là mặt đối lập trong quy luật mâu thuẫn?
+A. Điện tích dương và điện tích âm trong nguyên tử.
+B. Đồng hóa và dị hóa trong cơ thể sống.
+*C. Mưa và bão trong giới tự nhiên.
+D. Nóng và lạnh trong giới tự nhiên.
+
+Gt: Mưa và bão không phải là hai mặt đối lập thống nhất trong cùng một sự vật, mà là hai hiện tượng thời tiết khác nhau.
+
+Câu 59: Trường hợp nào sau đây không phải là mặt đối lập trong quy luật mâu thuẫn?
+*A. Chiếm hữu nô lệ và phong kiến.
+B. Tư sản và vô sản.
+C. Địa chủ và nông dân.
+D. Chủ nghĩa tư bản và chủ nghĩa xã hội.
+
+Gt: Chiếm hữu nô lệ và phong kiến là hai hình thái xã hội kế tiếp nhau theo thời gian, không phải hai mặt đối lập cùng tồn tại trong một mâu thuẫn.
+
+Câu 60: Quan hệ nào sau đây là mặt đối lập trong quy luật mâu thuẫn?
+A. Cao - thấp.
+B. Sống - chết.
+*C. Thiện - ác.
+D. Trên - dưới.
+
+Gt: Thiện và ác là hai mặt đối lập nhau về bản chất đạo đức, tạo thành mâu thuẫn.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3600;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+        
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath(); // Render lại công thức trong phần giải thích
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

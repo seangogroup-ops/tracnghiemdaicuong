@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 3.4 - Thi Trắc Nghiệm - SNG EDU</title>
+    
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db; 
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        /* HEADER */
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        /* LAYOUT */
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        /* OPTIONS */
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter { 
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0; 
+        }
+        .opt-text { 
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s; 
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        /* ĐÁP ÁN ĐÚNG/SAI */
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box { 
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue); 
+            border-radius: 4px; display: none; font-size: 0.95rem; 
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        /* SIDEBAR - FIX LỖI KHÔNG CUỘN ĐƯỢC */
+        .sidebar-col { 
+            width: 320px; 
+            position: sticky; 
+            top: 80px; 
+            max-height: calc(100vh - 100px); /* Giới hạn chiều cao theo màn hình */
+            overflow-y: auto; /* Cho phép cuộn bên trong sidebar */
+            padding-right: 5px;
+        }
+        
+        /* Tùy chỉnh thanh cuộn cho sidebar */
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn { 
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s; 
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col { 
+                width: 100%; 
+                position: static; 
+                order: 2; 
+                max-height: none; 
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+    
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+
+Câu 1: Theo chủ nghĩa duy vật lịch sử, con người là thực thể thống nhất giữa các mặt cơ bản nào sau đây?
+*A. Sinh học và xã hội.
+B. Khoa học và văn hóa.
+C. Kiến thức và đạo đức.
+D. Năng lực và phẩm chất.
+
+Gt: Con người là thực thể thống nhất giữa mặt sinh học và mặt xã hội.
+
+Câu 2: Theo chủ nghĩa duy vật lịch sử, hiện tượng tha hóa con người thực chất là
+*A. lao động của con người bị tha hóa.
+B. tư duy của con người bị tha hóa.
+C. lối sống của con người bị tha hóa.
+D. đạo đức của con người bị tha hóa.
+
+Gt: Tha hóa con người bắt nguồn từ tha hóa lao động, khi lao động trở thành lực lượng đối lập với chính người lao động.
+
+Câu 3: Theo chủ nghĩa duy vật lịch sử, con người thoát khỏi trạng thái thuần túy loài vật nhờ hoạt động
+A. sinh tồn.
+B. học tập và nghiên cứu.
+*C. lao động và ngôn ngữ.
+D. văn hóa.
+
+Gt: Lao động và ngôn ngữ là hai yếu tố cơ bản giúp con người tách khỏi thế giới động vật.
+
+Câu 4: Theo chủ nghĩa duy vật lịch sử, tha hóa con người là thuộc tính vốn có của nền sản xuất trên cơ sở chế độ nào sau đây, khi đó tư liệu sản xuất tập trung vào tay một số ít người, còn đại đa số nhân dân lao động trở thành người không có hoặc rất ít tư liệu sản xuất?
+A. chiếm hữu nô lệ.
+*B. tư bản chủ nghĩa.
+C. phong kiến.
+D. xã hội chủ nghĩa.
+
+Gt: Chế độ tư hữu tư bản chủ nghĩa về tư liệu sản xuất là cơ sở sâu xa của sự tha hóa lao động và con người.
+
+Câu 5: Theo C. Mác, cá nhân là "thực thể xã hội" được hiểu theo nghĩa cá nhân
+A. đồng nhất với xã hội.
+B. tồn tại độc lập với xã hội.
+*C. là sản phẩm của xã hội.
+D. sáng tạo xã hội.
+
+Gt: Cá nhân được hình thành và phát triển nhờ các quan hệ xã hội, nên là sản phẩm của xã hội.
+
+Câu 6: Vận dụng triết học Mác - Lênin, Đảng Cộng sản Việt Nam xác định, ở Việt Nam hiện nay nếu tăng cường sự quan tâm đến giá trị cá nhân và xã hội thì lợi ích được đề cao là
+A. đạo đức.
+B. pháp quyền.
+C. chính trị.
+*D. kinh tế.
+
+Gt: Đảng xác định gắn kết giá trị cá nhân với xã hội thông qua việc chú trọng lợi ích kinh tế.
+
+Câu 7: Theo C. Mác, con người vừa là chủ thể của lịch sử, vừa là sản phẩm của
+A. giáo dục.
+B. văn hóa.
+*C. lịch sử.
+D. khoa học.
+
+Gt: Con người sáng tạo ra lịch sử đồng thời cũng chịu sự quy định của chính lịch sử đó.
+
+Câu 8: Theo chủ nghĩa duy vật lịch sử, con người khác biệt với vật ngay từ khi con người bắt đầu sản xuất ra
+A. sản phẩm khoa học công nghệ.
+*B. tư liệu sinh hoạt của mình.
+C. ngôn ngữ.
+D. giá trị tinh thần.
+
+Gt: Việc tự sản xuất ra tư liệu sinh hoạt là điểm phân biệt căn bản giữa con người và loài vật.
+
+Câu 9: Vận dụng chủ nghĩa Mác - Lênin trong cách mạng Việt Nam, Hồ Chí Minh xác định mục tiêu, sự nghiệp suốt đời của Người và của dân tộc Việt Nam là
+A. xây dựng toàn diện xã hội.
+B. giải phóng giai cấp.
+*C. giành và bảo vệ độc lập tự do.
+D. phát triển kinh tế.
+
+Gt: Hồ Chí Minh xác định mục tiêu suốt đời là giành và bảo vệ độc lập, tự do cho dân tộc.
+
+Câu 10: Hồ Chí Minh cho rằng "Tất cả những người lao động trên thế giới đều có một mục đích chung là thoát khỏi ách bóc lột, được sống ấm no sung sướng tự do, tức là thực hiện chế độ cộng sản". Luận điểm này được phát triển từ lý luận
+*A. giải phóng con người.
+B. bản chất con người.
+C. cá nhân và xã hội.
+D. cách mạng thuộc địa.
+
+Gt: Đây là sự vận dụng và phát triển lý luận giải phóng con người của chủ nghĩa Mác - Lênin.
+
+Câu 11: Theo chủ nghĩa duy vật lịch sử, muốn nhận thức chính xác bản chất con người thì phải thông qua các
+*A. quan hệ xã hội.
+B. quan hệ chính trị.
+C. quan hệ pháp luật.
+D. quan hệ lợi ích.
+
+Gt: Bản chất con người chỉ được xác định đúng đắn thông qua các quan hệ xã hội hiện thực.
+
+Câu 12: Theo chủ nghĩa duy vật lịch sử, con người mang bản chất xã hội vì
+A. được sinh ra trong một thể chế xã hội nhất định.
+B. được sinh ra trong một hệ thống chính trị nhất định.
+*C. được sinh ra trong một môi trường xã hội nhất định.
+D. là một bộ phận hợp thành môi trường giáo dục.
+
+Gt: Con người hình thành và phát triển trong một môi trường xã hội nhất định nên mang bản chất xã hội.
+
+Câu 13: Theo chủ nghĩa duy vật lịch sử, các yếu tố quy định sự vận động của lịch sử là
+A. lãnh tụ.
+B. vĩ nhân.
+*C. quần chúng nhân dân.
+D. cuộc đấu tranh giai cấp.
+
+Gt: Quần chúng nhân dân là lực lượng quyết định sự vận động và phát triển của lịch sử.
+
+Câu 14: Vận dụng nội dung về vấn đề con người trong triết học Mác - Lênin, Hồ Chí Minh xác định: "Dễ vạn lần dân không, dân cũng chịu. Khó vạn lần dân liệu cũng xong." Hai câu trên nhấn mạnh đến vai trò nào sau đây của quần chúng nhân dân?
+A. Nguồn gốc.
+B. Động lực.
+C. Mục tiêu.
+*D. Chủ thể.
+
+Gt: Câu thơ khẳng định quần chúng nhân dân là chủ thể quyết định thành bại của công việc.
+
+Câu 15: Theo quan điểm của chủ nghĩa duy vật lịch sử, con người được giải phóng hoàn toàn khi
+A. người lao động được bảo vệ.
+*B. chế độ tư hữu bị thủ tiêu.
+C. con người ngừng lao động.
+D. lực lượng sản xuất tiến bộ.
+
+Gt: Xóa bỏ chế độ tư hữu là điều kiện căn bản để giải phóng con người khỏi tha hóa.
+
+Câu 16: Hoạt động nào sau đây quyết định con người là một "thực thể xã hội"?
+*A. Lao động sản xuất.
+B. Văn hóa của cộng đồng.
+C. Tâm lý xã hội.
+D. Đời sống tinh thần xã hội.
+
+Gt: Lao động sản xuất là hoạt động cơ bản làm nên tính xã hội của con người.
+
+Câu 17: Vận dụng triết học Mác - Lênin về vấn đề con người, Đảng Cộng sản Việt Nam xác định, phát huy vai trò của con người là phát huy phẩm chất, năng lực với
+A. tinh thần ứng với tinh thần trong nước.
+B. tinh thần hoạt bát, mềm dẻo.
+C. tinh thần ứng với tinh thần thế giới.
+*D. tinh thần tích cực, tự giác, sáng tạo.
+
+Gt: Đảng xác định phát huy nhân tố con người phải trên tinh thần tích cực, tự giác, sáng tạo.
+
+Câu 18: Theo chủ nghĩa duy vật lịch sử, bản chất con người sẽ thay đổi khi
+A. lợi ích kinh tế thay đổi.
+B. quan hệ chính trị thay đổi.
+C. các điều kiện tự nhiên thay đổi.
+*D. các quan hệ xã hội thay đổi.
+
+Gt: Vì bản chất con người là tổng hòa các quan hệ xã hội nên khi quan hệ xã hội thay đổi thì bản chất con người cũng thay đổi.
+
+Câu 19: Theo chủ nghĩa duy vật lịch sử, chủ thể sáng tạo chân chính và động lực phát triển của lịch sử là
+A. nhà khoa học kiệt xuất.
+B. lực lượng thanh niên tiên tiến.
+C. lãnh tụ.
+*D. quần chúng nhân dân.
+
+Gt: Quần chúng nhân dân là lực lượng sản xuất cơ bản, chủ thể sáng tạo và động lực của lịch sử.
+
+Câu 20: Việc tu dưỡng rèn luyện trong hoạt động thực tiễn, kết hợp giáo dục và tự giáo dục là thể hiện quan điểm nào sau đây của Hồ Chí Minh?
+*A. Phát triển con người toàn diện.
+B. Cải tạo con người.
+C. Giải phóng con người.
+D. Không ngừng đổi mới con người.
+
+Gt: Hồ Chí Minh coi tu dưỡng, rèn luyện gắn với giáo dục và tự giáo dục là con đường phát triển con người toàn diện.
+
+Câu 21: Đức tính nào sau đây được Đảng Cộng sản Việt Nam nhấn mạnh trong việc xây dựng con người Việt Nam hiện nay?
+A. Có lối sống giản dị, hòa đồng.
+B. Hi sinh lợi ích cá nhân vì lợi ích tập thể.
+*C. Có ý thức tập thể, đoàn kết, phấn đấu vì lợi ích chung.
+D. Yêu thương con người.
+
+Gt: Xây dựng con người Việt Nam gắn liền với ý thức tập thể, đoàn kết vì lợi ích chung.
+
+Câu 22: Vận dụng vấn đề con người trong triết học Mác - Lênin vào sự nghiệp cách mạng ở Việt Nam, Hồ Chí Minh khẳng định giải phóng dân tộc phải được thực hiện bởi
+A. các tổ chức chính trị xã hội.
+B. lãnh tụ.
+C. các đảng cầm quyền.
+*D. quần chúng nhân dân.
+
+Gt: Hồ Chí Minh khẳng định sự nghiệp cách mạng là sự nghiệp của quần chúng nhân dân.
+
+Câu 23: Theo chủ nghĩa duy vật lịch sử, bằng hoạt động thực tiễn, con người trở thành một bộ phận của giới tự nhiên, có quan hệ mật thiết với giới tự nhiên, bởi giới tự nhiên là
+A. thân thể hữu cơ của con người.
+B. điều kiện đủ để hình thành con người.
+*C. thân thể vô cơ của con người.
+D. điều kiện duy nhất để hình thành con người.
+
+Gt: C. Mác gọi giới tự nhiên là "thân thể vô cơ" của con người vì con người tồn tại phụ thuộc vào giới tự nhiên.
+
+Câu 24: Theo C. Mác, trong tính hiện thực của nó, bản chất của con người là tổng hòa
+A. các quan hệ văn hóa và pháp luật.
+B. hoạt động giáo dục của gia đình và xã hội.
+*C. các quan hệ xã hội.
+D. các quan hệ kinh tế và chính trị.
+
+Gt: C. Mác khẳng định bản chất con người trong tính hiện thực là tổng hòa các quan hệ xã hội.
+
+Câu 25: Theo C. Mác, con người là một sinh vật có tính xã hội ở trình độ phát triển cao nhất của giới tự nhiên và của lịch sử xã hội, là chủ thể của lịch sử, sáng tạo nên tất cả các thành tựu của văn minh và
+A. giáo dục.
+B. giá trị.
+*C. văn hóa.
+D. đời sống vật chất.
+
+Gt: Con người là chủ thể sáng tạo nên các thành tựu văn minh và văn hóa của xã hội loài người.
+
+Câu 26: Theo chủ nghĩa duy vật lịch sử, về phương diện sinh học, con người là một thực thể sinh vật, là sản phẩm của giới tự nhiên, là
+*A. động vật xã hội.
+B. động vật bậc cao.
+C. thân thể vô cơ.
+D. sản phẩm của thiên chúa.
+
+Gt: Con người là sản phẩm của giới tự nhiên nhưng mang tính xã hội, nên được xem là động vật xã hội.
+
+Câu 27: Tệ sùng bái cá nhân, thần thánh hóa lãnh tụ có nguồn gốc từ
+A. đề cao vai trò của cá nhân.
+B. đánh đồng vai trò giữa lãnh tụ và quần chúng.
+C. phủ nhận vai trò của quần chúng.
+*D. tuyệt đối hóa vai trò của lãnh tụ.
+
+Gt: Việc tuyệt đối hóa vai trò lãnh tụ dẫn đến sùng bái cá nhân, xem nhẹ vai trò quần chúng.
+
+Câu 28: Chủ tịch Hồ Chí Minh khẳng định: "Hiền dữ phải đâu là tính sẵn. Phần nhiều do giáo dục mà nên". Hai câu thơ trên muốn nhấn mạnh bản chất nào sau đây của con người?
+A. Cần được giáo dục.
+B. Tự nhiên.
+C. Dễ bị tiêm nhiễm.
+*D. Xã hội.
+
+Gt: Câu thơ nhấn mạnh bản chất con người hình thành chủ yếu qua giáo dục, tức bản chất xã hội.
+
+Câu 29: Theo chủ nghĩa duy vật lịch sử, con người là sản phẩm của quá trình tiến hóa lâu dài của giới tự nhiên, của lịch sử xã hội loài người và của
+A. hoạt động văn hóa nghệ thuật.
+B. hoạt động giáo dục và đào tạo.
+C. quá trình vượn chuyển thành người.
+*D. chính bản thân con người.
+
+Gt: Con người vừa là sản phẩm vừa là chủ thể tự tạo ra chính mình qua quá trình lịch sử.
+
+Câu 30: Theo chủ nghĩa duy vật lịch sử, nguyên nhân gây nên hiện tượng tha hóa con người là
+A. sự quản lý của nhà nước.
+*B. chế độ tư hữu về tư liệu sản xuất.
+C. suy đồi về đạo đức.
+D. cuộc sống có nhiều áp lực.
+
+Gt: Chế độ tư hữu về tư liệu sản xuất là nguyên nhân sâu xa dẫn đến tha hóa con người.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3600;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+        
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath(); // Render lại công thức trong phần giải thích
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

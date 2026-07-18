@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 1 - Thi Trắc Nghiệm - SNG EDU</title>
+    
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db; 
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        /* HEADER */
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        /* LAYOUT */
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        /* OPTIONS */
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter { 
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0; 
+        }
+        .opt-text { 
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s; 
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        /* ĐÁP ÁN ĐÚNG/SAI */
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box { 
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue); 
+            border-radius: 4px; display: none; font-size: 0.95rem; 
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        /* SIDEBAR - FIX LỖI KHÔNG CUỘN ĐƯỢC */
+        .sidebar-col { 
+            width: 320px; 
+            position: sticky; 
+            top: 80px; 
+            max-height: calc(100vh - 100px); /* Giới hạn chiều cao theo màn hình */
+            overflow-y: auto; /* Cho phép cuộn bên trong sidebar */
+            padding-right: 5px;
+        }
+        
+        /* Tùy chỉnh thanh cuộn cho sidebar */
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn { 
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s; 
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col { 
+                width: 100%; 
+                position: static; 
+                order: 2; 
+                max-height: none; 
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+    
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+
+Câu 1: Theo Ph. Ăngghen, vấn đề cơ bản lớn của mọi triết học, đặc biệt là triết học hiện đại, là vấn đề
+A. vật chất và ý thức.
+B. quan hệ giữa con người với thế giới.
+*C. quan hệ giữa tư duy với tồn tại.
+D. logic và pháp ngôn ngữ.
+
+Gt: Ph. Ăngghen xác định vấn đề cơ bản của triết học là quan hệ giữa tư duy và tồn tại.
+
+Câu 2: Triết học là khoa học về những quy luật vận động, phát triển chung nhất của
+A. môi trường chính trị.
+B. môi trường kinh tế.
+*C. tự nhiên, xã hội và tư duy.
+D. con người trong thế giới tự nhiên.
+
+Gt: Triết học nghiên cứu quy luật chung nhất của tự nhiên, xã hội, tư duy.
+
+Câu 3: Nguồn gốc ra đời của triết học là
+A. cách mạng xã hội.
+B. đấu tranh giai cấp.
+*C. nhận thức và xã hội.
+D. lý luận và nhu cầu con người.
+
+Gt: Triết học ra đời từ nguồn gốc nhận thức và nguồn gốc xã hội.
+
+Câu 4: Đối tượng nghiên cứu của triết học là những quy luật chung nhất của tự nhiên, xã hội và
+A. nhận thức.
+B. lý luận.
+C. tinh thần.
+*D. tư duy.
+
+Gt: Đối tượng triết học gồm tự nhiên, xã hội, tư duy.
+
+Câu 5: Phương pháp triết học nào sau đây nhận thức đối tượng ở trong sự vận động phát triển?
+A. Siêu hình.
+B. Logic.
+*C. Biện chứng.
+D. Thống kê.
+
+Gt: Phép biện chứng xem xét sự vật trong vận động, phát triển, liên hệ.
+
+Câu 6: Giải quyết mặt nhận thức luận trong vấn đề cơ bản của triết học là làm rõ nội dung nào sau đây?
+*A. Con người có khả năng nhận thức được thế giới hay không.
+B. Giữa vật chất và ý thức cái nào quyết định cái nào.
+C. Giải quyết mối quan hệ giữa vật chất và ý thức.
+D. Giải quyết quan hệ giữa tư duy với tồn tại.
+
+Gt: Mặt nhận thức luận trả lời câu hỏi con người có nhận thức được thế giới không.
+
+Câu 7: Việc phân chia các trường phái triết học thành chủ nghĩa duy vật và chủ nghĩa duy tâm là dựa trên cơ sở nào sau đây?
+A. Mặt nhận thức luận trong vấn đề cơ bản của triết học.
+B. Giải quyết vấn đề cơ bản của triết học.
+*C. Việc giải quyết mặt bản thể luận trong vấn đề cơ bản của triết học.
+D. Quan điểm lý luận nhận thức.
+
+Gt: Duy vật - duy tâm phân chia dựa trên mặt bản thể luận (vật chất hay ý thức có trước).
+
+Câu 8: Chủ nghĩa duy vật có các hình thức cơ bản là chủ nghĩa duy vật chất phác, chủ nghĩa duy vật siêu hình và
+A. chủ nghĩa duy vật cổ đại.
+B. chủ nghĩa duy vật tầm thường.
+*C. chủ nghĩa duy vật biện chứng.
+D. chủ nghĩa duy vật thực chứng.
+
+Gt: Ba hình thức: chất phác, siêu hình, biện chứng.
+
+Câu 9: Quan điểm nào sau đây là của chủ nghĩa duy tâm khách quan?
+A. Sự vật là sự phức hợp những cảm giác.
+*B. Tinh thần khách quan có trước và độc lập với ý thức con người.
+C. Tồn tại có nghĩa là được cảm nhận.
+D. "Không có sự lý nào ngoài tâm", "Ngoài tâm không có gì".
+
+Gt: Duy tâm khách quan thừa nhận tinh thần khách quan có trước, tồn tại độc lập với con người.
+
+Câu 10: Phương pháp triết học nào sau đây nhận thức đối tượng ở trong trạng thái cô lập, tách rời?
+*A. Siêu hình.
+B. Logic.
+C. Biện chứng.
+D. Thống kê.
+
+Gt: Phương pháp siêu hình nhìn sự vật cô lập, tĩnh tại, tách rời.
+
+Câu 11: C. Mác đã khái quát trực tiếp nhất hợp lý nào sau đây để xây dựng phép biện chứng duy vật?
+A. Phép biện chứng duy tâm.
+B. Phép biện chứng tự phát.
+*C. Phép biện chứng duy tâm của Hêghen.
+D. Phép biện chứng của Hêraclit.
+
+Gt: C. Mác kế thừa hạt nhân hợp lý trong phép biện chứng duy tâm của Hêghen.
+
+Câu 12: Chủ nghĩa duy tâm chủ quan phủ nhận sự tồn tại khách quan của hiện thực và thừa nhận tính thứ nhất của
+*A. ý thức con người.
+B. tinh thần khách quan.
+C. ý niệm tuyệt đối.
+D. ý thức xã hội.
+
+Gt: Duy tâm chủ quan coi ý thức, cảm giác con người là tính thứ nhất.
+
+Câu 13: Phép biện chứng cổ đại là biện chứng
+*A. ngây thơ, tự phát.
+B. duy tâm.
+C. duy vật khoa học.
+D. chủ quan.
+
+Gt: Phép biện chứng thời cổ đại mang tính chất tự phát, ngây thơ.
+
+Câu 14: Phương pháp nào sau đây được coi là công cụ hữu hiệu giúp con người nhận thức và cải tạo thế giới và là phương pháp luận chủ yếu của mọi khoa học?
+*A. Biện chứng.
+B. Siêu hình.
+C. Logic.
+D. Thống kê.
+
+Gt: Phép biện chứng duy vật là phương pháp luận chung nhất của mọi khoa học.
+
+Câu 15: Hình thức nào sau đây của phép biện chứng cho rằng thế giới hiện thực chỉ là sự phản ánh của ý niệm?
+A. Phép biện chứng duy vật.
+*B. Phép biện chứng duy tâm.
+C. Phép biện chứng tự phát thời cổ đại.
+D. Phép biện chứng cận đại.
+
+Gt: Phép biện chứng duy tâm coi hiện thực là phản ánh của ý niệm, tinh thần.
+
+Câu 16: Triết học có vai trò nào sau đây đối với hoạt động nhận thức và hoạt động thực tiễn của con người?
+A. Đánh giá và cải tạo thế giới đương đại.
+B. Chỉ đạo và thực hiện.
+C. Hướng dẫn hành động.
+*D. Thế giới quan và phương pháp luận chung nhất.
+
+Gt: Triết học đóng vai trò thế giới quan, phương pháp luận chung nhất.
+
+Câu 17: Hệ thống các tri thức, quan điểm, tình cảm, niềm tin, lý tưởng xác định về thế giới và về vị trí của con người trong thế giới đó gọi là
+A. quan niệm sống của con người.
+B. lối sống của con người.
+C. nhân sinh quan.
+*D. thế giới quan.
+
+Gt: Đây là định nghĩa của thế giới quan.
+
+Câu 18: Các hình thức phát triển của thế giới quan từ thấp đến cao là
+A. triết học - tôn giáo - huyền thoại.
+B. tôn giáo - triết học - huyền thoại.
+*C. huyền thoại - tôn giáo - triết học.
+D. huyền thoại - triết học - tôn giáo.
+
+Gt: Thế giới quan phát triển theo trình tự: huyền thoại, tôn giáo, triết học.
+
+Câu 19: Triết học thời kỳ nào sau đây bị bao trùm bởi quyền lực của giáo hội và mang tính tôn giáo?
+A. Hy Lạp cổ đại.
+*B. Tây Âu thời trung cổ.
+C. Phục hưng, cận đại.
+D. Triết học cổ điển Đức.
+
+Gt: Triết học Tây Âu trung cổ chịu sự chi phối của thần học, giáo hội.
+
+Câu 20: Quan điểm của G.W.F. Hêghen cho rằng khởi nguyên của thế giới là một ý niệm tuyệt đối thể hiện thế giới quan nào sau đây?
+*A. Duy tâm.
+B. Duy vật.
+C. Duy tâm chủ quan.
+D. Nhị nguyên.
+
+Gt: Hêghen theo lập trường duy tâm (khách quan).
+
+Câu 21: Triết học Mác ra đời vào thời gian nào sau đây?
+A. Cuối thế kỷ XIX.
+B. Đầu thế kỷ XIX.
+*C. Những năm 40 của thế kỷ XIX.
+D. Những năm 30 của thế kỷ XIX.
+
+Gt: Triết học Mác hình thành vào những năm 40 của thế kỷ XIX.
+
+Câu 22: C. Mác và Ph. Ăngghen đã kế thừa trực tiếp tư tưởng triết học của trường phái nào sau đây?
+*A. L. Phoiơbắc và Hêghen.
+B. Các triết gia thời cổ đại.
+C. Các triết gia thời Phục Hưng.
+D. Hium và Beccơli.
+
+Gt: Nguồn gốc trực tiếp là triết học cổ điển Đức (Hêghen, Phoiơbắc).
+
+Câu 23: Một trong những điều kiện cho sự ra đời của Triết học Mác là
+*A. phương thức sản xuất tư bản chủ nghĩa đang có sự phát triển.
+B. giai cấp tư sản đã trở nên bảo thủ, phản động mất đi vai trò lịch sử của mình.
+C. phương thức sản xuất phong kiến được củng cố.
+D. quan hệ sản xuất tư bản chủ nghĩa được thiết lập.
+
+Gt: Điều kiện kinh tế - xã hội là sự phát triển của phương thức sản xuất tư bản chủ nghĩa.
+
+Câu 24: V.I. Lênin chỉ rõ, học thuyết của C. Mác ra đời là sự thừa kế trực tiếp những học thuyết nào sau đây?
+A. Triết học khai sáng Pháp, Kinh tế chính trị cổ điển Đức.
+B. Triết học cổ, Kinh tế chính trị cổ điển Đức và Chủ nghĩa xã hội không tưởng Anh.
+C. Triết học khai sáng Pháp và Chủ nghĩa xã hội không tưởng Anh.
+*D. Triết học cổ điển Đức, Kinh tế chính trị cổ điển Anh và Chủ nghĩa xã hội không tưởng Pháp.
+
+Gt: Ba nguồn gốc lý luận trực tiếp: Triết học cổ điển Đức, Kinh tế chính trị cổ điển Anh, Chủ nghĩa xã hội không tưởng Pháp.
+
+Câu 25: V.I. Lênin bổ sung và phát triển triết học Mác trong hoàn cảnh nào sau đây?
+A. Chủ nghĩa tư bản chưa xuất hiện.
+*B. Chủ nghĩa tư bản chuyển thành chủ nghĩa đế quốc.
+C. Chủ nghĩa tư bản ở giai đoạn tự do cạnh tranh.
+D. Chủ nghĩa tư bản vừa xuất hiện.
+
+Gt: Lênin phát triển triết học Mác trong thời kỳ chủ nghĩa tư bản chuyển sang giai đoạn đế quốc chủ nghĩa.
+
+Câu 26: Lần đầu tiên V.I. Lênin đưa ra định nghĩa hoàn chỉnh về giai cấp trong tác phẩm nào sau đây?
+A. Cách mạng vô sản và tên phản bội Causky.
+*B. Sáng kiến vĩ đại.
+C. Lại bàn về công đoàn.
+D. Chủ nghĩa duy vật và chủ nghĩa kinh nghiệm phê phán.
+
+Gt: Định nghĩa giai cấp của Lênin được nêu trong tác phẩm "Sáng kiến vĩ đại".
+
+Câu 27: Tác phẩm nào sau đây được Ph. Ăngghen đánh giá là văn kiện đầu tiên chứa đựng mầm mống thiên tài của một thế giới quan mới?
+A. Tuyên ngôn của Đảng Cộng sản.
+*B. Luận cương về Phoiơbắc.
+C. Hệ tư tưởng Đức.
+D. Bản thảo kinh tế - triết học năm 1844.
+
+Gt: Ăngghen đánh giá "Luận cương về Phoiơbắc" là văn kiện chứa mầm mống thiên tài của thế giới quan mới.
+
+Câu 28: Triết học Mác - Lênin có chức năng nào sau đây?
+A. Cầu nối cho các khoa học.
+B. Khoa học của các khoa học.
+*C. Thế giới quan và phương pháp luận.
+D. Dự báo và phê phán.
+
+Gt: Chức năng cơ bản của triết học Mác - Lênin là thế giới quan và phương pháp luận.
+
+Câu 29: Bổ sung, phát triển triết học Mác - Lênin từ việc phân tích khái quát những thành tựu mới nhất của khoa học tự nhiên và thực tiễn xã hội là làm rõ
+A. các hành vi của con người.
+B. các quan điểm siêu hình về thế giới và tìm ra bản chất quy luật của nó.
+C. đời sống của con người.
+*D. những quy luật vận động chung nhất của tự nhiên, xã hội và tư duy.
+
+Gt: Triết học Mác - Lênin không ngừng được bổ sung dựa trên khái quát quy luật chung nhất.
+
+Câu 30: Trước khi chuyển sang lập trường duy vật biện chứng, C. Mác đã từng theo quan điểm của nhà triết học nào sau đây?
+A. Cantơ.
+*B. Hêghen.
+C. Sêlinh.
+D. Phoiơbắc.
+
+Gt: C. Mác từng chịu ảnh hưởng triết học duy tâm của Hêghen trước khi chuyển sang duy vật biện chứng.
+
+Câu 31: Bước ngoặt cách mạng về triết học do C. Mác và Ph. Ăngghen thực hiện là
+*A. thống nhất hữu cơ giữa thế giới quan duy vật và phép biện chứng.
+B. thống nhất giữa phép biện chứng duy tâm của Hêghen và chủ nghĩa duy vật nhân bản của Phoiơbắc.
+C. phê phán chủ nghĩa duy vật siêu hình của Phoiơbắc.
+D. phê phán triết học duy tâm của Hêghen.
+
+Gt: Bước ngoặt là sự thống nhất hữu cơ giữa chủ nghĩa duy vật và phép biện chứng.
+
+Câu 32: Một trong những thành tựu mang tính bước ngoặt cách mạng về triết học do C. Mác và Ph. Ăngghen thực hiện là sáng tạo ra
+A. quan điểm duy vật về tự nhiên.
+B. quan điểm biện chứng về tự nhiên.
+*C. chủ nghĩa duy vật lịch sử.
+D. chủ nghĩa thực dụng.
+
+Gt: Sáng tạo lớn nhất là chủ nghĩa duy vật lịch sử.
+
+Câu 33: Triết học Mác - Lênin có vai trò nào sau đây?
+A. Khoa học của mọi khoa học.
+B. Thay thế các khoa học cụ thể.
+C. Thay thế khoa học tự nhiên.
+*D. Thế giới quan, phương pháp luận khoa học.
+
+Gt: Vai trò của triết học Mác - Lênin là thế giới quan, phương pháp luận khoa học, không thay thế các khoa học cụ thể.
+
+Câu 34: C. Mác đề cập tới vấn đề "lao động bị tha hóa" trong tác phẩm nào sau đây?
+A. Hệ tư tưởng Đức.
+*B. Bản thảo kinh tế - triết học năm 1844.
+C. Luận cương về Phoiơbắc.
+D. Sự khốn cùng của triết học.
+
+Gt: Vấn đề lao động bị tha hóa được C. Mác trình bày trong "Bản thảo kinh tế - triết học năm 1844".
+
+Câu 35: Hệ thống triết học nào sau đây đã phát kiến ra tư tưởng biện chứng đạt trình độ một hệ thống lý luận?
+A. Triết học cổ đại.
+B. Triết học Tây Âu thời trung cổ.
+*C. Triết học cổ điển Đức.
+D. Triết học Tây Âu thời Phục hưng.
+
+Gt: Triết học cổ điển Đức (đặc biệt Hêghen) đưa phép biện chứng lên trình độ một hệ thống lý luận.
+
+Câu 36: Cuộc cách mạng nào sau đây vào cuối những năm 30 của thế kỷ XIX được nhận định là "phong trào cách mạng vô sản lên tới đỉnh điểm, thật sự có tính chất quần chúng và có hình thức chính trị"?
+A. Cuộc khởi nghĩa thợ dệt ở Lyon Pháp.
+B. Cuộc khởi nghĩa thợ dệt ở Xilêdi Đức.
+*C. Phong trào Hiến chương Anh.
+D. Cách mạng tư sản Pháp.
+
+Gt: Phong trào Hiến chương Anh được đánh giá là phong trào vô sản có tính chất chính trị rõ nét, quy mô quần chúng.
+
+Câu 37: Tính chất nào sau đây của triết học Mác được thể hiện qua nhận định: giai cấp vô sản thấy triết học là vũ khí tinh thần của mình, còn triết học thấy giai cấp vô sản là vũ khí vật chất của mình?
+A. Tính đảng và tính khoa học.
+*B. Tính giai cấp.
+C. Tính sáng tạo.
+D. Tính nhân đạo cộng sản.
+
+Gt: Nhận định thể hiện mối quan hệ gắn bó giữa triết học Mác với giai cấp vô sản, tức tính giai cấp.
+
+Câu 38: Tác phẩm nào sau đây của C. Mác và Ph. Ăngghen nêu quan điểm duy vật lịch sử một cách hệ thống, xem xét lịch sử xuất phát từ con người hiện thực và sản xuất vật chất là cách sản xuất tư liệu sinh hoạt của con người?
+A. Gia đình thần thánh.
+*B. Hệ tư tưởng Đức.
+C. Luận cương về Phoiơbắc.
+D. Niên giám Pháp - Đức.
+
+Gt: "Hệ tư tưởng Đức" trình bày quan điểm duy vật lịch sử một cách hệ thống.
+
+Câu 39: Tính sáng tạo là một trong những đặc trưng nổi bật nhất của triết học Mác - Lênin bởi đó là
+A. hệ thống đóng bộ.
+*B. hệ thống mở.
+C. hệ thống tối ưu.
+D. hệ thống khép kín.
+
+Gt: Triết học Mác - Lênin là hệ thống mở, không ngừng được bổ sung phát triển.
+
+Câu 40: Theo quan điểm của V.I. Lênin, con đường để thoát khỏi cuộc khủng hoảng trong vật lý học cuối thế kỷ XIX đầu thế kỷ XX là thay thế
+A. chủ nghĩa duy tâm bằng chủ nghĩa duy vật.
+*B. chủ nghĩa duy vật siêu hình bằng chủ nghĩa duy vật biện chứng.
+C. chủ nghĩa duy vật biện chứng bằng chủ nghĩa duy vật siêu hình.
+D. chủ nghĩa duy vật cổ đại bằng chủ nghĩa duy vật biện chứng.
+
+Gt: Lênin chỉ ra lối thoát khủng hoảng vật lý học là thay chủ nghĩa duy vật siêu hình bằng chủ nghĩa duy vật biện chứng.
+
+Câu 1: Quan điểm coi thế giới vật chất là kết quả của quá trình phát triển của ý niệm tuyệt đối thuộc thế giới quan triết học nào sau đây?
+A. Duy tâm chủ quan.
+*B. Duy tâm khách quan.
+C. Duy vật siêu hình.
+D. Duy vật biện chứng.
+
+Gt: Coi ý niệm tuyệt đối sinh ra vật chất là quan điểm duy tâm khách quan.
+
+Câu 2: Đồng nhất vật chất với khối lượng là quan điểm của chủ nghĩa duy vật
+A. siêu hình thế kỷ XV - XVI.
+B. chất phác thời cổ đại.
+*C. siêu hình thế kỷ XVII - XVIII.
+D. biện chứng mácxít.
+
+Gt: Duy vật siêu hình thế kỷ XVII-XVIII đồng nhất vật chất với khối lượng theo cơ học Niutơn.
+
+Câu 3: Chủ nghĩa duy vật thời kỳ cổ đại thường đồng nhất vật chất với
+A. ý niệm tuyệt đối.
+*B. một dạng vật thể cụ thể, hữu hình cảm tính.
+C. khối lượng.
+D. ý thức và các hình thức phản ánh của ý thức.
+
+Gt: Duy vật chất phác cổ đại quy vật chất về một dạng vật thể cụ thể (nước, lửa, không khí...).
+
+Câu 4: Các nhà triết học duy vật trước Mác thường gặp phải sai lầm khi đồng nhất vật chất với
+A. tồn tại.
+B. hiện thực.
+*C. vật thể.
+D. tự nhiên.
+
+Gt: Sai lầm chung của duy vật trước Mác là đồng nhất vật chất nói chung với vật thể cụ thể.
+
+Câu 5: Quan điểm coi điện tử là phi vật chất thuộc trường phái triết học nào sau đây?
+A. Siêu hình.
+*B. Duy tâm.
+C. Duy vật cổ đại.
+D. Duy vật biện chứng.
+
+Gt: Phủ nhận tính vật chất của điện tử là lập trường duy tâm.
+
+Câu 6: Định nghĩa vật chất của V.I. Lênin được nêu trong tác phẩm nào sau đây?
+A. Bản thảo kinh tế - triết học năm 1844.
+*B. Chủ nghĩa duy vật và chủ nghĩa kinh nghiệm phê phán.
+C. Nguồn gốc gia đình, chế độ tư hữu và nhà nước.
+D. Nhà nước và cách mạng.
+
+Gt: Định nghĩa vật chất kinh điển của Lênin nằm trong tác phẩm này.
+
+Câu 7: Phạm trù triết học nào sau đây dùng để chỉ thực tại khách quan, được đem lại cho con người trong cảm giác, được cảm giác của chúng ta chép lại, chụp lại, phản ánh và tồn tại không lệ thuộc vào cảm giác?
+*A. Vật chất.
+B. Ý thức.
+C. Vận động.
+D. Đứng im.
+
+Gt: Đây chính là định nghĩa vật chất của Lênin.
+
+Câu 8: Theo quan điểm triết học Mác - Lênin, thuộc tính phản ánh là
+*A. phổ biến ở mọi tổ chức vật chất.
+B. riêng có ở con người.
+C. chỉ có ở các cơ thể sống.
+D. chỉ có ở các dạng vật chất vô cơ.
+
+Gt: Phản ánh là thuộc tính phổ biến của mọi dạng vật chất, ở các trình độ khác nhau.
+
+Câu 9: Theo Ph. Ăngghen, tính thống nhất thực sự của thế giới là ở
+*A. tính vật chất.
+B. tính phổ biến.
+C. tính khách quan.
+D. tính hiện thực.
+
+Gt: Ăngghen khẳng định tính thống nhất của thế giới là ở tính vật chất của nó.
+
+Câu 10: Phạm trù triết học nào sau đây dùng để chỉ hình thức tồn tại của vật chất xét về mặt quảng tính, sự cùng tồn tại, trật tự, kết cấu và sự tác động lẫn nhau?
+A. Thời gian.
+B. Khối lượng.
+C. Vận động.
+*D. Không gian.
+
+Gt: Không gian phản ánh quảng tính, trật tự, kết cấu cùng tồn tại của vật chất.
+
+Câu 11: Các hình thức vận động từ thấp đến cao của vật chất theo quan điểm của Ph. Ăngghen là
+A. cơ học, vật lý, sinh học, hóa học, xã hội.
+B. vật lý, cơ học, hóa học, xã hội, sinh học.
+*C. cơ học, vật lý, hóa học, sinh học, xã hội.
+D. cơ học, hóa học, vật lý, sinh học, xã hội.
+
+Gt: Thứ tự Ăngghen nêu là cơ học - vật lý - hóa học - sinh học - xã hội.
+
+Câu 12: Quá trình hóa hợp và phân giải các chất là hình thức vận động cơ bản nào sau đây của thế giới vật chất?
+A. Cơ học.
+B. Vật lý.
+*C. Hóa học.
+D. Sinh học.
+
+Gt: Hóa hợp, phân giải chất là đặc trưng của vận động hóa học.
+
+Câu 13: Theo quan điểm của Ph. Ăngghen, hình thức vận động nào sau đây là cao nhất và phức tạp nhất?
+A. Vật lý.
+B. Hóa học.
+C. Sinh học.
+*D. Xã hội.
+
+Gt: Vận động xã hội là hình thức cao nhất, phức tạp nhất trong thang bậc vận động.
+
+Câu 14: Quan điểm cho rằng vận động và đứng im không tách rời nhau là thế giới quan triết học nào sau đây?
+A. Duy tâm khách quan.
+B. Duy vật cổ đại.
+*C. Duy vật biện chứng.
+D. Duy vật siêu hình.
+
+Gt: Duy vật biện chứng coi đứng im là tương đối, tồn tại trong quan hệ biện chứng với vận động.
+
+Câu 15: Theo quan điểm duy vật biện chứng, không gian và thời gian là
+A. bất biến và chứa đầy vật chất.
+B. khái niệm của tư duy lý tính.
+*C. hình thức tồn tại của vật chất.
+D. hình thức trực quan tiên nghiệm.
+
+Gt: Không gian, thời gian là hình thức tồn tại của vật chất, gắn liền với vật chất vận động.
+
+Câu 16: Nội dung nào sau đây đề cập tới bản chất của ý thức?
+*A. Hình ảnh chủ quan của thế giới khách quan.
+B. Hình ảnh phản chiếu về thế giới khách quan.
+C. Hình ảnh tượng trưng của sự vật.
+D. Hình ảnh khách quan của thế giới.
+
+Gt: Bản chất ý thức là hình ảnh chủ quan của thế giới khách quan.
+
+Câu 17: Theo quan điểm duy vật biện chứng, ý thức là hình thức phản ánh đặc trưng chỉ có ở
+A. vượn người.
+*B. con người.
+C. giới tự nhiên vô sinh.
+D. mọi dạng vật chất.
+
+Gt: Ý thức là hình thức phản ánh cao nhất, chỉ có ở con người.
+
+Câu 18: Theo quan điểm duy vật biện chứng, ý thức là sự phản ánh
+A. nguyên bản hiện thực khách quan.
+B. thụ động về thế giới khách quan.
+*C. tích cực, sáng tạo hiện thực khách quan.
+D. hư ảo về thế giới khách quan.
+
+Gt: Ý thức phản ánh hiện thực khách quan một cách tích cực, sáng tạo, không phải sao chép thụ động.
+
+Câu 19: Quan điểm cho rằng vật chất quyết định ý thức nhưng ý thức có tính độc lập tương đối và tác động đến vật chất thông qua hoạt động thực tiễn là của
+A. chủ nghĩa duy vật siêu hình.
+B. chủ nghĩa duy vật chất phác.
+*C. chủ nghĩa duy vật biện chứng.
+D. chủ nghĩa duy vật thực chứng.
+
+Gt: Đây là quan điểm biện chứng về mối quan hệ vật chất - ý thức.
+
+Câu 20: Phản ánh nào sau đây mang tính thụ động, chưa có định hướng lựa chọn của vật chất tác động?
+A. Tâm lý.
+B. Sinh học.
+*C. Vật lý.
+D. Ý thức.
+
+Gt: Phản ánh vật lý, hóa học là trình độ thấp, thụ động, chưa có định hướng lựa chọn.
+
+Câu 21: Thuộc tính chung nhất của vật chất mà V.I. Lênin khẳng định là
+A. có thể nhận thức được.
+*B. tồn tại khách quan.
+C. không thể cảm giác được.
+D. lệ thuộc vào cảm giác.
+
+Gt: Thuộc tính chung nhất, cơ bản nhất của vật chất là tồn tại khách quan, độc lập với ý thức.
+
+Câu 22: Khi khoa học tự nhiên phát hiện ra tia X, hiện tượng phóng xạ và điện tử là một thành phần cấu tạo nên nguyên tử. Theo V.I. Lênin điều đó chứng tỏ rằng
+A. vật chất không tồn tại thật sự.
+B. vật chất tiêu tan mất.
+*C. giới hạn hiểu biết trước đây của con người về vật chất tiêu tan.
+D. vật chất có tồn tại thực sự nhưng không thể nhận thức được.
+
+Gt: Lênin khẳng định "vật chất tiêu tan" chỉ là giới hạn hiểu biết cũ về cấu trúc vật chất bị phá vỡ, không phải vật chất biến mất.
+
+Câu 23: Các nhà triết học duy vật thế kỷ XVII - XVIII đã quy mọi hình thức vận động thành một hình thức vận động duy nhất là
+A. vận động vật lý.
+B. vận động hóa học.
+*C. vận động cơ học.
+D. vận động sinh học.
+
+Gt: Chủ nghĩa duy vật siêu hình quy mọi vận động về vận động cơ học.
+
+Câu 24: Quan điểm cho rằng, không gian và thời gian là do thói quen của con người quy định thuộc trường phái triết học nào sau đây?
+*A. Chủ nghĩa duy tâm chủ quan.
+B. Chủ nghĩa duy tâm khách quan.
+C. Chủ nghĩa duy vật biện chứng.
+D. Chủ nghĩa duy vật siêu hình.
+
+Gt: Coi không gian, thời gian là sản phẩm chủ quan của con người là lập trường duy tâm chủ quan.
+
+Câu 25: Trong định nghĩa vật chất, V.I. Lênin cho rằng vật chất là cái mà khi tác động vào các giác quan con người thì đem lại cho con người cảm giác nhằm khẳng định
+*A. vật chất có trước, ý thức có sau.
+B. ý thức có trước, vật chất có sau.
+C. vật chất và ý thức song song cùng tồn tại.
+D. vật chất tồn tại phụ thuộc vào cảm giác.
+
+Gt: Ý này khẳng định vật chất tồn tại khách quan, có trước và là nguồn gốc của cảm giác, ý thức.
+
+Câu 26: Quan niệm về vật chất của V.I. Lênin khác với quan niệm của chủ nghĩa kinh nghiệm ở nội dung nào sau đây?
+*A. Thừa nhận vật chất tồn tại khách quan độc lập với ý thức con người.
+B. Đồng nhất vật chất nói chung với một dạng cụ thể của vật chất.
+C. Thừa nhận vật chất nói chung tồn tại vĩnh viễn, tách rời các dạng cụ thể của vật chất.
+D. Đồng nhất vật chất với khối lượng, không gian và thời gian.
+
+Gt: Điểm khác biệt căn bản là Lênin thừa nhận vật chất tồn tại khách quan, độc lập với ý thức.
+
+Câu 27: Theo Ph. Ăngghen, động lực xã hội trực tiếp thúc đẩy sự ra đời của ý thức làm cho bộ óc của con vượn dần dần biến chuyển thành bộ óc con người là yếu tố nào sau đây?
+A. Não người và thế giới khách quan.
+*B. Lao động và ngôn ngữ.
+C. Bộ não và các cơ quan cảm giác.
+D. Hoạt động nghiên cứu khoa học.
+
+Gt: Ăngghen chỉ ra lao động và ngôn ngữ là hai động lực trực tiếp làm nảy sinh ý thức.
+
+Câu 28: Theo Ph. Ăngghen, tính thống nhất vật chất của thế giới được chứng minh bởi sự phát triển lâu dài và khó khăn của
+A. thực tiễn lịch sử.
+B. cuộc cách mạng vô sản.
+C. khoa học tự nhiên và thực tiễn cách mạng.
+*D. triết học và khoa học tự nhiên.
+
+Gt: Ăngghen cho rằng chính triết học và khoa học tự nhiên qua quá trình phát triển đã chứng minh tính thống nhất vật chất của thế giới.
+
+Câu 29: Theo quan điểm duy vật biện chứng, ý thức không thể hình thành và phát triển được nếu thiếu đi phương tiện trao đổi xã hội nào sau đây?
+A. Cảm giác.
+B. Hoạt động nhận thức.
+C. Năng lực quan sát.
+*D. Ngôn ngữ.
+
+Gt: Ngôn ngữ là phương tiện, "vỏ vật chất" của tư duy, không thể thiếu để ý thức hình thành, phát triển.
+
+Câu 30: Theo quan điểm duy vật biện chứng, chúng ta phải luôn xem xét sự vật, hiện tượng của thế giới vật chất trong
+A. trạng thái cô lập, tách rời.
+*B. trạng thái vận động biến đổi không ngừng.
+C. trạng thái cân bằng, ổn định tương đối.
+D. hình thức vận động cao nhất của nó.
+
+Gt: Duy vật biện chứng yêu cầu xem xét sự vật trong vận động, biến đổi không ngừng.
+
+Câu 31: Chủ nghĩa duy tâm đã dựa vào phát minh của khoa học tự nhiên về hiện tượng phóng xạ để chứng minh
+A. nguyên tử không bất biến.
+*B. nguyên tử biến đổi đồng nhất với vật chất mất đi.
+C. nguyên tử biến đổi nhưng vật chất nói chung không mất đi.
+D. nguyên tử là phần tử vật chất nhỏ bé nhất.
+
+Gt: Chủ nghĩa duy tâm lợi dụng việc nguyên tử biến đổi để tuyên bố sai lầm rằng vật chất tiêu biến.
+
+Câu 32: Theo quan điểm duy vật biện chứng, điều kiện cần và đủ để ý thức hình thành và phát triển là
+A. nguồn gốc chính trị và văn hóa.
+B. nguồn gốc khoa học và kinh tế.
+*C. nguồn gốc tự nhiên và xã hội.
+D. nguồn gốc lịch sử và địa lý.
+
+Gt: Ý thức hình thành từ sự kết hợp của nguồn gốc tự nhiên (bộ óc, thế giới khách quan) và nguồn gốc xã hội (lao động, ngôn ngữ).
+
+Câu 33: Từ mối quan hệ biện chứng giữa vật chất và ý thức trên lập trường duy vật biện chứng, chúng ta rút ra nguyên tắc triết học nào sau đây?
+A. Thực tiễn.
+*B. Khách quan.
+C. Toàn diện.
+D. Lịch sử - cụ thể.
+
+Gt: Từ quan hệ vật chất quyết định ý thức, rút ra nguyên tắc khách quan trong nhận thức và hành động.
+
+Câu 34: Theo quan điểm duy vật biện chứng, thế giới vật chất không ngừng vận động phát triển xuất phát từ nguyên nhân nào sau đây?
+A. Sự tương tác hay tác động ở bên ngoài sự vật, hiện tượng.
+*B. Sự tác động của các mặt, các yếu tố trong sự vật hiện tượng.
+C. Cảm giác, ý thức của con người.
+D. Tác động của thượng đế.
+
+Gt: Nguồn gốc vận động, phát triển nằm ở mâu thuẫn, sự tác động qua lại giữa các yếu tố bên trong sự vật.
+
+Câu 35: Theo quan điểm duy vật biện chứng, đứng im mang tính tương đối vì
+A. chỉ xảy ra trong ý thức của con người, do con người cảm giác.
+*B. chỉ xảy ra trong một quan hệ nhất định, với một hình thức vận động nhất định.
+C. chỉ là quy ước của con người.
+D. chỉ xảy ra trong một sự vật nhất định.
+
+Gt: Đứng im chỉ là tương đối, tồn tại trong một quan hệ, một hình thức vận động xác định.
+
+Câu 36: Theo quan điểm triết học Mác - Lênin, sự tác động trở lại của ý thức với vật chất là ở tính chất nào sau đây?
+*A. Độc lập tương đối.
+B. Lệ thuộc hoàn toàn.
+C. Quyết định.
+D. Ổn định.
+
+Gt: Ý thức có tính độc lập tương đối, tác động trở lại vật chất thông qua hoạt động thực tiễn.
+
+Câu 37: Theo quan điểm duy vật biện chứng, khi sắt để lâu ở ngoài môi trường sẽ bị han gỉ là thể hiện thuộc tính phổ biến nào sau đây của mọi dạng vật chất?
+*A. Phản ánh.
+B. Cảm ứng.
+C. Đa dạng.
+D. Kích thích.
+
+Gt: Sắt bị han gỉ do tác động môi trường là biểu hiện của thuộc tính phản ánh ở trình độ thấp (vật lý, hóa học).
+
+Câu 38: Theo quan điểm duy vật biện chứng, ý thức hình thành thông qua quá trình nào sau đây?
+A. Tiếp thu sự tác động của thế giới bên ngoài.
+B. Sáng tạo thuần túy trong tư duy con người.
+*C. Hoạt động chủ động cải tạo thế giới và phản ánh sáng tạo thế giới.
+D. Tác động của thế giới bên ngoài và sáng tạo thuần túy của tư duy.
+
+Gt: Ý thức hình thành qua hoạt động thực tiễn chủ động cải tạo và phản ánh sáng tạo thế giới.
+
+Câu 39: Phát minh khoa học nào sau đây đã chứng minh không gian, thời gian, khối lượng luôn biến đổi cùng với sự vận động của vật chất?
+*A. Thuyết tương đối của Anhxtanh.
+B. Tia X của Rơnghen.
+C. Hiện tượng phóng xạ của Beccơren.
+D. Điện tử của Tômxơn.
+
+Gt: Thuyết tương đối của Anhxtanh chứng minh không gian, thời gian, khối lượng biến đổi theo vận động vật chất.
+
+Câu 40: Luận điểm của Đềcáctơ: "tôi tư duy vậy tôi tồn tại" thể hiện thế giới quan triết học nào sau đây?
+A. Chủ nghĩa duy tâm khách quan.
+*B. Chủ nghĩa duy tâm chủ quan.
+C. Chủ nghĩa duy vật tầm thường.
+D. Chủ nghĩa duy năng.
+
+Gt: Luận điểm lấy tư duy (ý thức chủ quan) làm cơ sở cho sự tồn tại, thể hiện lập trường duy tâm chủ quan.
+
+Câu 41: I. Cantơ từng luận rằng, vẻ đẹp không nằm ở đôi má hồng của người thiếu nữ mà nằm trong đôi mắt của kẻ si tình. Quan điểm của ông thể hiện bản chất của ý thức là
+A. một hiện tượng mang bản chất xã hội.
+*B. hình ảnh chủ quan của thế giới khách quan.
+C. quá trình phản ánh nguyên xi thế giới khách quan.
+D. một hiện tượng mang bản chất thẩm mỹ.
+
+Gt: Ý muốn nói cái đẹp phụ thuộc vào chủ thể cảm nhận, tức ý thức là hình ảnh chủ quan về thế giới khách quan.
+
+Câu 42: "Nước non là nước non trời. Ai ngăn được nước ai dời được sông?" Hai câu ca dao trên thể hiện thế giới vật chất là
+*A. tồn tại khách quan.
+B. do thần linh tạo ra.
+C. do ý thức cá nhân tạo ra.
+D. tồn tại chủ quan.
+
+Gt: Câu ca dao thể hiện quy luật tự nhiên tồn tại khách quan, không phụ thuộc ý muốn con người.
+
+Câu 43: Theo quan điểm duy vật biện chứng, bệnh chủ quan duy ý chí là khuynh hướng tuyệt đối hóa vai trò của nhân tố nào sau đây?
+A. Vật chất.
+B. Quy luật khách quan.
+C. Ý thức khoa học.
+*D. Ý thức cá nhân.
+
+Gt: Bệnh chủ quan duy ý chí tuyệt đối hóa vai trò ý chí, ý thức cá nhân, coi nhẹ quy luật khách quan.
+
+Câu 44: Phản ánh ý thức khác với các hình thức phản ánh khác của thế giới vật chất ở tính chất nào sau đây?
+A. Tính đúng đắn trung thực với vật phản ánh.
+*B. Tính năng động, sáng tạo.
+C. Tính thụ động bởi vật phản ánh.
+D. Tính cảm ứng.
+
+Gt: Điểm khác biệt của ý thức so với các phản ánh khác là tính năng động, sáng tạo.
+
+Câu 45: Chủ nghĩa duy vật siêu hình khi lý giải về nguồn gốc của ý thức, đã đồng nhất ý thức với vật chất khi cho rằng
+A. ý thức là sự hồi tưởng về ý niệm.
+B. ý thức là hiện tượng bẩm sinh.
+*C. óc tiết ra ý thức như gan tiết ra mật.
+D. ý thức con người hình thành từ lao động.
+
+Gt: Quan điểm "óc tiết ra ý thức như gan tiết ra mật" là ví dụ điển hình của duy vật siêu hình tầm thường hóa ý thức.
+
+Câu 46: Trong quan điểm về vật chất, chủ nghĩa duy vật siêu hình thế kỷ XVII - XVIII chịu ảnh hưởng trực tiếp của
+*A. khoa học vật lý thực nghiệm.
+B. khoa học tự nhiên ở trình độ lý luận.
+C. khoa học hành vi.
+D. khoa học xã hội.
+
+Gt: Duy vật siêu hình thời kỳ này chịu ảnh hưởng của khoa học vật lý thực nghiệm, cơ học cổ điển.
+
+Câu 47: Chủ nghĩa duy vật cũ bị "cầm tù" trong cách nhìn chật hẹp, phiến diện của phép siêu hình và
+A. duy tâm về tự nhiên.
+*B. duy tâm về xã hội.
+C. mang tính trực quan, chất phác.
+D. mang tính nhân bản.
+
+Gt: Hạn chế của duy vật cũ là siêu hình trong tự nhiên và duy tâm khi giải thích các hiện tượng xã hội.
+
+Câu 48: Quan điểm cho rằng, cái gì cảm giác được là vật chất thuộc thế giới quan triết học nào sau đây?
+*A. Duy tâm chủ quan.
+B. Duy vật siêu hình.
+C. Duy vật biện chứng.
+D. Duy tâm khách quan.
+
+Gt: Quy vật chất về cảm giác là đặc trưng của chủ nghĩa duy tâm chủ quan.
+
+Câu 49: Theo quan điểm duy vật biện chứng về quá trình phản ánh của ý thức, trình độ phản ánh nào sau đây mang tính định hướng, lựa chọn?
+A. Vật lý.
+B. Hóa học.
+*C. Sinh học.
+D. Cơ học.
+
+Gt: Phản ánh sinh học (tính kích thích, cảm ứng, tâm lý) đã mang tính định hướng, lựa chọn.
+
+Câu 50: Nhà triết học Talét cho rằng, nước là bản nguyên của mọi cái đang tồn tại là thể hiện quan điểm của
+A. chủ nghĩa duy tâm.
+B. chủ nghĩa nhị nguyên.
+*C. chủ nghĩa duy vật.
+D. chủ nghĩa duy năng.
+
+Gt: Talét quy bản nguyên thế giới về nước - một dạng vật chất cụ thể, thể hiện lập trường duy vật chất phác.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3600;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+        
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath(); // Render lại công thức trong phần giải thích
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

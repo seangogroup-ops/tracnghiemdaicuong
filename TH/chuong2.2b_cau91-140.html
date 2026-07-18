@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 2.2.b - Thi Trắc Nghiệm - SNG EDU</title>
+    
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db; 
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        /* HEADER */
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        /* LAYOUT */
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        /* OPTIONS */
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter { 
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0; 
+        }
+        .opt-text { 
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s; 
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        /* ĐÁP ÁN ĐÚNG/SAI */
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box { 
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue); 
+            border-radius: 4px; display: none; font-size: 0.95rem; 
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        /* SIDEBAR - FIX LỖI KHÔNG CUỘN ĐƯỢC */
+        .sidebar-col { 
+            width: 320px; 
+            position: sticky; 
+            top: 80px; 
+            max-height: calc(100vh - 100px); /* Giới hạn chiều cao theo màn hình */
+            overflow-y: auto; /* Cho phép cuộn bên trong sidebar */
+            padding-right: 5px;
+        }
+        
+        /* Tùy chỉnh thanh cuộn cho sidebar */
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn { 
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s; 
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col { 
+                width: 100%; 
+                position: static; 
+                order: 2; 
+                max-height: none; 
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+    
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+
+Câu 1: Cái riêng và cái chung, khả năng và hiện thực trong phép biện chứng duy vật được gọi là
+A. cặp khái niệm cơ bản.
+B. cặp thuật ngữ cơ bản.
+*C. cặp phạm trù cơ bản.
+D. cặp nguyên lý cơ bản.
+
+Gt: Đây là các cặp phạm trù cơ bản của phép biện chứng duy vật.
+
+Câu 2: Cái riêng là một phạm trù triết học dùng để chỉ
+A. một thuộc tính chỉ có ở một sự vật, hiện tượng nhất định.
+*B. một sự vật, hiện tượng nhất định.
+C. những nét, những thuộc tính ở một sự vật.
+D. các yếu tố cấu thành một sự vật, hiện tượng.
+
+Gt: Cái riêng chỉ một sự vật, hiện tượng, quá trình riêng lẻ nhất định.
+
+Câu 3: Phạm trù triết học nào sau đây dùng để chỉ các mặt, các đặc điểm chỉ vốn có ở một sự vật, hiện tượng (một cái riêng) nào đó mà không lặp lại ở sự vật, hiện tượng nào khác?
+A. Cái riêng.
+B. Cái chung.
+*C. Cái đơn nhất.
+D. Cái đặc thù.
+
+Gt: Cái đơn nhất là đặc điểm chỉ có ở một sự vật duy nhất, không lặp lại.
+
+Câu 4: Phạm trù triết học nào sau đây dùng để chỉ những mặt, những thuộc tính không những có ở một sự vật, hiện tượng nào đó, mà còn lặp lại trong nhiều sự vật, hiện tượng (nhiều cái riêng) khác?
+A. Cái riêng.
+*B. Cái chung.
+C. Cái đơn nhất.
+D. Cái đặc thù.
+
+Gt: Cái chung là thuộc tính lặp lại ở nhiều sự vật, hiện tượng khác nhau.
+
+Câu 5: Phạm trù triết học nào sau đây dùng để chỉ sự tác động lẫn nhau giữa các mặt trong một sự vật, hiện tượng hay giữa các sự vật, hiện tượng với nhau tạo ra một sự biến đổi nhất định?
+*A. Nguyên nhân.
+B. Kết quả.
+C. Khả năng.
+D. Hiện thực.
+
+Gt: Nguyên nhân là sự tác động qua lại giữa các mặt gây ra biến đổi.
+
+Câu 6: Phạm trù triết học nào sau đây dùng để chỉ những biến đổi xuất hiện do những tác động giữa các mặt, các yếu tố trong một sự vật hoặc giữa các sự vật, hiện tượng tạo nên?
+A. Nguyên nhân.
+*B. Kết quả.
+C. Khả năng.
+D. Hiện thực.
+
+Gt: Kết quả là những biến đổi do nguyên nhân gây ra.
+
+Câu 7: Phạm trù triết học nào sau đây dùng để chỉ mối liên hệ bản chất, do nguyên nhân cơ bản bên trong sự vật, hiện tượng quy định và trong điều kiện nhất định phải xảy ra đúng như thế chứ không thể khác?
+*A. Tất nhiên.
+B. Ngẫu nhiên.
+C. Cái riêng.
+D. Cái chung.
+
+Gt: Tất nhiên do nguyên nhân bên trong quyết định, tất yếu phải xảy ra như vậy.
+
+Câu 8: Phạm trù triết học nào sau đây dùng để chỉ mối liên hệ không bản chất, do nguyên nhân, hoàn cảnh bên ngoài quy định nên có thể xuất hiện, có thể không xuất hiện; có thể xuất hiện như thế này hoặc có thể xuất hiện thế khác?
+A. Tất nhiên.
+*B. Ngẫu nhiên.
+C. Cái riêng.
+D. Cái chung.
+
+Gt: Ngẫu nhiên do nguyên nhân bên ngoài, không tất yếu, có thể xảy ra hoặc không.
+
+Câu 9: Tất nhiên đóng vai trò chi phối sự phát triển, còn ngẫu nhiên có thể làm cho sự phát triển ấy diễn ra
+A. chỉ ở một sự vật.
+B. trong xã hội.
+*C. nhanh hay chậm.
+D. sớm hay muộn.
+
+Gt: Ngẫu nhiên tác động làm quá trình tất nhiên diễn ra nhanh hay chậm.
+
+Câu 10: Quan điểm duy vật biện chứng khẳng định vị trí của quan hệ nguyên nhân và kết quả là có tính
+A. tuyệt đối.
+B. khác biệt.
+C. đặc thù.
+*D. tương đối.
+
+Gt: Nguyên nhân, kết quả có thể chuyển hóa vị trí cho nhau tùy mối quan hệ được xét, nên mang tính tương đối.
+
+Câu 11: Trong hoạt động nhận thức và thực tiễn, cần phải căn cứ vào cái tất nhiên chứ không phải căn cứ vào cái
+*A. ngẫu nhiên.
+B. xác suất.
+C. bất biến.
+D. thường biến.
+
+Gt: Tất nhiên quyết định xu hướng phát triển, nên hoạt động thực tiễn phải dựa vào cái tất nhiên.
+
+Câu 12: Quan điểm duy vật biện chứng khẳng định ranh giới giữa tất nhiên và ngẫu nhiên là
+A. tuyệt đối.
+*B. tương đối.
+C. vừa tuyệt đối, vừa tương đối.
+D. tùy vào sự nhận thức của con người.
+
+Gt: Tất nhiên và ngẫu nhiên có thể chuyển hóa lẫn nhau nên ranh giới giữa chúng chỉ là tương đối.
+
+Câu 13: Phạm trù triết học nào sau đây dùng để chỉ tổng thể tất cả các mặt, các yếu tố tạo nên sự vật, hiện tượng?
+A. Hình thức.
+B. Bản chất.
+*C. Nội dung.
+D. Hiện tượng.
+
+Gt: Nội dung là tổng thể các mặt, các yếu tố tạo nên sự vật.
+
+Câu 14: Quan điểm duy vật biện chứng khẳng định khi hình thức phù hợp với nội dung, nó là động cơ thúc đẩy nội dung phát triển, còn khi không phù hợp thì hình thức
+A. thúc đẩy sự phát triển của nội dung.
+*B. cản trở sự phát triển của nội dung.
+C. dung hòa sự phát triển của nội dung.
+D. phá vỡ sự phát triển của nội dung.
+
+Gt: Hình thức không phù hợp sẽ kìm hãm, cản trở nội dung phát triển.
+
+Câu 15: Phạm trù triết học nào sau đây dùng để chỉ sự tổng thể các mối liên hệ khách quan, tất nhiên, tương đối ổn định bên trong, quy định sự vận động, phát triển của đối tượng?
+A. Nội dung.
+B. Hình thức.
+C. Tất nhiên.
+*D. Bản chất.
+
+Gt: Đây là định nghĩa của phạm trù bản chất.
+
+Câu 16: Quan điểm duy vật biện chứng khẳng định quan hệ biện chứng giữa bản chất và hiện tượng vừa có sự thống nhất vừa có sự
+A. tương đồng lẫn nhau.
+B. bài trừ lẫn nhau.
+*C. đối lập với nhau.
+D. kế thừa lẫn nhau.
+
+Gt: Bản chất và hiện tượng vừa thống nhất vừa có mặt đối lập nhau.
+
+Câu 17: Phạm trù triết học nào sau đây dùng để chỉ kết quả sự sinh thành, là sự thực hiện khả năng, và là cơ sở để định hình những khả năng mới?
+A. Kết quả.
+B. Nguyên nhân.
+C. Nội dung.
+*D. Hiện thực.
+
+Gt: Hiện thực là cái đã hình thành từ sự thực hiện khả năng, làm cơ sở nảy sinh khả năng mới.
+
+Câu 18: Phạm trù triết học nào sau đây dùng để chỉ sự phản ánh tổng thể các tiền đề của sự biến đổi, sự hình thành của hiện thực mới, là cái có thể có, nhưng ngay lúc này chưa có?
+A. Kết quả.
+B. Nguyên nhân.
+*C. Khả năng.
+D. Nội dung.
+
+Gt: Khả năng là cái chưa có nhưng có thể xuất hiện trong tương lai khi đủ điều kiện.
+
+Câu 19: Theo quan điểm duy vật biện chứng, tất nhiên có mối liên hệ với cái chung, nhưng cái chung không phải lúc nào cũng là
+A. tất nhiên.
+*B. ngẫu nhiên.
+C. đơn nhất.
+D. cái riêng.
+
+Gt: Cái chung có thể biểu hiện dưới dạng tất nhiên hoặc ngẫu nhiên, nên không phải lúc nào cái chung cũng là ngẫu nhiên (đáp án phủ định B là câu hỏi phân biệt khái niệm).
+
+Câu 20: Phạm trù triết học nào sau đây dùng để chỉ phương thức tồn tại, biểu hiện và phát triển của sự vật, hiện tượng ấy, là hệ thống các mối liên hệ tương đối bền vững giữa các yếu tố cấu thành nội dung của sự vật, hiện tượng?
+A. Nội dung.
+*B. Hình thức.
+C. Bản chất.
+D. Hiện tượng.
+
+Gt: Đây là định nghĩa của phạm trù hình thức.
+
+Câu 21: Quan điểm duy vật biện chứng khẳng định trong hoạt động thực tiễn, cần chủ động tác động vào sự chuyển hóa cái mới thành cái chung để phát triển nó, và ngược lại cái cũ thành cái đơn nhất để
+*A. hạn chế nó.
+B. thúc đẩy nó.
+C. cân bằng nó.
+D. cản trở nó.
+
+Gt: Cần thúc đẩy cái mới trở thành cái chung, đồng thời làm cái cũ trở thành cái đơn nhất để hạn chế, loại bỏ dần.
+
+Câu 22: Việt Nam là "cái riêng" thì yếu tố nào sau đây là "cái đơn nhất"?
+A. Con người.
+B. Quốc gia.
+C. Văn hóa.
+*D. Hà Nội.
+
+Gt: Hà Nội là một đặc điểm riêng biệt, cụ thể, chỉ có ở Việt Nam, thể hiện cái đơn nhất.
+
+Câu 23: Công cuộc xây dựng chủ nghĩa xã hội trên thế giới phải xuất phát từ tình hình cụ thể của từng đất nước. Đó là bài học về việc vận dụng cái chung vào trong cái riêng, cần phải xét đến
+*A. cái đặc thù.
+B. tính hình thái.
+C. cái chung.
+D. cái phổ biến.
+
+Gt: Vận dụng cái chung vào cái riêng phải xét tới cái đặc thù của từng hoàn cảnh cụ thể.
+
+Câu 24: Quan điểm duy vật biện chứng khẳng định khi cái mới xuất hiện thì nó thuộc phạm trù triết học nào sau đây?
+A. Cái chung.
+B. Cái riêng.
+*C. Cái đơn nhất.
+D. Cái phổ biến.
+
+Gt: Cái mới lúc mới xuất hiện chỉ tồn tại đơn lẻ, tức là cái đơn nhất.
+
+Câu 25: Theo quan điểm duy vật biện chứng, quan hệ nào sau đây là quan hệ nguyên nhân - kết quả?
+A. Đông - Tây.
+B. Sấm - chớp.
+*C. Mây - mưa.
+D. Ngày - đêm.
+
+Gt: Mây là nguyên nhân, mưa là kết quả sinh ra từ mây; các cặp còn lại chỉ là quan hệ đồng thời hoặc kế tiếp không phải nhân quả.
+
+Câu 26: Theo quan điểm duy vật biện chứng, "đói nghèo" và "dốt nát" là biểu hiện mối quan hệ giữa
+A. tất nhiên - ngẫu nhiên.
+*B. nguyên nhân - kết quả.
+C. nội dung - hình thức.
+D. bản chất - hiện tượng.
+
+Gt: Đói nghèo và dốt nát thường tác động qua lại theo quan hệ nhân - quả.
+
+Câu 27: Theo quan điểm duy vật biện chứng, mối quan hệ giữa nguyên nhân và kết quả có tính khách quan, tính phổ biến và tính
+A. lạc hậu.
+B. vượt trước.
+C. chủ quan.
+*D. tất yếu.
+
+Gt: Quan hệ nhân quả có ba tính chất: khách quan, phổ biến, tất yếu.
+
+Câu 28: Theo quan điểm duy vật biện chứng, muốn loại bỏ một hiện tượng nào đó không cần thiết, thì phải loại bỏ
+A. chính nó.
+B. cái sau nó.
+C. những điều kiện chủ quan của nó.
+*D. nguyên nhân sinh ra nó.
+
+Gt: Muốn loại bỏ một hiện tượng (kết quả) phải loại bỏ nguyên nhân sinh ra nó.
+
+Câu 29: Theo quan điểm duy vật biện chứng, trong hoạt động nhận thức và thực tiễn, không được tách rời giữa nội dung và hình thức, hoặc tuyệt đối hóa
+*A. một trong hai mặt đó.
+B. cả hai mặt đó.
+C. mặt tiêu cực của nó.
+D. mặt tích cực của nó.
+
+Gt: Không được tách rời nội dung với hình thức, cũng không tuyệt đối hóa một trong hai mặt.
+
+Câu 30: "Cái mà người ta quả quyết cho là tất nhiên lại hoàn toàn do những ngẫu nhiên thuần túy cấu thành, và cái được coi là ngẫu nhiên, lại là hình thức, dưới đó ẩn nấp cái tất nhiên". Phát biểu trên của Ăngghen khẳng định quan hệ giữa tất nhiên và ngẫu nhiên là
+*A. thống nhất.
+B. bất biến.
+C. tuyệt đối.
+D. tách rời.
+
+Gt: Câu nói khẳng định tất nhiên và ngẫu nhiên thống nhất biện chứng, chuyển hóa lẫn nhau.
+
+Câu 31: Theo quan điểm duy vật biện chứng, trong mối quan hệ giữa tất nhiên và ngẫu nhiên, việc làm cho tiến trình phát triển của sự vật, hiện tượng đột ngột biến đổi là do
+A. tất nhiên.
+B. ý muốn chủ quan của con người.
+*C. ngẫu nhiên.
+D. sự phát triển của xã hội.
+
+Gt: Ngẫu nhiên là nhân tố có thể làm tiến trình phát triển đột ngột thay đổi.
+
+Câu 32: Theo quan điểm duy vật biện chứng, sự biến đổi giữa nội dung và hình thức trong sự vật, hiện tượng là
+A. hình thức biến đổi trước, nội dung biến đổi sau.
+B. nội dung và hình thức cùng biến đổi.
+*C. nội dung biến đổi trước, hình thức biến đổi sau.
+D. hình thức biến đổi, nội dung mang tính ổn định.
+
+Gt: Nội dung luôn biến đổi trước, hình thức biến đổi chậm hơn, theo sau.
+
+Câu 33: Theo quan điểm duy vật biện chứng, hình thức xuất hiện trong sự quy định của nội dung và sau khi xuất hiện, hình thức tồn tại tương đối độc lập và có ảnh hưởng đến nội dung, gây ra
+A. sự không thống nhất về các yếu tố của chính nó.
+B. sự đối lập giữa các yếu tố của chính nó.
+C. các mặt đối lập.
+*D. các hệ quả nhất định.
+
+Gt: Hình thức tác động trở lại nội dung, gây ra những hệ quả nhất định.
+
+Câu 34: Theo quan điểm duy vật biện chứng, mối quan hệ giữa nội dung và hình thức là nội dung có khuynh hướng chủ đạo là biến đổi, còn hình thức
+*A. tương đối ổn định.
+B. bất biến.
+C. thay đổi nhanh hơn.
+D. thay đổi đồng thời.
+
+Gt: Hình thức có tính ổn định tương đối so với nội dung luôn biến đổi.
+
+Câu 35: Quan điểm duy vật biện chứng khẳng định cùng một nội dung có thể biểu hiện trong nhiều hình thức, cùng một hình thức có thể
+A. có một nội dung tương ứng.
+B. nội dung không tồn tại.
+*C. chứa đựng nhiều nội dung.
+D. chứa nhiều sự vật.
+
+Gt: Mối quan hệ nội dung - hình thức không phải một - một mà đa dạng, một hình thức có thể chứa nhiều nội dung.
+
+Câu 36: Quan điểm duy vật biện chứng khẳng định mối quan hệ giữa bản chất và hiện tượng là
+A. luôn luôn thống nhất với nhau.
+B. tách rời với nhau.
+C. luôn luôn đối lập với nhau.
+*D. vừa thống nhất vừa đối lập với nhau.
+
+Gt: Bản chất và hiện tượng có quan hệ biện chứng, vừa thống nhất vừa đối lập.
+
+Câu 37: Quan điểm duy vật biện chứng khẳng định muốn nhận thức đúng sự vật, hiện tượng thì không dừng lại ở hiện tượng bên ngoài mà phải
+A. tìm hiểu hình thức của nó.
+B. nghiên cứu những nhân tố của nó.
+*C. đi vào bản chất sự vật.
+D. đi vào bản chất của sự phản ánh.
+
+Gt: Nhận thức đúng đắn đòi hỏi đi sâu vào bản chất, không dừng ở hiện tượng bên ngoài.
+
+Câu 38: Theo quan điểm duy vật biện chứng, hiện thực bao hàm trong mình số lớn các khả năng, nhưng
+A. tất cả đều trở thành hiện thực.
+B. tất cả đều không trở thành hiện thực.
+*C. một số trở thành hiện thực.
+D. một số ổn định tuyệt đối.
+
+Gt: Trong nhiều khả năng, chỉ một số hội đủ điều kiện mới trở thành hiện thực.
+
+Câu 39: Quan điểm duy vật biện chứng khẳng định trong đời sống xã hội, khả năng chuyển hóa thành hiện thực phải có điều kiện khách quan và nhân tố
+A. tự nhiên.
+B. thế giới quan.
+*C. chủ quan.
+D. môi trường.
+
+Gt: Trong xã hội, khả năng chuyển thành hiện thực cần cả điều kiện khách quan lẫn nhân tố chủ quan (hoạt động con người).
+
+Câu 40: Theo quan điểm duy vật biện chứng, một nguyên nhân nhất định trong hoàn cảnh nhất định có thể gây ra
+*A. một kết quả.
+B. hai kết quả.
+C. ba kết quả.
+D. bốn kết quả.
+
+Gt: Trong cùng hoàn cảnh xác định, một nguyên nhân nhất định chỉ gây ra một kết quả tương ứng.
+
+Câu 41: Vật trong chân không luôn chuyển động với gia tốc 9,8 m/s². Điều này chứng tỏ
+A. một nguyên nhân nhất định, trong hoàn cảnh giống nhau sẽ tạo nên kết quả khác nhau.
+B. nguyên nhân khác nhau nhưng trong hoàn cảnh giống nhau cũng cho ra kết quả giống nhau.
+*C. một nguyên nhân nhất định, trong hoàn cảnh giống nhau sẽ tạo nên kết quả giống nhau.
+D. nguyên nhân khác nhau nhưng trong hoàn cảnh giống nhau sẽ không cho ra kết quả nào cả.
+
+Gt: Cùng một nguyên nhân (trọng lực), trong cùng hoàn cảnh (chân không) luôn cho kết quả giống nhau (gia tốc 9,8 m/s²).
+
+Câu 42: Đảng Cộng sản Việt Nam vận dụng phạm trù cái chung và cái riêng trong thời kỳ quá độ đi lên chủ nghĩa xã hội là
+A. nguyên xi mô hình chung.
+B. chỉ thấy cái riêng mà không thấy cái đặc thù.
+*C. xét đến cái đặc thù trong điều kiện cụ thể.
+D. đề cao cái đặc thù.
+
+Gt: Đảng vận dụng cái chung (mô hình CNXH) gắn với cái đặc thù, điều kiện cụ thể của Việt Nam.
+
+Câu 43: Vai trò lãnh đạo của Đảng Cộng sản Việt Nam đối với Nhà nước pháp quyền xã hội chủ nghĩa Việt Nam là biểu hiện mối quan hệ nào sau đây trong triết học Mác - Lênin?
+A. Nội dung và hình thức.
+B. Hiện thực và khả năng.
+C. Cái riêng và cái chung.
+*D. Nguyên nhân và kết quả.
+
+Gt: Sự lãnh đạo của Đảng là nguyên nhân dẫn đến kết quả xây dựng, vận hành Nhà nước pháp quyền.
+
+Câu 44: Việc vận dụng kinh tế thị trường vào quá trình xây dựng chủ nghĩa xã hội ở Việt Nam hiện nay là biểu hiện của cặp phạm trù nào sau đây trong triết học Mác - Lênin?
+A. Khả năng và hiện thực.
+*B. Tất nhiên và ngẫu nhiên.
+C. Nội dung và hình thức.
+D. Bản chất và hiện tượng.
+
+Gt: Việc lựa chọn mô hình phát triển phù hợp thể hiện quan hệ tất nhiên - ngẫu nhiên trong con đường đi lên CNXH.
+
+Câu 45: Theo quan điểm triết học Mác - Lênin, nếu xem tư duy là phạm trù nội dung thì hình thức biểu hiện của tư duy là?
+A. Lao động.
+B. Sáng tạo tinh thần.
+*C. Ngôn ngữ.
+D. Phản ánh.
+
+Gt: Ngôn ngữ là hình thức vật chất biểu hiện nội dung tư duy.
+
+Câu 46: Việc xóa bỏ chế độ bóc lột người ở Việt Nam không tách rời với thực hiện chế độ sở hữu công cộng về tư liệu sản xuất xã hội là biểu hiện của cặp phạm trù nào sau đây trong triết học Mác - Lênin?
+A. Cái riêng và cái chung.
+B. Tất nhiên và ngẫu nhiên.
+C. Nội dung và hình thức.
+*D. Bản chất và hiện tượng.
+
+Gt: Sở hữu công cộng (nội dung, bản chất) gắn liền với việc xóa bỏ bóc lột (hiện tượng biểu hiện ra).
+
+Câu 47: Sau khi tốt nghiệp đại học, sinh viên cùng một chuyên ngành đào tạo nhưng lại làm việc trong những lĩnh vực, ngành nghề khác nhau của xã hội là biểu hiện của cặp phạm trù nào sau đây trong triết học Mác - Lênin?
+A. Cái riêng và cái chung.
+*B. Khả năng và hiện thực.
+C. Nội dung và hình thức.
+D. Bản chất và hiện tượng.
+
+Gt: Cùng một chuyên ngành (khả năng chung) nhưng hiện thực hóa khác nhau ở mỗi người.
+
+Câu 48: Theo quan điểm duy vật biện chứng, hình thức biểu hiện nội dung của tác phẩm văn học là
+*A. cấu trúc tác phẩm, hình tượng nhân vật, nghệ thuật bút pháp, ngôn ngữ.
+B. màu sắc, kích thước của tác phẩm.
+C. những trang trí bằng hình vẽ, font chữ trên trang bìa của tác phẩm.
+D. độ dày, mỏng của tác phẩm.
+
+Gt: Hình thức của tác phẩm văn học là cấu trúc, hình tượng, bút pháp, ngôn ngữ - cách thức nội dung được thể hiện.
+
+Câu 49: Theo quan điểm triết học Mác - Lênin, luận điểm nào sau đây thể hiện sự chuyển hóa khả năng thành hiện thực ở Việt Nam?
+A. Kinh tế thị trường định hướng xã hội chủ nghĩa sẽ dẫn đến hình thành sở hữu công cộng về tư liệu sản xuất xã hội.
+B. Sự đa dạng về sở hữu tư liệu sản xuất dẫn đến kinh tế thị trường tự do cạnh tranh.
+*C. Kinh tế thị trường sẽ dẫn đến sự đa dạng hóa về sở hữu tư liệu sản xuất.
+D. Kinh tế thị trường định hướng xã hội chủ nghĩa không làm thay đổi về sở hữu tư liệu sản xuất xã hội.
+
+Gt: Từ khả năng (kinh tế thị trường) đã chuyển hóa thành hiện thực (đa dạng hóa sở hữu tư liệu sản xuất).
+
+Câu 50: Chùa Một Cột ở thành phố Hà Nội là di tích lịch sử đặc sắc của Việt Nam. Trong nhận định trên, logic "cái riêng", "cái chung" và "cái đơn nhất" thể hiện ở nội dung nào sau đây?
+A. Chùa Một Cột - Việt Nam - thành phố Hà Nội.
+*B. Thành phố Hà Nội - di tích lịch sử - chùa Một Cột.
+C. Việt Nam - chùa Một Cột - thành phố Hà Nội.
+D. Chùa Một Cột - Việt Nam - di tích lịch sử.
+
+Gt: Thành phố Hà Nội (cái riêng) - di tích lịch sử (cái chung, loại hình phổ biến) - chùa Một Cột (cái đơn nhất, chỉ có một).
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3600;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+        
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath(); // Render lại công thức trong phần giải thích
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>
