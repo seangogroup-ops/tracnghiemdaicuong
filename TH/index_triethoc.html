@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNG EDU - Ôn Tập Triết Học Mác-Lênin</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JEGQGMQQQG"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JEGQGMQQQG');
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --maroon:      #1c2b52;
+            --maroon-deep: #0c1530;
+            --maroon-soft: #2f437c;
+            --gold:        #af8a52;
+            --gold-light:  #dcc494;
+            --gold-dark:   #7a5f34;
+            --paper:       #eef0e9;
+            --paper-edge:  #dbe0d2;
+            --ink:         #1a1e29;
+            --ink-soft:    #565c6e;
+            --line:        #ccd2c4;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Be Vietnam Pro', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 16px 56px;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 50% -10%, var(--maroon-soft) 0%, var(--maroon) 38%, var(--maroon-deep) 100%);
+            background-attachment: fixed;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* fine guilloché-style hairline texture, evokes an official seal/certificate paper */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.5;
+            background-image:
+                repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 9px),
+                repeating-linear-gradient(25deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 9px);
+            z-index: 0;
+        }
+
+        /* ── LOGO / EMBLEM ─────────────────────── */
+        .logo-wrap {
+            position: fixed;
+            top: 20px; left: 20px;
+            z-index: 999;
+        }
+        .logo-box {
+            width: 54px; height: 54px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, var(--gold-light), var(--gold) 55%, var(--gold-dark) 100%);
+            color: var(--maroon-deep);
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border: 2px solid rgba(255,255,255,0.55);
+            box-shadow: 0 6px 18px rgba(0,0,0,.35), inset 0 0 0 3px rgba(74,12,20,.18);
+            transition: transform .25s ease, box-shadow .25s ease;
+            font-family: 'Playfair Display', serif;
+        }
+        .logo-box:hover { transform: translateY(-2px) rotate(-4deg); box-shadow: 0 10px 22px rgba(0,0,0,.4), inset 0 0 0 3px rgba(74,12,20,.18); }
+
+        /* ── WRAPPER ──────────────────────────── */
+        .wrap {
+            width: 100%;
+            max-width: 660px;
+            position: relative;
+            z-index: 1;
+            animation: rise .6s cubic-bezier(.16,.8,.3,1) both;
+        }
+        @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── TOP BANNER (gold ribbon) ─────────── */
+        .top-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            background: linear-gradient(180deg, #fff3cf, #ffd24a);
+            border: 2px solid #ffe27a;
+            border-radius: 999px;
+            padding: 11px 24px;
+            margin: 0 auto 12px;
+            width: fit-content;
+            max-width: 100%;
+            text-decoration: none;
+            position: relative;
+            box-shadow: 0 4px 14px rgba(0,0,0,.25), 0 0 0 0 rgba(255,210,74,.6);
+            transition: transform .18s ease, box-shadow .18s ease;
+            animation: bannerGlow 2s ease-in-out infinite;
+        }
+        .top-banner:hover { transform: translateY(-1px) scale(1.015); }
+        .bottom-banner { margin: 22px auto 0; }
+        .top-banner .icon {
+            font-size: 16px;
+            flex-shrink: 0;
+            display: inline-block;
+            animation: iconShake 1.8s ease-in-out infinite;
+        }
+        .top-banner span:not(.icon):not(.arrow) {
+            color: var(--maroon-deep);
+            font-size: 12.5px;
+            font-weight: 800;
+            letter-spacing: .3px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .top-banner span u { text-decoration-thickness: 2px; }
+        .top-banner .arrow {
+            font-size: 15px;
+            flex-shrink: 0;
+            animation: arrowNudge 1s ease-in-out infinite;
+        }
+        @keyframes arrowNudge {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(4px); }
+        }
+        @keyframes bannerGlow {
+            0%, 100% { box-shadow: 0 4px 14px rgba(0,0,0,.25), 0 0 0 0 rgba(255,82,82,.55); }
+            50% { box-shadow: 0 4px 18px rgba(0,0,0,.3), 0 0 0 9px rgba(255,82,82,0); }
+        }
+        @keyframes iconShake {
+            0%, 60%, 100% { transform: rotate(0deg); }
+            65% { transform: rotate(-14deg); }
+            75% { transform: rotate(11deg); }
+            85% { transform: rotate(-7deg); }
+            92% { transform: rotate(4deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .top-banner, .top-banner .icon { animation: none; }
+        }
+
+        /* ── PROMO STRIP ───────────────────────── */
+        .promo {
+            text-align: center;
+            background: rgba(255,255,255,.08);
+            border: 1px dashed rgba(236,209,137,.55);
+            border-radius: 10px;
+            padding: 9px 16px;
+            margin: 0 auto 26px;
+            width: fit-content;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--gold-light);
+            letter-spacing: .4px;
+        }
+
+        /* ── MAIN CARD: the dossier folder ────── */
+        .main-card {
+            background: var(--paper);
+            border-radius: 6px;
+            position: relative;
+            box-shadow: 0 22px 50px rgba(0,0,0,.35), 0 2px 0 rgba(255,255,255,.05) inset;
+            padding-left: 34px;
+        }
+        /* die-cut tab spine on the left, like a folder binding */
+        .main-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 34px;
+            background: linear-gradient(180deg, var(--maroon-soft), var(--maroon) 60%, var(--maroon-deep));
+            border-radius: 6px 0 0 6px;
+            box-shadow: inset -4px 0 8px rgba(0,0,0,.25);
+        }
+        .spine-label {
+            position: absolute;
+            left: 0; top: 0;
+            width: 34px; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold-light);
+            font-family: 'Playfair Display', serif;
+            font-weight: 800;
+            font-size: 13px;
+            letter-spacing: 4px;
+            writing-mode: vertical-rl;
+            text-transform: uppercase;
+            z-index: 2;
+        }
+
+        .card-header {
+            padding: 34px 28px 22px;
+            text-align: center;
+            border-bottom: 1px dashed var(--line);
+        }
+        .card-header .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.6px;
+            color: var(--gold-dark);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .card-header .eyebrow::before,
+        .card-header .eyebrow::after { content: '✦'; font-size: 9px; }
+        .card-header h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--maroon);
+            font-size: 25px;
+            font-weight: 900;
+            letter-spacing: .3px;
+            line-height: 1.35;
+        }
+        .card-header .subtitle {
+            margin-top: 8px;
+            color: var(--ink-soft);
+            font-size: 12.5px;
+            font-weight: 600;
+            letter-spacing: .3px;
+        }
+
+        .card-body {
+            padding: 6px 22px 28px;
+        }
+
+        /* ── SECTION LABEL (folder tab) ───────── */
+        .section-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--maroon);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin: 26px 0 12px;
+        }
+        .section-label .tag {
+            background: var(--maroon);
+            color: var(--gold-light);
+            padding: 3px 10px 4px;
+            border-radius: 4px 4px 0 0;
+            font-family: 'Playfair Display', serif;
+        }
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: repeating-linear-gradient(to right, var(--line) 0, var(--line) 4px, transparent 4px, transparent 8px);
+        }
+
+        /* ── CHAPTER ITEMS ─────────────────────── */
+        .chapter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .chapter-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border: 1px solid var(--paper-edge);
+            background: #fffdf7;
+            border-radius: 10px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+        }
+        .chapter-item::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+            background: var(--gold);
+            transform: scaleY(0);
+            transition: transform .2s ease;
+        }
+        .chapter-item:hover {
+            border-color: var(--maroon-soft);
+            transform: translateX(5px);
+            box-shadow: 0 6px 16px rgba(122,18,38,.16);
+        }
+        .chapter-item:hover::before { transform: scaleY(1); }
+
+        .ch-num {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11.5px;
+            font-weight: 800;
+            flex-shrink: 0;
+            color: var(--maroon);
+            background: #fff;
+            border: 2px solid var(--gold);
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,.6);
+            transition: transform .25s ease, background .2s ease, color .2s ease;
+            font-family: 'Playfair Display', serif;
+        }
+        .chapter-item:hover .ch-num {
+            background: var(--maroon);
+            color: var(--gold-light);
+            transform: rotate(-8deg) scale(1.06);
+        }
+
+        .ch-info { flex: 1; min-width: 0; }
+        .ch-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .badge-new {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 2px 7px;
+            font-size: 9.5px;
+            font-weight: 800;
+            letter-spacing: .4px;
+            text-transform: uppercase;
+            color: #fff;
+            background: linear-gradient(135deg, #e0392b, #b3101f);
+            border-radius: 999px;
+            vertical-align: middle;
+            box-shadow: 0 2px 6px rgba(179,16,31,.5);
+            animation: badgePulse 1.6s ease-in-out infinite;
+        }
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 2px 6px rgba(179,16,31,.5); }
+            50% { transform: scale(1.12); box-shadow: 0 2px 10px rgba(179,16,31,.75); }
+        }
+        .chapter-item:hover .ch-name { color: var(--maroon); }
+
+        .ch-range {
+            font-size: 11px;
+            color: var(--ink-soft);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .btn-mo-ngay {
+            background: var(--maroon);
+            color: var(--gold-light);
+            font-size: 11px;
+            font-weight: 800;
+            padding: 7px 14px;
+            border-radius: 999px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            letter-spacing: .4px;
+            text-transform: uppercase;
+            transition: background .2s ease, color .2s ease;
+        }
+        .chapter-item:hover .btn-mo-ngay { background: var(--gold); color: var(--maroon-deep); }
+
+        /* ── SPECIAL ITEMS (ticket style) ──────── */
+        .chapter-item.special {
+            background: #fffaf0;
+            border: 1.5px dashed var(--gold-dark);
+        }
+        .chapter-item.special::before { background: var(--maroon); }
+        .chapter-item.special .ch-num {
+            background: var(--gold-light);
+            border-color: var(--maroon-soft);
+            color: var(--maroon-deep);
+        }
+        .chapter-item.special:hover .ch-num {
+            background: var(--maroon);
+            color: var(--gold-light);
+        }
+        .chapter-item.special .btn-mo-ngay { background: var(--gold-dark); color: #fff8e8; }
+        .chapter-item.special:hover .btn-mo-ngay { background: var(--maroon); color: var(--gold-light); }
+        .chapter-item.special:hover { border-color: var(--maroon); }
+
+        /* ── FOOTER ───────────────────────────── */
+        footer {
+            margin-top: 26px;
+            text-align: center;
+            color: rgba(255,255,255,.65);
+            font-size: 12px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        footer a { color: var(--gold-light); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        /* ── RESPONSIVE ───────────────────────── */
+        @media (max-width: 480px) {
+            .main-card { padding-left: 22px; }
+            .main-card::before { width: 22px; }
+            .spine-label { display: none; }
+            .card-header { padding: 26px 18px 18px; }
+            .card-header h1 { font-size: 20px; }
+            .card-body { padding: 6px 14px 22px; }
+            .chapter-item { padding: 10px 12px; gap: 10px; }
+            .ch-num { width: 32px; height: 32px; font-size: 10px; }
+            .ch-name { font-size: 13px; }
+            .top-banner { padding: 9px 16px; border-radius: 18px; }
+            .top-banner span:not(.icon) { font-size: 11px; }
+        }
+
+        a:focus-visible, .top-banner:focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<a href="https://www.sngedu.site/" class="logo-box logo-wrap">SNG</a>
+
+<div class="wrap">
+
+    <p class="promo">🎁 Thêm trắc nghiệm miễn phí — không mua bán</p>
+
+    <div class="main-card">
+        <div class="spine-label">Ôn Thi</div>
+        <div class="card-header">
+            <div class="eyebrow">Mác&nbsp;–&nbsp;Lênin</div>
+            <h1>Ôn Tập Triết Học<br>Mác‑Lênin</h1>
+            <p class="subtitle">Chọn chương để bắt đầu ôn tập</p>
+        </div>
+        <div class="card-body">
+            <div class="section-label"><span class="tag">Nội dung chính</span></div>
+            <div class="chapter-list" id="mainList"></div>
+
+            <div class="section-label"><span class="tag">Bổ sung</span></div>
+            <div class="chapter-list" id="boSungList"></div>
+
+            <div class="section-label"><span class="tag">Đề thi thử</span></div>
+            <div class="chapter-list" id="deThiList"></div>
+        </div>
+    </div>
+
+    <a href="https://forms.gle/CMZj35G3BMGfo1AZ8" target="_blank" rel="noopener" class="top-banner bottom-banner">
+        <span class="icon">🔔</span>
+        <span>Gặp câu hỏi sai? <u>Click vào đây</u> góp ý giúp tôi!</span>
+        <span class="arrow">👉</span>
+    </a>
+
+</div>
+
+<footer>SNG &copy; <a href="https://www.sngedu.site/">H.N.TấnHải</a> &nbsp;·&nbsp; sngedu.site</footer>
+
+<script>
+    const main = [
+        { label: "Chương 1", sub: "Câu 1 – 90",   num: "C1",  file: "chuong1_cau1-90.html" },
+        { label: "Chương 2.2.b", sub: "Câu 91 – 140",  num: "C2B", file: "chuong2.2b_cau91-140.html" },
+        { label: "Chương 2.2.c", sub: "Câu 141 – 200", num: "C2C", file: "chuong2.2c_cau141-200.html" },
+        { label: "Chương 2.3", sub: "Câu 201 – 230", num: "C23", file: "chuong2.3_cau201-230.html" },
+        { label: "Chương 3.1", sub: "Câu 231 – 300", num: "C31", file: "chuong3.1_cau231-300.html" },
+        { label: "Chương 3.2", sub: "Câu 301 – 340", num: "C32", file: "chuong3.2_cau301-340.html" },
+        { label: "Chương 3.3", sub: "Câu 341 – 370", num: "C33", file: "chuong3.3_cau341-370.html" },
+        { label: "Chương 3.4", sub: "Câu 371 – 400", num: "C34", file: "chuong3.4_cau371-400.html" },
+    ];
+    const bosung = [
+        { label: "Bổ sung 2022-2023", sub: "Câu 401 – 440", num: "B1", file: "bosung_2022-2023_cau401-440.html" },
+        { label: "Bổ sung 2023-2024", sub: "Câu 441 – 480", num: "B2", file: "bosung_2023-2024_cau441-480.html" },
+        { label: "Bổ sung 2024-2025", sub: "Câu 481 – 520", num: "B3", file: "bosung_2024-2025_cau481-520.html" },
+        { label: "Bổ sung 2025-2026", sub: "Câu 521 – 560", num: "B4", file: "bosung_2025-2026_cau521-560.html" },
+    ];
+    const dethi = [
+        { label: "Đề thi thử Tổng hợp", sub: "Random – Toàn bộ 560 câu", num: "🎲", file: "DETHITHU_TrietHoc_560cau.html", special: true },
+    ];
+
+    function buildList(containerId, items) {
+        const el = document.getElementById(containerId);
+        items.forEach(ch => {
+            const a = document.createElement('a');
+            a.className = 'chapter-item' + (ch.special || ch.url ? ' special' : '');
+            a.href = ch.url ? ch.url : (ch.href ? ch.href : ch.file);
+            if (ch.url) { a.target = '_blank'; a.rel = 'noopener'; }
+            a.innerHTML = `
+                <div class="ch-num">${ch.num}</div>
+                <div class="ch-info">
+                    <div class="ch-name">${ch.label}${ch.isNew ? '<span class="badge-new">Mới</span>' : ''}</div>
+                    ${ch.sub ? `<div class="ch-range">${ch.sub}</div>` : ''}
+                </div>
+                <div class="btn-mo-ngay">Mở ngay</div>
+            `;
+            el.appendChild(a);
+        });
+    }
+
+    buildList('mainList', main);
+    buildList('boSungList', bosung);
+    buildList('deThiList', dethi);
+</script>
+</body>
+</html>
