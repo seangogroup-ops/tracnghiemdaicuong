@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/index.htm" }
+    { "source": "/", "destination": "/index_triethoc.html" }
   ],
   "headers": [
     {
