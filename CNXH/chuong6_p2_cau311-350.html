@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 6: Vấn đề dân tộc và tôn giáo - Phần 2 - Thi Trắc Nghiệm - SNG EDU</title>
+
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db;
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter {
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0;
+        }
+        .opt-text {
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s;
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box {
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue);
+            border-radius: 4px; display: none; font-size: 0.95rem;
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        .sidebar-col {
+            width: 320px;
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn {
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col {
+                width: 100%;
+                position: static;
+                order: 2;
+                max-height: none;
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+Câu 1: Theo quan điểm của chủ nghĩa Mác - Lênin, hình thái ý thức xã hội phản ánh hư ảo hiện thực khách quan là
+A. tư tưởng.
+B. khoa học.
+*C. tôn giáo.
+D. niềm tin.
+Gt: Chủ nghĩa Mác - Lênin cho rằng tôn giáo là một hình thái ý thức xã hội phản ánh hư ảo hiện thực khách quan.
+
+Câu 2: Theo quan điểm của chủ nghĩa Mác - Lênin, về nguồn gốc, tôn giáo là một hiện tượng do
+A. thần linh sáng tạo ra.
+*B. con người sáng tạo ra.
+C. xã hội thừa nhận.
+D. nhà nước thừa nhận.
+Gt: Chủ nghĩa Mác - Lênin khẳng định tôn giáo là một hiện tượng xã hội - văn hóa do con người sáng tạo ra.
+
+Câu 3: Theo quan điểm của chủ nghĩa Mác - Lênin, các tôn giáo có thế giới quan
+A. duy vật siêu hình.
+B. duy vật.
+*C. duy tâm.
+D. duy tâm chủ quan.
+Gt: Về phương diện thế giới quan, các tôn giáo mang thế giới quan duy tâm.
+
+Câu 4: Một trong những bộ phận cấu thành tôn giáo dưới góc độ một thực thể xã hội là
+*A. niềm tin tôn giáo.
+B. thái độ tôn giáo.
+C. tinh thần tôn giáo.
+D. quan hệ tôn giáo.
+Gt: Một trong những bộ phận cấu thành tôn giáo dưới góc độ một thực thể xã hội là niềm tin tôn giáo.
+
+Câu 5: Một trong những bộ phận cấu thành tôn giáo dưới góc độ một thực thể xã hội là
+A. quan điểm tôn giáo.
+B. hệ thống truyền thuyết.
+*C. hệ thống giáo thuyết.
+D. quan hệ tôn giáo.
+Gt: Một trong những bộ phận cấu thành tôn giáo dưới góc độ một thực thể xã hội là hệ thống giáo thuyết.
+
+Câu 6: Sự yếu đuối, bất lực của con người trước tự nhiên là cơ sở hình thành nguồn gốc nào sau đây của tôn giáo?
+A. Nhận thức.
+B. Kinh tế - xã hội.
+*C. Tự nhiên.
+D. Tâm lý.
+Gt: Sự yếu đuối, bất lực của con người trước tự nhiên là cơ sở hình thành nguồn gốc tự nhiên của tôn giáo.
+
+Câu 7: Sự bất lực của con người trước những áp bức, bóc lột, bất công là cơ sở hình thành nguồn gốc nào sau đây của tôn giáo?
+*A. Kinh tế - xã hội.
+B. Tự nhiên.
+C. Nhận thức.
+D. Tâm lý.
+Gt: Sự bất lực của con người trước áp bức, bóc lột, bất công là cơ sở hình thành nguồn gốc kinh tế - xã hội của tôn giáo.
+
+Câu 8: Sự hiểu biết còn giới hạn của con người về tự nhiên và xã hội trong quá trình nhận thức là cơ sở hình thành nguồn gốc nào sau đây của tôn giáo?
+A. Tự nhiên.
+*B. Nhận thức.
+C. Kinh tế - xã hội.
+D. Tâm lý.
+Gt: Sự hiểu biết còn giới hạn của con người về tự nhiên và xã hội là cơ sở hình thành nguồn gốc nhận thức của tôn giáo.
+
+Câu 9: Sự sợ hãi của con người trước các hiện tượng tự nhiên và xã hội là cơ sở hình thành nguồn gốc nào sau đây của tôn giáo?
+A. Kinh tế - xã hội.
+B. Nhận thức.
+*C. Tâm lý.
+D. Tự nhiên.
+Gt: Sự sợ hãi của con người trước các hiện tượng tự nhiên và xã hội là cơ sở hình thành nguồn gốc tâm lý của tôn giáo.
+
+Câu 10: Sự phát triển và biến đổi không ngừng của tôn giáo trong thời kỳ quá độ lên chủ nghĩa xã hội gắn liền với tính chất nào sau đây của tôn giáo?
+A. Chính trị.
+B. Quần chúng.
+*C. Lịch sử.
+D. Xã hội.
+Gt: Sự phát triển, biến đổi không ngừng của tôn giáo gắn với tính chất lịch sử của tôn giáo.
+
+Câu 11: Tính quần chúng của tôn giáo được biểu hiện ở việc các tôn giáo có
+A. thế giới quan duy tâm.
+B. đức tin mang tính thiêng liêng.
+C. hệ thống tổ chức chặt chẽ.
+*D. số lượng tín đồ đông đảo.
+Gt: Tính quần chúng của tôn giáo được biểu hiện ở việc các tôn giáo có số lượng tín đồ đông đảo.
+
+Câu 12: Tôn giáo thu hút đông đảo các tín đồ tham gia sinh hoạt tín ngưỡng, điều này thể hiện tính chất nào sau đây của tôn giáo?
+*A. Quần chúng.
+B. Lịch sử.
+C. Chính trị.
+D. Đạo đức.
+Gt: Việc tôn giáo thu hút đông đảo tín đồ tham gia hoạt động tín ngưỡng thể hiện tính quần chúng của tôn giáo.
+
+Câu 13: Theo chủ nghĩa Mác - Lênin, tính chất chính trị của tôn giáo chỉ xuất hiện khi xã hội đã có
+A. nhận thức về tự nhiên.
+B. phân công lao động.
+*C. phân chia giai cấp.
+D. nhận thức về chính mình.
+Gt: Tính chất chính trị của tôn giáo chỉ xuất hiện khi xã hội đã có sự phân chia giai cấp.
+
+Câu 14: Theo chủ nghĩa Mác - Lênin, một trong những nguyên tắc giải quyết vấn đề tôn giáo là phải
+A. chủ động can thiệp vào công việc của các tôn giáo.
+B. xóa bỏ nhanh chóng mọi ảo tưởng của con người.
+*C. tôn trọng quyền tự do tín ngưỡng của nhân dân.
+D. đồng nhất mặt chính trị và tư tưởng của tôn giáo.
+Gt: Một trong những nguyên tắc giải quyết vấn đề tôn giáo là phải tôn trọng quyền tự do tín ngưỡng của nhân dân.
+
+Câu 15: Theo chủ nghĩa Mác - Lênin, một trong những nguyên tắc giải quyết vấn đề tôn giáo là phải
+A. xóa bỏ nhanh chóng mọi ảo tưởng của con người.
+*B. phân biệt mặt chính trị và tư tưởng của tôn giáo.
+C. can thiệp vào công việc nội bộ của các tôn giáo.
+D. kiểm soát quyền tự do tín ngưỡng của nhân dân.
+Gt: Một trong những nguyên tắc giải quyết vấn đề tôn giáo là phải phân biệt mặt chính trị và tư tưởng trong tôn giáo.
+
+Câu 16: Theo chủ nghĩa Mác - Lênin, một trong những nguyên tắc giải quyết vấn đề tôn giáo là phải
+*A. có quan điểm lịch sử - cụ thể.
+B. có các công cụ bạo lực.
+C. dựa trên ý chí chủ quan.
+D. dựa trên lý do tôn giáo.
+Gt: Một trong những nguyên tắc giải quyết vấn đề tôn giáo là phải có quan điểm lịch sử - cụ thể.
+
+Câu 17: Một trong những đặc điểm tôn giáo ở Việt Nam hiện nay là
+A. các tôn giáo hòa nhập vào nhau.
+B. thường xảy ra xung đột tôn giáo.
+*C. có nhiều tôn giáo cùng tồn tại.
+D. chỉ có tôn giáo nội sinh.
+Gt: Một trong những đặc điểm tôn giáo ở Việt Nam hiện nay là Việt Nam là một quốc gia có nhiều tôn giáo.
+
+Câu 18: Một trong những đặc điểm tôn giáo ở Việt Nam hiện nay là các tôn giáo đa dạng, đan xen và
+A. đồng nhất về đức tin.
+B. thường xuyên xung đột.
+*C. chung sống hòa bình.
+D. hòa nhập vào nhau.
+Gt: Các tôn giáo ở Việt Nam đa dạng, đan xen, chung sống hòa bình, không xảy ra xung đột, chiến tranh tôn giáo.
+
+Câu 19: Một trong những đặc điểm tôn giáo ở Việt Nam hiện nay là các tôn giáo đa dạng, đan xen và
+A. tôn giáo ngoại nhập.
+*B. có cả tôn giáo nội sinh và ngoại nhập.
+C. tổ chức thống nhất.
+D. liên hệ với bên ngoài.
+Gt: Tôn giáo ở Việt Nam bao gồm cả tôn giáo nội sinh và tôn giáo ngoại nhập.
+
+Câu 20: Theo chủ nghĩa Mác - Lênin, một trong những nguyên tắc giải quyết vấn đề tôn giáo là phải bảo đảm
+*A. quyền tự do tín ngưỡng của nhân dân.
+B. bài trừ tôn giáo cổ và thiết lập tôn giáo mới.
+C. can thiệp kịp thời vào nội bộ tôn giáo.
+D. chính sách ưu tiên phát triển các tôn giáo lớn.
+Gt: Một trong những nguyên tắc giải quyết vấn đề tôn giáo là phải bảo đảm quyền tự do tín ngưỡng của nhân dân.
+
+Câu 21: Theo quan điểm của chủ nghĩa Mác - Lênin, để xóa bỏ những ảnh hưởng tiêu cực của tôn giáo, trước hết cần cải tạo xã hội cũ, xây dựng xã hội mới. Quan điểm này dựa trên cơ sở nào sau đây của tôn giáo?
+A. Hệ thống tổ chức.
+B. Hình thức biểu hiện nghi lễ.
+*C. Nguồn gốc nảy sinh.
+D. Các quan điểm giáo lý.
+Gt: Muốn xóa bỏ ảo tưởng nảy sinh trong tư tưởng con người, phải xóa bỏ nguồn gốc sinh ra ảo tưởng ấy, do vậy đáp án là nguồn gốc nảy sinh.
+
+Câu 22: Sự biến đổi của các tôn giáo do những biến đổi về kinh tế - xã hội, chính trị theo các thời kỳ khác nhau quy định là thể hiện tính chất nào của tôn giáo?
+*A. Lịch sử.
+B. Quần chúng.
+C. Chính trị.
+D. Xã hội.
+Gt: Sự biến đổi của các tôn giáo theo các thời kỳ kinh tế - xã hội, chính trị khác nhau thể hiện tính lịch sử của tôn giáo.
+
+Câu 23: Khoảng cách giữa cái "đã biết" và cái "chưa biết" do sự hiểu biết của con người còn hạn chế là cơ sở hình thành nguồn gốc nào sau đây của tôn giáo?
+A. Tâm lý.
+B. Tự nhiên.
+C. Kinh tế - xã hội.
+*D. Nhận thức.
+Gt: Khoảng cách giữa cái đã biết và chưa biết do hiểu biết còn hạn chế là cơ sở hình thành nguồn gốc nhận thức của tôn giáo.
+
+Câu 24: Theo quan điểm của chủ nghĩa Mác - Lênin, mặt nào sau đây của tôn giáo phản ánh mối quan hệ đối kích về lợi ích giữa các giai cấp trong xã hội?
+A. Đạo đức.
+B. Tư tưởng.
+C. Nhận thức.
+*D. Chính trị.
+Gt: Mặt chính trị của tôn giáo phản ánh mối quan hệ đối kích về lợi ích kinh tế, chính trị giữa các giai cấp trong xã hội.
+
+Câu 25: Theo quan điểm của chủ nghĩa Mác - Lênin, mặt nào sau đây của tôn giáo biểu hiện sự khác nhau về niềm tin giữa người theo và người không theo tôn giáo?
+A. Chính trị.
+*B. Tư tưởng.
+C. Nhận thức.
+D. Xã hội.
+Gt: Mặt tư tưởng biểu hiện sự khác nhau về niềm tin, mức độ tin giữa người theo và người không theo tôn giáo.
+
+Câu 26: Theo quan điểm của chủ nghĩa Mác - Lênin, việc khắc phục ảnh hưởng tiêu cực của tôn giáo là một quá trình lâu dài, gắn với việc
+*A. cải tạo xã hội cũ, xây dựng xã hội mới.
+B. xóa bỏ tôn giáo cũ, thiết lập tôn giáo mới.
+C. bài trừ tín ngưỡng cũ, xây dựng niềm tin mới.
+D. thủ tiêu giai cấp cũ, hình thành giai cấp mới.
+Gt: Việc khắc phục ảnh hưởng tiêu cực của tôn giáo gắn với quá trình cải tạo xã hội cũ, xây dựng xã hội mới.
+
+Câu 27: Khi giải quyết những vấn đề nảy sinh từ tôn giáo có liên quan đến việc chống phá sự nghiệp cách mạng, cần đặc biệt chú ý đến yếu tố nào sau đây của tôn giáo?
+A. Lịch sử.
+B. Quần chúng.
+*C. Chính trị.
+D. Thể thao.
+Gt: Khi các vấn đề nảy sinh từ tôn giáo liên quan đến việc chống lại sự nghiệp cách mạng, cần phân biệt và chú ý mặt chính trị của tôn giáo.
+
+Câu 28: Tính chất vận động và biến đổi không ngừng của các tôn giáo đòi hỏi khi xem xét vấn đề tôn giáo phải dựa trên nguyên tắc nào sau đây?
+A. Đồng nhất chính trị - tư tưởng.
+*B. Quan điểm lịch sử - cụ thể.
+C. Tôn trọng tự do tôn giáo.
+D. Vận động tín đồ tôn giáo.
+Gt: Tính vận động, biến đổi không ngừng của tôn giáo đòi hỏi giải quyết vấn đề tôn giáo phải dựa trên nguyên tắc quan điểm lịch sử - cụ thể.
+
+Câu 29: Để tránh khuynh hướng cực đoan trong giải quyết vấn đề tôn giáo, cần tuân theo nguyên tắc nào sau đây của chủ nghĩa Mác - Lênin?
+*A. Phân biệt mặt chính trị và tư tưởng.
+B. Can thiệp có hiệu quả vào nội bộ tôn giáo.
+C. Giới hạn quyền tự do lựa chọn tôn giáo.
+D. Hạn chế sự phát triển của các tôn giáo cũ.
+Gt: Phân biệt mặt chính trị và tư tưởng là nguyên tắc cần thiết để tránh khuynh hướng cực đoan khi giải quyết vấn đề tôn giáo.
+
+Câu 30: Dựa vào nguồn gốc hình thành, có những loại tôn giáo nào đang tồn tại ở Việt Nam hiện nay?
+A. Đa phương và quốc gia.
+B. Đa thần và độc thần.
+*C. Ngoại nhập và nội sinh.
+D. Đơn nhất và hỗn hợp.
+Gt: Căn cứ vào nguồn gốc hình thành, ở Việt Nam hiện nay có tôn giáo ngoại nhập và tôn giáo nội sinh.
+
+Câu 31: Trong lịch sử, giai cấp bóc lột đã từng lợi dụng chiến tranh tôn giáo nhằm thực hiện mục đích khác. Điều này thể hiện tôn giáo có tính chất nào sau đây?
+*A. Chính trị.
+B. Lịch sử.
+C. Quần chúng.
+D. Xã hội.
+Gt: Việc lợi dụng chiến tranh tôn giáo để phục vụ mục đích quyền lực, cai trị của giai cấp bóc lột thể hiện tính chính trị của tôn giáo.
+
+Câu 32: Theo các tài liệu thống kê, số lượng tín đồ của các tôn giáo hiện nay khá đông đảo, chiếm khoảng 3/4 dân số thế giới và tham gia các hoạt động tín ngưỡng thường xuyên. Thực tế này thể hiện tôn giáo có tính chất nào sau đây?
+A. Giai cấp.
+B. Chính trị.
+C. Lịch sử.
+*D. Quần chúng.
+Gt: Số lượng tín đồ đông đảo, chiếm phần lớn dân số thế giới, thể hiện tính quần chúng của tôn giáo.
+
+Câu 33: Kitô giáo hình thành từ thế kỷ I, trải qua nhiều giai đoạn phát triển lịch sử, biến đổi và phân tách thành nhiều nhánh khác nhau như Chính thống giáo, Công giáo, Tin lành, Anh giáo. Điều này thể hiện tôn giáo có tính chất nào sau đây?
+A. Chính trị.
+*B. Lịch sử.
+C. Quần chúng.
+D. Giai cấp.
+Gt: Quá trình hình thành, trải qua nhiều giai đoạn, biến đổi và phân tách theo thời gian thể hiện tính lịch sử của tôn giáo.
+
+Câu 34: Trên thế giới hiện nay, một số tổ chức cực đoan đã lợi dụng tín ngưỡng của các tín đồ để kích động tư tưởng cực đoan, các hoạt động "thánh chiến", hành động "tử vì đạo" gây nhiều hậu quả nghiêm trọng ở nhiều quốc gia. Thực tế này thể hiện tôn giáo có tính chất nào sau đây?
+*A. Chính trị.
+B. Lịch sử.
+C. Quần chúng.
+D. Xã hội.
+Gt: Việc lợi dụng đức tin để kích động hoạt động "thánh chiến" nhằm phục vụ mục đích chính trị thể hiện tính chính trị của tôn giáo.
+
+Câu 35: Phật giáo ra đời vào thời kỳ Ấn Độ cổ đại, cho đến nay đã trải qua nhiều giai đoạn phát triển, biến đổi và chia thành nhiều dòng, tông phái khác nhau. Điều này khẳng định tôn giáo có tính chất nào sau đây?
+A. Xã hội.
+B. Chính trị.
+C. Quần chúng.
+*D. Lịch sử.
+Gt: Quá trình ra đời, trải qua nhiều giai đoạn phát triển, biến đổi và chia thành nhiều dòng thể hiện tính lịch sử của tôn giáo.
+
+Câu 36: Khắc phục ảnh hưởng tiêu cực của tôn giáo gắn với việc cải tạo xã hội cũ, xây dựng xã hội mới là nhiệm vụ tự nhiên, tất yếu nhưng phải trải qua thời gian lâu dài, không thể áp đặt tùy tiện. Nội dung này thể hiện việc giải quyết vấn đề tôn giáo là
+*A. một quá trình khoa học, lâu dài.
+B. phân biệt mặt chính trị và mặt tư tưởng của tôn giáo.
+C. quan điểm lịch sử - cụ thể trong giải quyết vấn đề tôn giáo.
+D. tôn trọng tự do tín ngưỡng quần chúng nhân dân.
+Gt: Việc khắc phục ảnh hưởng tiêu cực của tôn giáo cần thời gian dài, không thể áp đặt tùy tiện, thể hiện đây là một quá trình khoa học, lâu dài.
+
+Câu 37: Hồi giáo ra đời tại bán đảo Ả Rập, cho đến nay đã trải qua nhiều giai đoạn phát triển, biến đổi và chia thành nhiều dòng khác nhau. Điều này thể hiện tôn giáo có tính chất nào sau đây?
+A. Quần chúng.
+B. Chính trị.
+*C. Lịch sử.
+D. Xã hội.
+Gt: Quá trình ra đời, trải qua nhiều giai đoạn phát triển, biến đổi và chia thành nhiều dòng khác nhau thể hiện tính lịch sử của tôn giáo.
+
+Câu 38: Ở nước ta hiện nay có một số đối tượng lợi dụng tôn giáo và quyền tự do tín ngưỡng để tiến hành các hoạt động chống chính quyền dưới chiêu bài "đấu tranh cho tự do, dân chủ, nhân quyền". Thực tế này thể hiện tôn giáo có tính chất nào sau đây?
+A. Lịch sử.
+*B. Chính trị.
+C. Quần chúng.
+D. Xã hội.
+Gt: Hành vi lợi dụng tôn giáo để chống chính quyền dưới danh nghĩa tôn giáo thể hiện tính chính trị bị lợi dụng của tôn giáo.
+
+Câu 39: Khoa học đã chứng minh tôn giáo không xuất hiện cùng với sự ra đời của con người, mà chỉ xuất hiện khi xã hội đã có tổ chức, sau đó không ngừng phát triển và biến đổi. Điều này thể hiện tôn giáo có tính chất nào sau đây?
+A. Quần chúng.
+B. Chính trị.
+*C. Lịch sử.
+D. Xã hội.
+Gt: Việc tôn giáo chỉ xuất hiện khi xã hội có tổ chức và không ngừng phát triển, biến đổi thể hiện tính lịch sử của tôn giáo.
+
+Câu 40: Ph. Ăngghen cho rằng tôn giáo không hình thành ngay từ thời kỳ nguyên thủy, mà chỉ xuất hiện khi con người có sự hiểu biết hạn chế trước các hiện tượng tự nhiên và xã hội, từ đó dần hình thành niềm tin thần thánh bao quanh họ. Nhận định này thể hiện nguồn gốc nào sau đây của tôn giáo?
+*A. Nhận thức.
+B. Kinh tế.
+C. Tâm lý.
+D. Xã hội.
+Gt: Sự hiểu biết hạn chế của con người trước các hiện tượng tự nhiên, xã hội dẫn đến hình thành niềm tin siêu nhiên, thể hiện nguồn gốc nhận thức của tôn giáo.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 2400;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath();
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

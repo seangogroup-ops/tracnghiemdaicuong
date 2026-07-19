@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 5: Cơ cấu xã hội - giai cấp và liên minh giai cấp, tầng lớp - Thi Trắc Nghiệm - SNG EDU</title>
+
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db;
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter {
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0;
+        }
+        .opt-text {
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s;
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box {
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue);
+            border-radius: 4px; display: none; font-size: 0.95rem;
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        .sidebar-col {
+            width: 320px;
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn {
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col {
+                width: 100%;
+                position: static;
+                order: 2;
+                max-height: none;
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+Câu 1: Chủ nghĩa xã hội khoa học nghiên cứu cơ cấu
+A. xã hội - nghề nghiệp.
+B. xã hội - dân số.
+*C. xã hội - giai cấp.
+D. xã hội - tôn giáo.
+Gt: Chủ nghĩa xã hội khoa học tập trung nghiên cứu cơ cấu xã hội - giai cấp.
+
+Câu 2: Cơ cấu xã hội - giai cấp biến đổi gắn liền và bị quy định bởi
+A. chế độ tư hữu.
+*B. cơ cấu kinh tế.
+C. hình thái ý thức xã hội.
+D. chính sách xã hội.
+Gt: Cơ cấu xã hội - giai cấp biến đổi gắn liền và bị quy định bởi cơ cấu kinh tế của thời kỳ quá độ lên chủ nghĩa xã hội.
+
+Câu 3: Luận điểm "Những tư tưởng thống trị của một thời đại bao giờ cũng chỉ là tư tưởng của giai cấp thống trị" là của ai sau đây?
+*A. C. Mác và Ph. Ăngghen.
+B. Ph. Ăngghen.
+C. Xtalin.
+D. Xtalin và V.I. Lênin.
+Gt: Luận điểm trên là của C. Mác và Ph. Ăngghen, được viết trong tác phẩm Hệ tư tưởng Đức.
+
+Câu 4: Cơ cấu xã hội - giai cấp của thời kỳ quá độ lên chủ nghĩa tư bản được đặc trưng bởi hai giai cấp cơ bản là
+*A. tư sản và vô sản.
+B. tư sản và trí thức.
+C. tư sản và nông dân.
+D. tư sản và tiểu tư sản.
+Gt: Trong xã hội tư bản chủ nghĩa, giai cấp tư sản nắm tư liệu sản xuất, còn giai cấp vô sản không có (hoặc rất ít) tư liệu sản xuất, đó là đặc trưng cơ bản của cơ cấu xã hội - giai cấp thời kỳ này.
+
+Câu 5: Tất cả những cộng đồng người cùng toàn bộ những mối quan hệ xã hội do sự tác động lẫn nhau của các cộng đồng ấy tạo nên gọi là
+A. cơ cấu dân cư.
+B. cộng đồng người.
+C. cộng đồng xã hội.
+*D. cơ cấu xã hội.
+Gt: Cơ cấu xã hội là những cộng đồng người cùng toàn bộ những mối quan hệ xã hội do sự tác động lẫn nhau của các cộng đồng ấy tạo nên.
+
+Câu 6: Trong các cơ cấu hợp thành cơ cấu xã hội, cơ cấu nào sau đây giữ vị trí quan trọng hàng đầu?
+A. Cơ cấu xã hội - nghề nghiệp.
+B. Cơ cấu xã hội - dân tộc.
+*C. Cơ cấu xã hội - giai cấp.
+D. Cơ cấu xã hội - tôn giáo.
+Gt: Cơ cấu xã hội - giai cấp có vị trí quan trọng hàng đầu, chi phối các loại hình cơ cấu xã hội khác.
+
+Câu 7: Mức độ liên minh, xích lại gần nhau giữa các giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội tùy thuộc vào yếu tố nào sau đây?
+*A. Điều kiện kinh tế - xã hội.
+B. Hoàn cảnh lịch sử cụ thể.
+C. Quan điểm của tầng lớp trí thức.
+D. Tư tưởng của đội ngũ doanh nhân.
+Gt: Mức độ liên minh, xích lại gần nhau giữa các giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội tùy thuộc vào các điều kiện kinh tế - xã hội của đất nước trong từng giai đoạn.
+
+Câu 8: Cơ sở để hoạch định chính sách phát triển kinh tế và tổ chức đời sống xã hội một cách phù hợp phải dựa vào
+A. quan hệ giữa trí thức và tư sản.
+*B. cơ cấu xã hội - giai cấp.
+C. cơ cấu xã hội - dân số.
+D. quan hệ giữa sản xuất và tự nhiên.
+Gt: Cơ sở để hoạch định chính sách phát triển kinh tế và tổ chức đời sống xã hội phải dựa vào cơ cấu xã hội - giai cấp.
+
+Câu 9: Trong thời kỳ quá độ lên chủ nghĩa xã hội, cơ cấu xã hội - giai cấp bao gồm những giai cấp, tầng lớp cơ bản nào sau đây?
+*A. Công nhân, nông dân, trí thức.
+B. Tiểu tư sản, tiểu thương, tiểu chủ.
+C. Doanh nhân, tiểu thương, tiểu chủ.
+D. Công nhân, tiểu chủ, tiểu tư sản.
+Gt: Các giai cấp, tầng lớp xã hội cơ bản trong cơ cấu xã hội - giai cấp thời kỳ quá độ gồm giai cấp công nhân, giai cấp nông dân, tầng lớp trí thức và các tầng lớp xã hội khác.
+
+Câu 10: Việc hoạch định chính sách phát triển kinh tế, văn hóa, xã hội của mỗi quốc gia trong thời kỳ quá độ chủ yếu phải dựa vào cơ cấu nào sau đây?
+A. Xã hội - dân số.
+B. Xã hội - nghề nghiệp.
+*C. Xã hội - giai cấp.
+D. Xã hội - dân tộc.
+Gt: Cơ cấu xã hội - giai cấp là căn cứ cơ bản để xây dựng chính sách phát triển kinh tế, văn hóa, xã hội của mỗi giai đoạn lịch sử cụ thể.
+
+Câu 11: Sự xích lại gần nhau về quan hệ phân phối tư liệu tiêu dùng giữa các giai cấp, tầng lớp chủ yếu liên quan tới việc hoàn thiện chế độ phân phối theo
+*A. kết quả lao động.
+B. phúc lợi xã hội.
+C. nhu cầu cá nhân.
+D. địa vị xã hội.
+Gt: Sự xích lại gần nhau về quan hệ phân phối tư liệu tiêu dùng giữa các giai cấp, tầng lớp liên quan tới việc hoàn thiện chế độ phân phối theo kết quả lao động.
+
+Câu 12: Trong các loại hình của cơ cấu xã hội, cơ cấu xã hội - giai cấp có vị trí
+A. chủ yếu.
+B. thứ yếu.
+C. bao trùm tuyệt đối.
+*D. quan trọng hàng đầu.
+Gt: Cơ cấu xã hội - giai cấp có vị trí quan trọng hàng đầu, chi phối các loại hình cơ cấu xã hội khác.
+
+Câu 13: Trong thời kỳ quá độ lên chủ nghĩa xã hội, cơ cấu xã hội - giai cấp biến đổi theo hướng đa dạng, phức tạp, làm xuất hiện thêm
+A. phương thức sản xuất mới.
+*B. các tầng lớp xã hội mới.
+C. mâu thuẫn xã hội sâu sắc.
+D. đấu tranh giai cấp gay gắt.
+Gt: Trong thời kỳ quá độ lên chủ nghĩa xã hội, cơ cấu xã hội - giai cấp biến đổi đa dạng, phức tạp, làm xuất hiện thêm các tầng lớp xã hội mới.
+
+Câu 14: Cơ cấu xã hội - giai cấp biến đổi có tính quy luật, gắn liền và bị quy định bởi
+A. bản chất của cơ cấu xã hội.
+B. bản chất của chính sách nhà nước.
+*C. trình độ của lực lượng sản xuất.
+D. trình độ của công cụ lao động.
+Gt: Cơ cấu xã hội - giai cấp có vị trí quyết định, bắt nguồn từ quan hệ sở hữu tư liệu sản xuất, quản lý và tổ chức lao động, quyết định bởi trình độ của lực lượng sản xuất.
+
+Câu 15: Căn cứ để nhận diện cơ cấu xã hội - giai cấp là
+*A. quan hệ sản xuất.
+B. lực lượng sản xuất.
+C. ý thức xã hội.
+D. tồn tại xã hội.
+Gt: Cơ cấu xã hội - giai cấp là hệ thống các giai cấp, tầng lớp xã hội tồn tại khách quan trong một chế độ xã hội nhất định, thông qua những quan hệ về sở hữu tư liệu sản xuất, tức là dựa trên quan hệ sản xuất.
+
+Câu 16: Giai cấp công nhân giữ vai trò chủ đạo trong khối liên minh là do yếu tố nào sau đây quy định?
+A. Được kế thừa truyền thống đấu tranh.
+B. Luôn đi đầu trong các cuộc đấu tranh.
+*C. Địa vị kinh tế - xã hội quy định.
+D. Có mối quan hệ gắn bó với nông dân.
+Gt: Vai trò chủ đạo của giai cấp công nhân trong khối liên minh xuất phát từ vị trí kinh tế - xã hội khách quan, gắn với phương thức sản xuất tiên tiến, đại diện cho lợi ích chung của toàn xã hội.
+
+Câu 17: Các giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội biến đổi trong mối quan hệ với nhau tạo nên đối tượng nghiên cứu chính là
+A. cơ cấu xã hội - dân số.
+*B. cơ cấu xã hội - giai cấp.
+C. quan hệ dân cư.
+D. quan hệ dân tộc.
+Gt: Các giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội biến đổi trong mối quan hệ với nhau, thể hiện đối tượng nghiên cứu chính là cơ cấu xã hội - giai cấp.
+
+Câu 18: Cơ cấu xã hội - giai cấp trong thời kỳ quá độ lên chủ nghĩa xã hội biến đổi trong mối quan hệ
+*A. vừa đấu tranh, vừa liên minh với nhau.
+B. bài trừ và phủ định lẫn nhau.
+C. đối đầu.
+D. bài xích.
+Gt: Trong thời kỳ quá độ từ chủ nghĩa tư bản lên chủ nghĩa xã hội, cơ cấu xã hội - giai cấp biến đổi trong mối quan hệ vừa có mâu thuẫn, đấu tranh, vừa có hợp tác với nhau.
+
+Câu 19: Tính đa dạng, phức tạp của cơ cấu xã hội - giai cấp được biểu hiện ở sự tồn tại đan xen của các
+A. dân tộc, tôn giáo.
+B. thành phần dân cư.
+C. lĩnh vực kinh tế.
+*D. giai cấp, tầng lớp.
+Gt: Cơ cấu xã hội - giai cấp là hệ thống các giai cấp, tầng lớp xã hội tồn tại khách quan; tính đa dạng, phức tạp thể hiện ở sự tồn tại đan xen của các giai cấp, tầng lớp khác nhau trong xã hội.
+
+Câu 20: Trong thời kỳ quá độ, nền kinh tế nhiều thành phần tất yếu tạo ra cơ cấu xã hội - giai cấp
+A. thuần nhất.
+*B. đa dạng và phức tạp.
+C. thống nhất.
+D. bài trừ và phủ định.
+Gt: Trong thời kỳ quá độ, nền kinh tế nhiều thành phần tất yếu dẫn đến cơ cấu xã hội - giai cấp đa dạng và phức tạp.
+
+Câu 21: Nguyên nhân thất bại trong nhiều cuộc đấu tranh của công nhân là do chưa liên minh chặt chẽ với "người bạn đồng hành tự nhiên" của mình là
+*A. nông dân.
+B. trí thức.
+C. thợ thủ công.
+D. tiểu tư sản.
+Gt: Nguyên nhân thất bại trong nhiều cuộc đấu tranh của công nhân là do chưa liên minh chặt chẽ với "người bạn đồng hành tự nhiên" của mình là giai cấp nông dân.
+
+Câu 22: "Nếu không liên minh với nông dân thì không thể có được chính quyền của giai cấp vô sản" là khẳng định của ai sau đây?
+A. C. Mác.
+*B. V.I. Lênin.
+C. Hồ Chí Minh.
+D. Ph. Ăngghen.
+Gt: "Nếu không liên minh với nông dân thì không thể có được chính quyền của giai cấp vô sản" là khẳng định của V.I. Lênin.
+
+Câu 23: Nhà tư tưởng nào sau đây đã ví vấn đề liên minh giữa công nhân và nông dân giống như những "bài đơn ca và điệu"?
+*A. C. Mác và Ph. Ăngghen.
+B. V.I. Lênin.
+C. Hồ Chí Minh.
+D. V.I. Lênin và Xtalin.
+Gt: C. Mác và Ph. Ăngghen đã ví vấn đề liên minh giữa công nhân với nông dân được ví như những "bài đơn ca và điệu".
+
+Câu 24: Trong quá trình xây dựng chủ nghĩa xã hội, liên minh giữa công nhân, nông dân và trí thức giữ vị trí, vai trò quan trọng nhất trên lĩnh vực nào sau đây?
+A. Văn hóa.
+B. Tư tưởng.
+*C. Kinh tế.
+D. Chính trị.
+Gt: Trong quá trình xây dựng chủ nghĩa xã hội, liên minh giữa công nhân, nông dân, trí thức giữ vị trí và vai trò quan trọng nhất trên lĩnh vực kinh tế.
+
+Câu 25: Giai cấp nào sau đây không có hệ tư tưởng độc lập?
+A. Công nhân.
+*B. Nông dân.
+C. Địa chủ.
+D. Tư sản.
+Gt: Giai cấp nông dân không có hệ tư tưởng độc lập, tư tưởng của họ phụ thuộc vào hệ tư tưởng của giai cấp thống trị xã hội.
+
+Câu 26: Nguyên tắc cơ bản nhất của liên minh giữa giai cấp công nhân, giai cấp nông dân và tầng lớp trí thức là
+A. đảm bảo nguyên tắc dân chủ.
+B. đảm bảo nguyên tắc tự nguyện.
+*C. kết hợp đúng đắn các lợi ích.
+D. kết hợp rộng rãi các lực lượng.
+Gt: Nguyên tắc cơ bản nhất của liên minh là kết hợp đúng đắn các lợi ích về chính trị, kinh tế, văn hóa, xã hội.
+
+Câu 27: Theo chủ nghĩa Mác - Lênin, giai cấp, tầng lớp nào sau đây đóng vai trò quan trọng bậc nhất trong việc thực hiện chiến lược của giai cấp công nhân trong sự nghiệp cách mạng xã hội chủ nghĩa?
+*A. Trí thức.
+B. Thợ thủ công.
+C. Nông dân.
+D. Tiểu tư sản.
+Gt: Theo chủ nghĩa Mác - Lênin, đội ngũ trí thức đóng vai trò quan trọng bậc nhất trong việc thực hiện chiến lược của giai cấp công nhân trong sự nghiệp cách mạng xã hội chủ nghĩa.
+
+Câu 28: Lĩnh vực nào sau đây là quan trọng nhất trong liên minh giữa công nhân, nông dân và trí thức?
+A. Văn hóa.
+*B. Kinh tế.
+C. Tư tưởng.
+D. Chính trị.
+Gt: Nội dung kinh tế là nội dung cơ bản, quyết định nhất, là cơ sở vật chất - kỹ thuật của liên minh trong thời kỳ quá độ lên chủ nghĩa xã hội.
+
+Câu 29: Từ góc độ chính trị, giai cấp công nhân phải liên minh với các giai cấp, tầng lớp lao động khác nhằm mục đích nào sau đây?
+*A. Tập hợp lực lượng để tiến hành cách mạng xã hội chủ nghĩa.
+B. Tiến hành công nghiệp hóa, hiện đại hóa đất nước.
+C. Xây dựng nền văn hóa cho giai cấp nông dân.
+D. Nâng cao trình độ văn hóa cho giai cấp công nhân.
+Gt: Dưới sự lãnh đạo của Đảng Cộng sản, giai cấp công nhân phải liên minh với các giai cấp, tầng lớp lao động khác để tạo sức mạnh tổng hợp, đảm bảo thắng lợi cho cuộc cách mạng xã hội chủ nghĩa.
+
+Câu 30: Từ góc độ kinh tế, liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội nhằm mục đích nào sau đây?
+A. Xây dựng nền văn hóa cho giai cấp nông dân.
+B. Tập hợp lực lượng để tiến hành cách mạng xã hội chủ nghĩa.
+*C. Thỏa mãn nhu cầu, lợi ích kinh tế của các giai cấp, tầng lớp.
+D. Đảm bảo vai trò lãnh đạo của giai cấp công nhân.
+Gt: Dưới góc độ kinh tế, liên minh giai cấp công nhân, giai cấp nông dân và đội ngũ trí thức nhằm thỏa mãn nhu cầu, lợi ích kinh tế của các giai cấp, tầng lớp, cùng nhau xây dựng nền kinh tế mới xã hội chủ nghĩa.
+
+Câu 31: Một trong những nguyên tắc cơ bản xây dựng liên minh giữa công nhân, nông dân và trí thức trong cách mạng xã hội chủ nghĩa là phải đảm bảo vai trò lãnh đạo của
+A. tầng lớp trí thức.
+B. giai cấp nông dân.
+*C. giai cấp công nhân.
+D. tầng lớp trung gian.
+Gt: Một trong những nguyên tắc cơ bản xây dựng liên minh giai cấp công nhân, giai cấp nông dân và đội ngũ trí thức là phải đảm bảo vai trò lãnh đạo của giai cấp công nhân.
+
+Câu 32: Thực chất việc kết hợp đúng đắn các lợi ích kinh tế của các giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội là giải quyết những
+*A. mâu thuẫn giữa nhu cầu, lợi ích.
+B. mong muốn của các chủ thể.
+C. yêu cầu của giai cấp công nhân.
+D. đòi hỏi của tầng lớp trí thức.
+Gt: Trong khối liên minh, công nhân, nông dân và trí thức tuy thống nhất về cơ bản nhưng vẫn tồn tại sự khác biệt về lợi ích; việc kết hợp đúng đắn các lợi ích thực chất là giải quyết những mâu thuẫn nảy sinh giữa nhu cầu, lợi ích của các chủ thể.
+
+Câu 33: Trong thời kỳ quá độ lên chủ nghĩa xã hội, việc xây dựng khối liên minh giữa công nhân, nông dân, trí thức cần phải xuất phát từ yếu tố nào sau đây?
+A. Bản sắc.
+*B. Khách quan.
+C. Chủ quan.
+D. Thời đại.
+Gt: Sự liên minh giữa công nhân, nông dân, trí thức là đòi hỏi khách quan, xuất phát từ mối liên hệ tất yếu về kinh tế, chính trị giữa các giai cấp, tầng lớp này với nhau.
+
+Câu 34: Từ góc độ chính trị, giai cấp công nhân phải liên minh với các giai cấp, tầng lớp lao động để thực hiện mục đích nào sau đây?
+A. Hòa nhập lợi ích kinh tế.
+*B. Tạo sức mạnh tổng hợp.
+C. Đáp ứng nhu cầu xã hội.
+D. Bảo vệ quyền lợi của thiểu số.
+Gt: Dưới sự lãnh đạo của Đảng Cộng sản, giai cấp công nhân phải liên minh với các giai cấp, tầng lớp lao động khác để tạo sức mạnh tổng hợp, đảm bảo thắng lợi cho cách mạng xã hội chủ nghĩa.
+
+Câu 35: Việc thực hiện sự liên minh giữa các giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội trước tiên là để thực hiện yêu cầu nào sau đây?
+A. Quan hệ phân phối.
+B. Lĩnh vực tiêu dùng.
+*C. Lĩnh vực kinh tế.
+D. Quan hệ trao đổi.
+Gt: Liên minh giai cấp, tầng lớp tạo nền tảng kinh tế - xã hội vững chắc cho khối đại đoàn kết toàn dân; do đó việc thực hiện liên minh trước tiên là để thực hiện yêu cầu ở lĩnh vực kinh tế.
+
+Câu 36: Liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội xuất phát từ yêu cầu nào sau đây?
+*A. Đáp ứng các đòi hỏi khách quan của giai cấp công nhân.
+B. Gắn chặt chẽ với lợi ích kinh tế và chính trị.
+C. Tạo sức mạnh tổng hợp cho cách mạng xã hội chủ nghĩa.
+D. Thỏa mãn lợi ích của các giai cấp, tầng lớp.
+Gt: Theo chủ nghĩa Mác - Lênin, liên minh giai cấp là một tất yếu khách quan, xuất phát từ thực tiễn cách mạng nhằm đáp ứng những đòi hỏi khách quan của giai cấp công nhân trong quá trình thực hiện sứ mệnh lịch sử của mình.
+
+Câu 37: Về mặt kinh tế - kỹ thuật, tính tất yếu của liên minh giai cấp, tầng lớp trong thời kỳ quá độ lên chủ nghĩa xã hội được thể hiện ở yêu cầu nào sau đây?
+A. Đáp ứng nhu cầu xã hội.
+B. Bảo vệ quyền lợi thiểu số.
+*C. Gắn kết chặt chẽ các lĩnh vực kinh tế với nhau.
+D. Tạo sức mạnh tổng hợp cho cách mạng xã hội chủ nghĩa.
+Gt: Tính tất yếu của liên minh về mặt kinh tế - kỹ thuật xuất phát từ yêu cầu khách quan của quá trình đẩy mạnh công nghiệp hóa, hiện đại hóa, chuyển dịch cơ cấu kinh tế từ nền sản xuất nông nghiệp nhỏ sang sản xuất hàng hóa lớn, gắn kết chặt chẽ công nghiệp, nông nghiệp và khoa học công nghệ với nhau.
+
+Câu 38: Liên minh giữa giai cấp công nhân, nông dân và trí thức phải đặt dưới sự lãnh đạo của Đảng Cộng sản là do yếu tố nào sau đây quy định?
+A. Biến đổi về cơ cấu.
+B. Tăng nhanh về số lượng.
+*C. Địa vị kinh tế - xã hội của giai cấp công nhân.
+D. Có quan hệ gắn bó với nông dân.
+Gt: Theo chủ nghĩa Mác - Lênin, vai trò lãnh đạo của giai cấp công nhân trong khối liên minh không phải do số lượng đông hay ít quyết định mà do địa vị kinh tế - xã hội của giai cấp công nhân quy định.
+
+Câu 39: Yếu tố nào sau đây quyết định địa vị kinh tế - xã hội của giai cấp công nhân, giai cấp nông dân và tầng lớp trí thức trong khối liên minh?
+*A. Sự thống nhất về lợi ích cơ bản.
+B. Đặc điểm chính trị, xã hội của mỗi giai cấp.
+C. Điều kiện lịch sử cụ thể.
+D. Cơ sở hạ tầng kinh tế của xã hội.
+Gt: Giai cấp công nhân, nông dân, trí thức vừa là lực lượng sản xuất cơ bản, vừa là lực lượng chính trị - xã hội to lớn; sự thống nhất về lợi ích cơ bản là nền tảng để xây dựng khối liên minh vững chắc.
+
+Câu 40: Một trong những nguyên tắc cơ bản xây dựng liên minh giữa công nhân, nông dân và trí thức trong cách mạng xã hội chủ nghĩa là phải đảm bảo nguyên tắc nào sau đây?
+A. liên hợp.
+*B. tự nguyện.
+C. dân chủ.
+D. tự quyết.
+Gt: Theo V.I. Lênin, một trong những nguyên tắc cơ bản để xây dựng khối liên minh giữa giai cấp công nhân với giai cấp nông dân và các tầng lớp lao động khác là phải đảm bảo nguyên tắc tự nguyện.
+
+Câu 41: Trong xã hội Việt Nam hiện nay, trí thức là một bộ phận xã hội đặc biệt quan trọng, đặc trưng bởi lao động chủ yếu là lao động
+A. tổng hợp.
+B. cộng đồng.
+*C. trí tuệ.
+D. giai cấp.
+Gt: Trong xã hội Việt Nam hiện nay, trí thức là một bộ phận xã hội đặc biệt quan trọng, đặc trưng bởi lao động chủ yếu là lao động trí tuệ.
+
+Câu 42: Ở Việt Nam, sự chuyển đổi cơ cấu kinh tế đã dẫn đến việc đa dạng hóa cơ cấu xã hội - giai cấp, bao gồm
+*A. công nhân, nông dân, trí thức, doanh nhân, tiểu chủ và các tầng lớp khác.
+B. công nhân, nông dân, tư sản, tiểu tư sản, đội ngũ trí thức.
+C. địa chủ phong kiến, tư sản, trí thức.
+D. công nhân, nông dân và thanh niên.
+Gt: Ở Việt Nam, sự chuyển đổi cơ cấu kinh tế đã dẫn đến hình thành cơ cấu xã hội - giai cấp đa dạng, bao gồm giai cấp công nhân, giai cấp nông dân, đội ngũ trí thức, đội ngũ doanh nhân, tiểu chủ và các tầng lớp xã hội khác.
+
+Câu 43: Giai cấp công nhân Việt Nam có vai trò gì đối với quá trình công nghiệp hóa, hiện đại hóa đất nước?
+A. Chủ thể sáng tạo đặc biệt.
+B. Tiên phong trong chuyển giao công nghệ.
+*C. Lực lượng lao động đi đầu.
+D. Trực tiếp vận hành các công cụ sản xuất.
+Gt: Giai cấp công nhân Việt Nam có vai trò to lớn, là lực lượng lao động đi đầu trong quá trình công nghiệp hóa, hiện đại hóa đất nước.
+
+Câu 44: Xu hướng phát triển cơ cấu xã hội - giai cấp thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam hiện nay diễn ra đa dạng và phức tạp do yếu tố nào sau đây quyết định?
+A. Quan hệ giữa lực lượng sản xuất.
+B. Nền kinh tế kế hoạch hóa.
+*C. Nền kinh tế nhiều thành phần.
+D. Quan hệ phân phối sản phẩm.
+Gt: Tương ứng với nền kinh tế nhiều thành phần là một cơ cấu xã hội - giai cấp đa dạng, phức tạp gồm nhiều giai cấp, tầng lớp vừa hợp tác, vừa đấu tranh với nhau.
+
+Câu 45: Với sự phát triển của cách mạng khoa học công nghệ hiện đại, bộ phận nào sau đây có vai trò đặc biệt quan trọng trong tiến trình đẩy mạnh công nghiệp hóa, hiện đại hóa đất nước?
+A. Doanh nhân.
+*B. Trí thức.
+C. Công nhân.
+D. Tiểu tư sản.
+Gt: Đội ngũ trí thức là lực lượng lao động sáng tạo đặc biệt quan trọng trong tiến trình đẩy mạnh công nghiệp hóa, hiện đại hóa đất nước.
+
+Câu 46: Đặc điểm nào sau đây phản ánh nguồn gốc xã hội của giai cấp công nhân trong khối liên minh giai cấp, tầng lớp ở Việt Nam?
+*A. Đa số công nhân xuất thân từ nông dân.
+B. Giai cấp công nhân có hệ tư tưởng tiên tiến.
+C. Nông dân xuất thân từ công nhân.
+D. Trí thức có năng lực tiếp thu khoa học công nghệ hiện đại.
+Gt: Do đặc thù lịch sử của Việt Nam là một nước nông nghiệp, đại đa số giai cấp công nhân có nguồn gốc xuất thân từ nông dân, tạo điều kiện thuận lợi để xây dựng khối liên minh.
+
+Câu 47: Quan điểm của Đảng Cộng sản Việt Nam về "Đại đoàn kết dân tộc phải dựa trên cơ sở giải quyết hài hòa quan hệ lợi ích giữa các thành viên trong xã hội" thể hiện rõ nội dung nào sau đây?
+*A. Xây dựng các chính sách phù hợp với từng giai cấp, tầng lớp.
+B. Đảm bảo hài hòa lợi ích giữa các giai cấp, tầng lớp.
+C. Tạo sự thống nhất về mục tiêu giữa các giai cấp, tầng lớp.
+D. Giải quyết mâu thuẫn giữa các giai cấp, tầng lớp.
+Gt: Quan điểm trên của Đảng thể hiện việc xây dựng các chính sách phù hợp với từng giai cấp, tầng lớp nhằm giải quyết hài hòa lợi ích trong xã hội.
+
+Câu 48: Giai cấp công nhân Việt Nam trong thời kỳ quá độ lên chủ nghĩa xã hội có xu hướng biến đổi như thế nào?
+A. Doanh nhân hóa.
+B. Dân tộc hóa.
+C. Khu vực hóa.
+*D. Tri thức hóa.
+Gt: Bộ phận "công nhân hiện đại", "công nhân trí thức" ngày càng lớn mạnh; trình độ chuyên môn kỹ thuật, kỹ năng nghề nghiệp của công nhân ngày càng được nâng lên, chứng tỏ xu hướng tri thức hóa.
+
+Câu 49: Giai cấp nông dân Việt Nam trong thời kỳ quá độ lên chủ nghĩa xã hội có xu hướng biến đổi rõ đặc điểm nào sau đây?
+A. Trở thành giai cấp thống trị xã hội.
+*B. Trở thành một bộ phận của giai cấp công nhân.
+C. Đang dần giữ vai trò lãnh đạo.
+D. Đang chuyển sang giai cấp thủ công.
+Gt: Trong thời kỳ quá độ lên chủ nghĩa xã hội, giai cấp nông dân giảm dần về số lượng và tỉ lệ; một bộ phận nông dân chuyển sang lao động công nghiệp hoặc dịch vụ, trở thành một bộ phận của giai cấp công nhân.
+
+Câu 50: Sự xuất hiện của đội ngũ doanh nhân Việt Nam hiện nay là kết quả của giai đoạn lịch sử nào sau đây?
+A. Từ 1945 đến 1954.
+B. Thời kỳ trước đổi mới.
+*C. Thời kỳ đổi mới.
+D. Từ 1954 đến 1975.
+Gt: Trước năm 1986, Việt Nam vận hành theo cơ chế kế hoạch hóa tập trung, bao cấp, không thừa nhận kinh doanh tư nhân độc lập. Từ sau Đại hội Đảng lần thứ VI (1986) - khởi đầu thời kỳ Đổi mới - nhà nước chuyển sang phát triển kinh tế thị trường định hướng xã hội chủ nghĩa, tạo điều kiện cho đội ngũ doanh nhân hình thành và phát triển như hiện nay.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3000;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath();
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

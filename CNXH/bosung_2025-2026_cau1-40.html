@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Câu hỏi bổ sung năm học 2025 - 2026 - Thi Trắc Nghiệm - SNG EDU</title>
+
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db;
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter {
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0;
+        }
+        .opt-text {
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s;
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box {
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue);
+            border-radius: 4px; display: none; font-size: 0.95rem;
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        .sidebar-col {
+            width: 320px;
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn {
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col {
+                width: 100%;
+                position: static;
+                order: 2;
+                max-height: none;
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+Câu 1: "Cộng hòa hay là chết" là khẩu hiệu của phong trào đấu tranh nào sau đây của giai cấp công nhân?
+*A. Phong trào công nhân dệt ở thành phố Lion, Pháp năm 1834.
+B. Phong trào công nhân dệt ở thành phố Lion, Pháp năm 1831.
+C. Phong trào Hiến chương ở Anh (1836 - 1848).
+D. Phong trào công nhân dệt ở thành phố Xilêdi, Đức năm 1844.
+Gt: "Cộng hòa hay là chết" là khẩu hiệu của phong trào công nhân dệt ở thành phố Lion, Pháp năm 1834.
+
+Câu 2: Vào những năm 40 của thế kỷ XIX ở Châu Âu, cuộc cách mạng công nghiệp đã làm xuất hiện một lực lượng xã hội mới nào sau đây?
+A. Nền sản xuất nông nghiệp.
+B. Công trường thủ công.
+C. Hợp tác giản đơn.
+*D. Nền đại công nghiệp.
+Gt: Vào những năm 40 của thế kỷ XIX ở Châu Âu, cuộc cách mạng công nghiệp phát triển mạnh mẽ đã làm xuất hiện nền đại công nghiệp cơ khí.
+
+Câu 3: Kế thừa tư tưởng nào của chủ nghĩa xã hội không tưởng, C. Mác đã kế thừa hạt nhân hợp lý nào sau đây?
+A. Pháp biện chứng.
+B. Quan niệm duy vật.
+C. Học thuyết giá trị.
+D. Chủ nghĩa xã hội không tưởng.
+*B. Quan niệm duy vật.
+Gt: C. Mác đã kế thừa hạt nhân "quan niệm duy vật" trong tư tưởng của các nhà xã hội chủ nghĩa không tưởng.
+
+Câu 4: Giai cấp công nhân có đặc điểm nào sau đây phù hợp với việc thực hiện sứ mệnh lịch sử?
+*A. Có tinh thần cách mạng triệt để.
+B. Là chủ thể của quá trình sản xuất tiên tiến.
+C. Đại diện cho phương thức sản xuất tiên tiến.
+D. Không có lợi ích tư tưởng riêng.
+Gt: Giai cấp công nhân có đặc điểm là một tổ chức chặt chẽ, có tính kỷ luật cao, phù hợp với việc thực hiện sứ mệnh lịch sử.
+
+Câu 5: Một trong những điểm khác biệt cơ bản của giai cấp công nhân hiện đại so với giai cấp công nhân thế kỷ XIX là gì?
+A. Sứ mệnh lịch sử.
+B. Mục tiêu cách mạng.
+*C. Trình độ học vấn.
+D. Hệ tư tưởng.
+Gt: Giai cấp công nhân hiện đại có xu hướng trí thức hóa, được đào tạo chuẩn mực và có trình độ học vấn, chuyên môn kỹ thuật ngày càng cao hơn so với giai cấp công nhân thế kỷ XIX.
+
+Câu 6: Thuật ngữ nào sau đây dùng để chỉ bộ phận công nhân có tri thức, kỹ năng cao?
+A. "Cổ xanh".
+*B. "Cổ trắng".
+C. Nhân tài.
+D. Tổng tài.
+Gt: "Công nhân cổ trắng" chỉ những lao động trí óc, tri thức cao, làm việc trong môi trường văn phòng, kỹ thuật, dùng để phân biệt với "công nhân cổ xanh" là lao động chân tay trực tiếp sản xuất.
+
+Câu 7: Biểu hiện nào sau đây cho thấy công nhân Việt Nam có trình độ học vấn và tay nghề ngày càng cao?
+*A. Tuân thủ quy trình kỹ thuật và thời gian sản xuất.
+B. Linh động giải quyết vấn đề.
+C. Sản xuất theo sở trường, không quan tâm chất lượng.
+D. Nhiệt tình lao động và quan tâm giám sát.
+Gt: Công nhân Việt Nam có trình độ kỷ luật cao, tuân thủ quy trình kỹ thuật và thời gian sản xuất, thể hiện tay nghề ngày càng phát triển.
+
+Câu 8: Ở các khu công nghiệp, công nhân Việt Nam thể hiện tinh thần trách nhiệm trong lao động qua biểu hiện nào sau đây?
+A. Chủ động tham gia xây dựng chính quyền.
+B. Tích cực tham gia quản lý xã hội.
+C. Tham gia giám sát, phản biện xã hội.
+*D. Tự giác tham gia xây dựng Đảng.
+Gt: Việc học tập nghị quyết của Đảng và tham gia các lớp bồi dưỡng chính trị để nắm vững tinh thần đoàn kết trực tiếp sản xuất là biểu hiện tinh thần tự giác tham gia xây dựng Đảng của công nhân Việt Nam.
+
+Câu 9: Theo quan điểm của V.I. Lênin, giai đoạn đầu của xã hội hình thái kinh tế xã hội cộng sản chủ nghĩa là gì?
+A. Thời kỳ quá độ lên chủ nghĩa xã hội.
+B. Thời kỳ hoàng kim của chủ nghĩa tư bản.
+*C. Chủ nghĩa xã hội.
+D. Chủ nghĩa cộng sản.
+Gt: Lênin gọi "giai đoạn đầu của xã hội cộng sản" (hay giai đoạn thấp) là chủ nghĩa xã hội, thay vì gọi chủ nghĩa cộng sản.
+
+Câu 10: Học thuyết nào sau đây của chủ nghĩa Mác - Lênin luận chứng vững chắc về vai trò và sứ mệnh lịch sử của giai cấp công nhân?
+*A. Học thuyết về hình thái kinh tế - xã hội.
+B. Học thuyết về sự mệnh lịch sử của giai cấp công nhân.
+C. Học thuyết về giá trị thặng dư.
+D. Học thuyết về giai cấp và đấu tranh giai cấp.
+Gt: Học thuyết hình thái kinh tế - xã hội của Mác - Lênin đã chỉ ra rằng thay thế hình thái kinh tế - xã hội tư bản chủ nghĩa bằng hình thái kinh tế - xã hội cộng sản chủ nghĩa là quá trình lịch sử tự nhiên.
+
+Câu 11: Một trong những nhiệm vụ chính trị cơ bản thời kỳ quá độ lên chủ nghĩa xã hội là thực hiện điều gì?
+A. Đa dạng đối lập.
+*B. Chuyên chính tư sản.
+C. Chuyên chính vô sản.
+D. Tam quyền phân lập.
+Gt: Một trong những nhiệm vụ chính trị cơ bản thời kỳ quá độ lên chủ nghĩa xã hội là thực hiện chuyên chính vô sản.
+
+Câu 12: Trong xã hội tư bản, mâu thuẫn giữa giai cấp công nhân và giai cấp tư sản biểu hiện về mặt nào sau đây của xã hội?
+A. Điều kiện kinh tế và ý thức chính trị.
+B. Cơ sở hạ tầng và kiến trúc thượng tầng.
+C. Tồn tại xã hội và ý thức xã hội.
+*D. Lực lượng sản xuất và quan hệ sản xuất.
+Gt: Trong xã hội tư bản, mâu thuẫn giữa giai cấp công nhân và giai cấp tư sản biểu hiện ở mặt kinh tế là mâu thuẫn giữa lực lượng sản xuất xã hội hóa ngày càng cao với quan hệ sản xuất dựa trên chế độ chiếm hữu tư nhân tư bản chủ nghĩa.
+
+Câu 13: Mục tiêu cao cả nhất mà Đảng và nhân dân ta xây dựng nền văn hóa trong thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam là gì?
+A. Cải thiện đời sống của nhân dân.
+B. Giữ gìn bản sắc văn hóa.
+*C. Phát triển con người toàn diện.
+D. Thực hiện an sinh xã hội.
+Gt: Trong thời kỳ quá độ lên chủ nghĩa xã hội, việc xây dựng nền văn hóa mới có nội dung cốt lõi là phát triển con người toàn diện, đó là mục tiêu cao cả của công cuộc xây dựng chủ nghĩa xã hội ở Việt Nam.
+
+Câu 14: Nghị quyết Đại hội XIII của Đảng xác định thành phần kinh tế nào sau đây giữ vai trò chủ đạo, là công cụ vật chất quan trọng để nhà nước điều tiết, định hướng nền kinh tế thị trường?
+A. Kinh tế tư nhân.
+*B. Kinh tế nhà nước.
+C. Kinh tế tập thể.
+D. Kinh tế có vốn đầu tư nước ngoài.
+Gt: Nghị quyết Đại hội XIII của Đảng xác định kinh tế nhà nước giữ vai trò chủ đạo, là công cụ vật chất quan trọng để nhà nước điều tiết, định hướng phát triển kinh tế thị trường.
+
+Câu 15: Hệ tư tưởng nào sau đây giữ vai trò chủ đạo trong đời sống tinh thần xã hội thời kỳ quá độ lên chủ nghĩa xã hội?
+*A. Hệ tư tưởng của giai cấp công nhân.
+B. Hệ tư tưởng của giai cấp tư sản.
+C. Tư tưởng tự do cá nhân.
+D. Tư tưởng khai sáng.
+Gt: Nền dân chủ xã hội chủ nghĩa lấy hệ tư tưởng của giai cấp công nhân làm chủ đạo trong đời sống tinh thần xã hội thời kỳ quá độ lên chủ nghĩa xã hội.
+
+Câu 16: Theo quan điểm của chủ nghĩa Mác - Lênin, phát triển nền kinh tế thị trường xã hội chủ nghĩa cần thực hiện yêu cầu nào sau đây?
+A. Cơ chế vận hành của nền kinh tế thị trường.
+B. Sự tham gia chính trị của các tổ chức xã hội.
+*C. Sự lãnh đạo thống nhất của Đảng Cộng sản.
+D. Chỉ để cho thị trường tự vận hành của Đảng sản xuất.
+Gt: Dân chủ xã hội chủ nghĩa có được là do có sự lãnh đạo thống nhất của Đảng Cộng sản.
+
+Câu 17: Bản chất tư tưởng - văn hóa của nền chủ nghĩa xã hội được thể hiện rõ nét nhất qua nội dung nào sau đây?
+A. Bảo tồn mọi hình thức văn hóa cũ của các dân tộc.
+B. Phủ nhận vai trò của các giá trị văn hóa truyền thống.
+C. Đề cao việc tiếp thu giá trị văn hóa ngoại lai.
+*D. Kế thừa tinh hoa văn hóa dân tộc và nhân loại.
+Gt: Về bản chất tư tưởng - văn hóa, nền dân chủ xã hội chủ nghĩa lấy hệ tư tưởng của chủ nghĩa Mác - Lênin làm nền tảng, đồng thời kế thừa, phát huy tinh hoa văn hóa truyền thống dân tộc, tiếp thu những giá trị văn hóa tiến bộ của nhân loại.
+
+Câu 18: Nhà nước xã hội chủ nghĩa ra đời là kết quả của quá trình nào sau đây?
+A. Sự phát triển tự nhiên của xã hội tư bản.
+*B. Cuộc cách mạng do giai cấp vô sản tiến hành.
+C. Cuộc cách mạng do giai cấp tư sản tiến hành.
+D. Sự sụp đổ tất yếu của chủ nghĩa tư bản.
+Gt: Nhà nước xã hội chủ nghĩa ra đời là kết quả của cuộc cách mạng do giai cấp vô sản và nhân dân lao động tiến hành dưới sự lãnh đạo của Đảng Cộng sản.
+
+Câu 19: Theo V.I. Lênin, nhiệm vụ nào sau đây phải đặt lên hàng đầu sau khi giai cấp vô sản giành được chính quyền?
+*A. Tạo lập nền lao động cao hơn xã hội cũ.
+B. Trấn áp sự chống đối của giai cấp bóc lột.
+C. Xây dựng lực lượng vũ trang để bảo vệ chính quyền.
+D. Thủ tiêu ngay mọi hình thức sở hữu tư nhân.
+Gt: Lênin chỉ rõ, nhiệm vụ hàng đầu phải là tạo lập nền lao động cao hơn xã hội tư bản, đó là nhiệm vụ quan trọng nhất, khó khăn nhất so với nhiệm vụ trấn áp sự phản kháng của giai cấp bóc lột.
+
+Câu 20: Chế độ dân chủ nhân dân ở Việt Nam được xác lập sau sự kiện nào sau đây?
+A. Sau khi ký Hiệp định Genève năm 1954.
+B. Sau thắng lợi của cách mạng Tháng Tám năm 1945.
+C. Giải phóng miền Nam thống nhất đất nước năm 1975.
+D. Giai đoạn tiến hành công cuộc đổi mới năm 1986.
+*B. Sau thắng lợi của cách mạng Tháng Tám năm 1945.
+Gt: Chế độ dân chủ nhân dân ở nước ta được xác lập sau Cách mạng Tháng Tám năm 1945.
+
+Câu 21: Trong quá trình cải cách hành chính, khi thực hiện phép chuyển đổi cơ chế xin cho sang phục vụ doanh nghiệp, giải pháp nào sau đây thể hiện rõ nhất?
+*A. Khi thủ tục gây phiền hà, cơ quan quản lý chủ động cải cách, đơn giản hóa giúp thực hiện chức năng quản lý một cách hiệu quả.
+B. Đơn giản hóa thủ tục, cùng khai thay trách nhiệm giải trình.
+C. Duy trì quy trình hành chính đảm bảo đủ chặt chẽ pháp lý.
+D. Tăng cường các khâu kiểm soát và cải cách thủ tục hành chính.
+Gt: Khi thủ tục gây phiền hà, cơ quan quản lý chủ động cải cách hành chính theo hướng "đơn giản hóa", đón nhận một cách chủ động trách nhiệm giải trình để tạo thuận lợi cho người dân, doanh nghiệp.
+
+Câu 22: Trong trường hợp một cán bộ có vi phạm đạo đức công vụ, gây ảnh hưởng xấu đến uy tín cơ quan nhà nước, giải pháp nào sau đây thể hiện đúng tinh thần của Nhà nước pháp quyền xã hội chủ nghĩa?
+A. Phê bình trước tổ chức đoàn thể.
+B. Nhắc nhở trong nội bộ cơ quan.
+C. Không xem xét trách nhiệm pháp lý.
+*D. Xử lý theo đúng quy định của pháp luật.
+Gt: "Mọi công dân bình đẳng trước pháp luật" nên khi cán bộ vi phạm đạo đức công vụ, dù người vi phạm nắm giữ chức vụ nào, đều phải được xử lý theo đúng quy định của pháp luật.
+
+Câu 23: Một trong những mối quan hệ cơ bản giữa các giai cấp, tầng lớp trong cơ cấu xã hội - giai cấp là gì?
+A. Quan hệ tôn giáo, tín ngưỡng.
+B. Quan hệ hành chính, dân cư.
+*C. Quan hệ sở hữu tư liệu sản xuất.
+D. Quan hệ chuyên môn nghề nghiệp.
+Gt: Cơ cấu xã hội - giai cấp là hệ thống các giai cấp, tầng lớp xã hội tồn tại khách quan trong một chế độ xã hội nhất định, thông qua những mối quan hệ về sở hữu tư liệu sản xuất, về tổ chức quản lý quá trình sản xuất, về địa vị chính trị - xã hội... giữa các giai cấp, tầng lớp đó.
+
+Câu 24: Trong các loại hình cơ cấu xã hội, cơ cấu xã hội - giai cấp có vị trí trung tâm vì lý do nào sau đây?
+A. Đăng phái chính trị và nhà nước.
+B. Các chế độ văn hóa và tôn giáo.
+C. Quy mô và chất lượng nguồn lao động.
+*D. Các thiết chế gia đình và dòng họ.
+Gt: Trong các loại hình cơ cấu xã hội, cơ cấu xã hội - giai cấp có vị trí quan trọng hàng đầu vì có liên quan trực tiếp đến các đảng phái chính trị và nhà nước, đến quyền sở hữu tư liệu sản xuất, quản lý tổ chức lao động, vấn đề phân phối thu nhập trong một hệ thống sản xuất nhất định.
+
+Câu 25: Về mặt kinh tế, sự phát triển lực lượng sản xuất và cơ cấu kinh tế thời kỳ quá độ lên chủ nghĩa xã hội tất yếu dẫn đến việc mở rộng chủ thể kinh tế đa dạng như thế nào?
+A. Kế hoạch hóa, tập trung hóa.
+B. Tư nhân hóa triệt để mọi ngành.
+C. Phát triển hình thức tự do tự do.
+*D. Công nghiệp hóa, hiện đại hóa.
+Gt: Tính tất yếu kinh tế của thời kỳ quá độ lên chủ nghĩa xã hội đòi hỏi phát triển lực lượng sản xuất thông qua quá trình công nghiệp hóa, hiện đại hóa, làm biến đổi cơ cấu xã hội - giai cấp mạnh mẽ theo hướng phát triển các thành phần kinh tế đa dạng.
+
+Câu 26: Nhà tư tưởng nào sau đây đã chủ trương mở rộng liên minh giữa công nhân với giai cấp nông dân và giai cấp tầng lớp khác trong quá trình xây dựng chủ nghĩa xã hội?
+A. C. Mác.
+*B. V.I. Lênin.
+C. Ph. Ăngghen.
+D. Xtalin.
+Gt: Lênin đã chủ trương mở rộng khối liên minh giữa giai cấp công nhân với giai cấp nông dân và các tầng lớp lao động khác trong thời kỳ quá độ lên chủ nghĩa xã hội.
+
+Câu 27: Ở Việt Nam, quá trình đẩy mạnh công nghiệp hóa, hiện đại hóa và hội nhập quốc tế hiện nay khiến cơ cấu xã hội biến đổi mạnh mẽ nhất về mặt nào sau đây?
+A. Cơ cấu xã hội - nghề nghiệp.
+B. Chính sách của nhà nước.
+*C. Cơ cấu kinh tế.
+D. Quan hệ xã hội.
+Gt: Theo chủ nghĩa Mác - Lênin, cơ cấu xã hội - giai cấp có mối liên hệ chặt chẽ với cơ cấu kinh tế của thời kỳ quá độ, chính vì thế, khi phương thức sản xuất thay đổi, tất yếu dẫn đến biến đổi cơ cấu xã hội - giai cấp.
+
+Câu 28: Sự thức tỉnh, trưởng thành về ý thức dân tộc và mong muốn vươn tới độc lập, tự do là nội dung nào sau đây trong quan hệ dân tộc?
+A. Liên hiệp lại với nhau để hình thành quốc gia lớn hơn.
+*B. Tách ra để hình thành các cộng đồng dân tộc độc lập.
+C. Hình thành các liên minh khu vực hoặc quốc tế.
+D. Các dân tộc xích lại gần nhau, hòa hợp với nhau và mở rộng giao lưu.
+Gt: Quan hệ dân tộc phát triển theo hai xu hướng, trong đó ở xu hướng thứ nhất, cộng đồng dân cư muốn tách ra để hình thành cộng đồng dân tộc độc lập.
+
+Câu 29: Đấu tranh chống chủ nghĩa phân biệt chủng tộc, chủ nghĩa dân tộc cực đoan là biểu hiện của nguyên tắc nào sau đây trong Cương lĩnh dân tộc?
+*A. Liên hiệp công nhân tất cả các dân tộc.
+B. Các dân tộc hoàn toàn bình đẳng.
+C. Các dân tộc được quyền tự quyết.
+D. Đoàn kết quốc tế của các dân tộc.
+Gt: Để thực hiện quyền bình đẳng dân tộc, trước hết phải thủ tiêu tình trạng áp bức giai cấp, trên cơ sở đó xóa bỏ tình trạng áp bức dân tộc; phải đấu tranh chống chủ nghĩa phân biệt chủng tộc, chủ nghĩa dân tộc cực đoan, là nội dung của nguyên tắc "các dân tộc hoàn toàn bình đẳng" trong Cương lĩnh dân tộc.
+
+Câu 30: Để thực hiện bình đẳng giữa các dân tộc ở Việt Nam, cần ưu tiên thực hiện giải pháp nào sau đây?
+*A. Sự chênh lệch về trình độ phát triển giữa các dân tộc.
+B. Sự khác biệt về số lượng dân cư giữa các dân tộc.
+C. Sự khác biệt về phân bố dân cư giữa các dân tộc.
+D. Sự khác biệt về văn hóa giữa các dân tộc người.
+Gt: Muốn thực hiện bình đẳng giữa các dân tộc, trước hết phải khắc phục sự chênh lệch về trình độ phát triển kinh tế, văn hóa, xã hội giữa các dân tộc do lịch sử để lại.
+
+Câu 31: Sự kiện Nam Sudan tách ra từ Sudan và chính thức trở thành một quốc gia độc lập vào năm 2011 là biểu hiện của nguyên tắc nào sau đây trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin?
+A. Liên hiệp công nhân tất cả các dân tộc.
+B. Các dân tộc hoàn toàn bình đẳng.
+C. Đoàn kết tất cả các dân tộc.
+*D. Các dân tộc được quyền tự quyết.
+Gt: Quyền tự quyết của các dân tộc thể hiện ở quyền tự quyết định lập ra quốc gia dân tộc độc lập, do vậy sự kiện Nam Sudan tách ra từ Sudan và chính thức trở thành quốc gia độc lập là biểu hiện của nguyên tắc "các dân tộc được quyền tự quyết" trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin.
+
+Câu 32: Theo quan điểm của chủ nghĩa Mác - Lênin, xét đến cùng, mọi quan niệm về tôn giáo, các tổ chức, thiết chế tôn giáo đều được sinh ra từ đâu?
+A. Tín ngưỡng.
+B. Tư tưởng.
+*C. Sản xuất.
+D. Tính thân.
+Gt: Theo quan điểm chủ nghĩa Mác - Lênin, xét đến cùng, mọi quan niệm về tôn giáo, mọi tổ chức tôn giáo đều được sinh ra từ những điều kiện kinh tế - xã hội, mà trong hoạt động sản xuất vật chất là nền tảng cơ bản của đời sống xã hội.
+
+Câu 33: Khi xã hội chưa có giai cấp, tôn giáo chỉ phản ánh nhận thức ngây thơ của con người xung quanh thế nào?
+A. Lịch sử.
+B. Quần chúng.
+*C. Chính trị.
+D. Xã hội.
+Gt: Khi xã hội chưa có giai cấp, tôn giáo chỉ phản ánh nhận thức ngây thơ, ngộ nhận của con người xung quanh thế giới tự nhiên đầy bí ẩn quanh mình, khi đó chưa có tính chính trị.
+
+Câu 34: Sự vận động, biến đổi không ngừng của tôn giáo đòi hỏi giải pháp quản lý nào sau đây phù hợp nhất?
+A. Khắc phục dần các ảnh hưởng tiêu cực của tôn giáo.
+B. Đảm bảo tự do tín ngưỡng của tôn giáo.
+C. Phân biệt mặt chính trị và mặt tư tưởng.
+*D. Lịch sử - cụ thể.
+Gt: Tín ngưỡng, tôn giáo không phải là hiện tượng xã hội bất biến, các lực lượng chính trị hoặc những nhóm lợi ích khác nhau lợi dụng tôn giáo vào những thời điểm khác nhau vì vậy phải có quan điểm lịch sử - cụ thể khi xem xét, đánh giá và ứng xử với những vấn đề liên quan đến tôn giáo.
+
+Câu 35: Ngày 13 tháng 11 năm 2015, các phần tử khủng bố Nhà nước Hồi giáo (IS) đã tấn công thủ đô Paris (Pháp) làm hơn 100 người thiệt mạng và hàng trăm người bị thương, sự kiện này thể hiện tôn giáo bị biến tướng dẫn tới điều gì?
+A. Xã hội.
+B. Lịch sử.
+C. Quần chúng.
+*D. Chính trị.
+Gt: Tôn giáo mang tính chính trị khi nó bị các lực lượng chính trị hoặc những nhóm lợi ích khác nhau lợi dụng để thực hiện các mưu đồ chính trị, có khi khoác áo tôn giáo để gây bất ổn xã hội, gây tổn hại đến lợi ích nhân loại, khiến tôn giáo bị biến tướng thành công cụ chính trị cực đoan.
+
+Câu 36: Chức năng nào sau đây của gia đình góp phần đào tạo thế hệ trẻ và xây dựng con người mới xã hội chủ nghĩa?
+*A. Giáo dục, hình thành và phát triển nhân cách con người.
+B. Kinh tế, tổ chức đời sống và hoạt động tiêu dùng gia đình.
+C. Sinh đẻ, duy trì nòi giống và cung cấp thế hệ con người.
+D. Thỏa mãn nhu cầu tâm sinh lý của các thành viên.
+Gt: Với chức năng giáo dục, nuôi dưỡng, gia đình góp phần to lớn vào việc đào tạo thế hệ trẻ, thể hiện lại tương lai thế hệ trẻ cho xã hội.
+
+Câu 37: Chức năng tái sản xuất con người của gia đình tác động trực tiếp đến vấn đề nào sau đây của xã hội?
+A. Nghĩa vụ pháp lý của các thành viên gia đình.
+B. Sức khỏe bà mẹ và trẻ em.
+*C. Quy mô dân số và nguồn lao động của quốc gia.
+D. Mức sống của các tầng lớp dân cư.
+Gt: Chức năng tái sản xuất quyết định đến mật độ dân cư và nguồn lực lao động của một quốc gia, thể hiện ở việc quy mô gia đình tác động trực tiếp đến quy mô dân số và nguồn lao động của quốc gia.
+
+Câu 38: Một trong những biểu hiện của hôn nhân tự nguyện là gì?
+A. Theo tập quán vùng miền.
+*B. Môn đăng hộ đối.
+C. Tự do ly hôn.
+D. Hợp tuổi, hợp mệnh.
+Gt: Hôn nhân tiến bộ (tự nguyện) còn bao hàm cả quyền tự do ly hôn khi tình yêu giữa nam và nữ không còn nữa.
+
+Câu 39: Loại hình gia đình nào sau đây phổ biến ở Việt Nam hiện nay?
+A. Gia đình tập thể.
+B. Gia đình truyền thống.
+C. Gia đình đơn thân.
+*D. Gia đình hạt nhân.
+Gt: Gia đình đơn (còn gọi là gia đình hạt nhân) đang trở nên phổ biến ở đô thị và nông thôn ở Việt Nam.
+
+Câu 40: Gia đình anh P có mức thu nhập cao, đời sống vật chất đầy đủ nhưng các thành viên trong gia đình ít có sự gắn kết, giao tiếp trực tiếp với nhau, mỗi người chỉ tập trung vào công việc riêng, ít có mối quan tâm sẻ chia. Thực trạng này đang tồn tại phổ biến trong nhiều gia đình đô thị của Việt Nam hiện nay. Hiện tượng trên phản ánh sự xuất hiện xu hướng nào sau đây của biến đổi gia đình Việt Nam?
+*A. Sự rời rạc về liên kết trong quan hệ gia đình.
+B. Sự biến đổi về quy mô gia đình.
+C. Sự biến đổi chức năng kinh tế của gia đình.
+D. Sự biến đổi chức năng tái sản xuất con người.
+Gt: Hiện tượng "ít chia sẻ", "thiếu giao tiếp trực tiếp" và "tập trung vào công việc riêng" là biểu hiện rõ nét của sự rời rạc, lỏng lẻo trong liên kết tình cảm giữa các thành viên gia đình đô thị.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 2400;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath();
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

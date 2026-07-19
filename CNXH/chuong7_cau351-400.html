@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 7: Vấn đề gia đình trong thời kỳ quá độ lên CNXH - Thi Trắc Nghiệm - SNG EDU</title>
+
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db;
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter {
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0;
+        }
+        .opt-text {
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s;
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box {
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue);
+            border-radius: 4px; display: none; font-size: 0.95rem;
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        .sidebar-col {
+            width: 320px;
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn {
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col {
+                width: 100%;
+                position: static;
+                order: 2;
+                max-height: none;
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+Câu 1: Theo quan điểm của chủ nghĩa Mác - Lênin, một trong những chức năng cơ bản của gia đình là
+A. cung cấp phương pháp luận.
+B. tổ chức xây dựng xã hội.
+C. trung tâm thế giới quan.
+*D. tái sản xuất ra con người.
+Gt: Các chức năng cơ bản của gia đình gồm: tái sản xuất ra con người, nuôi dưỡng và giáo dục, kinh tế và tổ chức tiêu dùng, thoả mãn nhu cầu tâm sinh lý.
+
+Câu 2: Gia đình là một hình thức cộng đồng đặc biệt, có sự liên kết của các quan hệ nào sau đây?
+A. Cùng chung sống, huyết thống, giáo dục.
+B. Hôn nhân, huyết thống, nuôi dưỡng.
+*C. Hôn nhân, huyết thống, nuôi dưỡng, giáo dục.
+D. Cùng chung sống, giáo dục, nuôi dưỡng.
+Gt: Gia đình là một hình thức cộng đồng đặc biệt, có sự liên kết của các mối quan hệ hôn nhân, huyết thống, nuôi dưỡng và giáo dục.
+
+Câu 3: Hình thái gia đình huyết tộc tồn tại trong chế độ xã hội nào sau đây?
+A. Chiếm hữu nô lệ.
+*B. Cộng xã nguyên thủy.
+C. Tư bản chủ nghĩa.
+D. Phong kiến.
+Gt: Hình thái gia đình huyết tộc tồn tại trong xã hội cộng xã nguyên thủy.
+
+Câu 4: Theo quan điểm của chủ nghĩa Mác - Lênin, một trong những chức năng cơ bản của gia đình là
+*A. thoả mãn nhu cầu tâm sinh lý.
+B. tổ chức quản lý cộng đồng.
+C. điều chỉnh quan hệ xã hội.
+D. cung cấp phương pháp luận.
+Gt: Thoả mãn nhu cầu tâm sinh lý, duy trì tình cảm là một trong các chức năng cơ bản của gia đình.
+
+Câu 5: Các hình thức cộng đồng gia đình từ thấp đến cao trong lịch sử phát triển của xã hội loài người là
+A. cặp đôi, đồng huyết, một vợ - một chồng.
+B. cặp đôi, một vợ - một chồng, đồng huyết.
+*C. đồng huyết, cặp đôi, một vợ - một chồng.
+D. đồng huyết, một vợ - một chồng, cặp đôi.
+Gt: Hình thức gia đình huyết tộc xuất hiện đầu tiên, sau đó là gia đình cặp đôi, và khi chế độ tư hữu xuất hiện, gia đình một vợ một chồng ra đời.
+
+Câu 6: Hình thức gia đình nào sau đây hình thành sớm nhất trong lịch sử?
+A. Punaluan.
+B. Cặp đôi.
+*C. Quần hôn.
+D. Một vợ - một chồng.
+Gt: Ph.Ăngghen khái quát lịch sử phát triển gia đình qua các hình thức tương ứng với các giai đoạn phát triển của xã hội, trong đó quần hôn là hình thức xuất hiện sớm nhất.
+
+Câu 7: Quan hệ nào sau đây xác định vị trí thành viên trong gia đình?
+A. Nuôi dưỡng.
+B. Tình cảm.
+C. Quan hệ tự do.
+*D. Huyết thống.
+Gt: Quan hệ huyết thống là mối liên hệ tự nhiên, có ý nghĩa quan trọng nhất và chi phối các mối quan hệ khác trong gia đình.
+
+Câu 8: Gia đình là một hình thức cộng đồng xã hội đặc biệt, được hình thành, duy trì và củng cố chủ yếu dựa trên quan hệ nào sau đây?
+*A. Hôn nhân, huyết thống, nuôi dưỡng, giáo dục.
+B. Nuôi dưỡng, giáo dục, quản lý, ngân sách chung.
+C. Kinh tế, tình yêu, huyết thống.
+D. Tình yêu, hôn nhân, kinh tế.
+Gt: Gia đình được hình thành, duy trì và củng cố chủ yếu dựa trên quan hệ hôn nhân, huyết thống, nuôi dưỡng và giáo dục.
+
+Câu 9: Cơ sở đầu tiên hình thành gia đình là quan hệ
+A. tình cảm.
+B. xã hội.
+*C. hôn nhân.
+D. văn hóa.
+Gt: Cơ sở hình thành gia đình gồm hai mối quan hệ cơ bản là quan hệ hôn nhân và quan hệ huyết thống, trong đó hôn nhân là cơ sở đầu tiên.
+
+Câu 10: Cộng đồng gia đình được gắn kết chủ yếu bởi yếu tố
+A. chính trị.
+*B. tình cảm.
+C. kinh tế.
+D. văn hóa.
+Gt: Khác với các cộng đồng xã hội khác, gia đình được gắn kết chủ yếu bởi yếu tố tình cảm.
+
+Câu 11: Chức năng đặc thù của gia đình là
+A. nuôi dưỡng và giáo dục.
+B. tổ chức đời sống gia đình.
+*C. tái sản xuất ra con người.
+D. thỏa mãn các nhu cầu tâm sinh lý.
+Gt: Tái sản xuất ra con người là chức năng đặc thù, chỉ gia đình mới có, không thể thay thế bởi thiết chế xã hội khác.
+
+Câu 12: Theo quan điểm của chủ nghĩa Mác - Lênin, yếu tố nào sau đây quyết định nhất dẫn đến sự ra đời của gia đình một vợ - một chồng?
+A. Chế độ hôn nhân tiến bộ.
+B. Nhu cầu phát triển của sản xuất và tự do.
+C. Nhu cầu phát triển của sản xuất hiện đại hóa.
+*D. Chế độ tư hữu về tư liệu sản xuất.
+Gt: Hôn nhân một vợ một chồng xuất hiện khi chế độ tư hữu về tư liệu sản xuất thắng thế chế độ công hữu nguyên thủy.
+
+Câu 13: Hình thức gia đình quần hôn trong xã hội cộng xã nguyên thủy có đặc điểm nổi bật nào sau đây?
+A. Vợ chồng bình đẳng.
+*B. Chế độ mẫu hệ.
+C. Một vợ - một chồng.
+D. Chế độ phụ hệ.
+Gt: Trong hình thức gia đình quần hôn, con chỉ có thể xác định được mẹ, nên địa vị người mẹ nổi bật hơn, dẫn tới chế độ mẫu hệ.
+
+Câu 14: Yếu tố nào sau đây quyết định nhất sự thay đổi các hình thức tổ chức gia đình trong lịch sử?
+A. Văn hóa.
+B. Xã hội.
+*C. Kinh tế.
+D. Chính trị.
+Gt: Gia đình là một phạm trù lịch sử, vận động và biến đổi khi cơ sở kinh tế - kỹ thuật của xã hội thay đổi.
+
+Câu 15: Hình thức gia đình cặp đôi trong xã hội cộng xã nguyên thủy có đặc điểm nổi bật nào sau đây?
+A. Chế độ phụ hệ.
+B. Vợ chồng bình đẳng.
+C. Một vợ - một chồng.
+*D. Chế độ mẫu hệ.
+Gt: Gia đình cặp đôi vẫn dựa trên nguyên tắc mẫu hệ vì vai trò người cha chưa được xác định rõ, người mẹ vẫn giữ vai trò quan trọng.
+
+Câu 16: Trong mối quan hệ với xã hội, gia đình được coi là
+*A. tế bào của xã hội.
+B. xương sống của xã hội.
+C. trung tâm của xã hội.
+D. ngoại vi của xã hội.
+Gt: Gia đình được coi là tế bào của xã hội.
+
+Câu 17: Việc thực hiện chức năng kinh tế của gia đình có đặc điểm nào sau đây?
+A. Tổ chức, quản lý sản xuất.
+*B. Chủ thể tái sản xuất ra sức lao động.
+C. Chủ thể sản xuất tư liệu tiêu dùng.
+D. Tổ chức phân phối sản phẩm.
+Gt: Gia đình là chủ thể sản xuất và tái sản xuất ra sức lao động cho xã hội.
+
+Câu 18: Việc thực hiện chức năng giáo dục của gia đình đối với mỗi cá nhân có đặc điểm là môi trường giáo dục
+A. khoa học, đạt chuẩn.
+B. hệ thống, chuyên nghiệp.
+*C. đầu tiên, suốt đời.
+D. tiên tiến, hiện đại.
+Gt: Gia đình là môi trường giáo dục đầu tiên và quá trình giáo dục trong gia đình diễn ra suốt đời của mỗi người.
+
+Câu 19: Việc thực hiện chức năng tái sản xuất con người phải gắn với
+*A. điều kiện kinh tế, xã hội cụ thể.
+B. trí lực của con người.
+C. thể lực của con người.
+D. phong tục, tập quán của cộng đồng.
+Gt: Việc sinh con không chỉ là việc riêng của gia đình mà còn gắn với các chính sách của nhà nước và điều kiện kinh tế - xã hội cụ thể.
+
+Câu 20: Hình thức gia đình Punaluan trong xã hội cộng xã nguyên thủy có đặc điểm nổi bật nào sau đây?
+A. Một vợ - một chồng.
+B. Vợ chồng bình đẳng.
+*C. Chế độ mẫu hệ.
+D. Chế độ phụ hệ.
+Gt: Gia đình Punaluan là một hình thức quần hôn vẫn duy trì chế độ mẫu hệ.
+
+Câu 21: Theo quan điểm của chủ nghĩa Mác - Lênin, yếu tố nào sau đây quyết định nhất việc hình thành quyền bình đẳng nam nữ trong gia đình?
+A. Chế độ công hữu nguyên thủy bị xóa bỏ.
+*B. Xóa bỏ chế độ tư hữu về tư liệu sản xuất.
+C. Chế độ tư hữu bị bãi bỏ trong nghĩa vụ xã hội.
+D. Xóa bỏ chế độ tư hữu phong kiến.
+Gt: Việc xóa bỏ chế độ tư hữu về tư liệu sản xuất là điều kiện quyết định để hình thành quyền bình đẳng nam nữ trong gia đình.
+
+Câu 22: Một trong những biểu hiện của chế độ hôn nhân tiến bộ là hôn nhân dựa trên cơ sở
+A. tập quán.
+B. kinh tế.
+*C. tự nguyện.
+D. tín ngưỡng.
+Gt: Các biểu hiện của chế độ hôn nhân tiến bộ gồm hôn nhân tự nguyện, một vợ một chồng và vợ chồng bình đẳng, hôn nhân được đảm bảo về pháp lý.
+
+Câu 23: Xây dựng gia đình trong thời kỳ quá độ lên chủ nghĩa xã hội không dựa trên cơ sở nào sau đây?
+A. chính trị - xã hội.
+B. chế độ hôn nhân tiến bộ.
+*C. hôn nhân bất bình đẳng.
+D. kinh tế - xã hội.
+Gt: Xây dựng gia đình trong thời kỳ quá độ dựa trên các cơ sở kinh tế - xã hội, chính trị - xã hội, văn hóa và chế độ hôn nhân tiến bộ, không dựa trên hôn nhân bất bình đẳng.
+
+Câu 24: Một trong những biểu hiện của chế độ hôn nhân tiến bộ là hôn nhân được đảm bảo về mặt
+A. kinh tế.
+*B. pháp lý.
+C. nghi lễ.
+D. xã hội.
+Gt: Hôn nhân được đảm bảo về mặt pháp lý là một trong những biểu hiện của chế độ hôn nhân tiến bộ.
+
+Câu 25: Một trong những cơ sở xây dựng gia đình trong thời kỳ quá độ lên chủ nghĩa xã hội là
+A. mô hình gia đình truyền thống.
+B. quan hệ khác đối đầu.
+*C. chế độ hôn nhân tiến bộ.
+D. mô hình gia đình hạt nhân.
+Gt: Chế độ hôn nhân tiến bộ là một trong bốn cơ sở xây dựng gia đình trong thời kỳ quá độ lên chủ nghĩa xã hội.
+
+Câu 26: Vấn đề cốt lõi trong cơ sở kinh tế - xã hội của xây dựng gia đình trong thời kỳ quá độ lên chủ nghĩa xã hội là
+*A. chế độ sở hữu xã hội đối với tư liệu sản xuất.
+B. nền đại công nghiệp phát triển.
+C. sự tiến bộ của khoa học, công nghệ hiện đại.
+D. chế độ phân phối theo lao động.
+Gt: Vấn đề cốt lõi trong cơ sở kinh tế - xã hội là chế độ sở hữu xã hội đối với tư liệu sản xuất từng bước hình thành và củng cố thay thế chế độ sở hữu tư nhân.
+
+Câu 27: Vấn đề cốt lõi trong cơ sở chính trị - xã hội của xây dựng gia đình trong thời kỳ quá độ lên chủ nghĩa xã hội là
+A. xây dựng cơ sở pháp lý tiến bộ.
+*B. thiết lập chính quyền của giai cấp công nhân.
+C. chế độ sở hữu xã hội đối với tư liệu sản xuất.
+D. nền đại công nghiệp phát triển.
+Gt: Vấn đề cốt lõi trong cơ sở chính trị - xã hội là việc thiết lập chính quyền nhà nước của giai cấp công nhân và nhân dân lao động.
+
+Câu 28: Nội dung nào sau đây không phải là cơ sở văn hóa xây dựng gia đình trong thời kỳ quá độ lên chủ nghĩa xã hội?
+*A. Thiết lập chính quyền của giai cấp công nhân và nhân dân lao động.
+B. Những giá trị văn hóa của gia đình truyền thống.
+C. Các giá trị văn hóa mới tiến bộ theo tư tưởng của giai cấp công nhân.
+D. Sự hình thành các giá trị, chuẩn mực điều chỉnh các quan hệ gia đình.
+Gt: Việc thiết lập chính quyền của giai cấp công nhân và nhân dân lao động thuộc nội dung của cơ sở chính trị - xã hội, không phải cơ sở văn hóa.
+
+Câu 29: Một trong những biểu hiện của chế độ hôn nhân tiến bộ là hôn nhân dựa trên quan hệ
+A. tài sản.
+B. nhân thân.
+*C. bình đẳng.
+D. đạo đức.
+Gt: Vợ chồng bình đẳng là một trong những biểu hiện của chế độ hôn nhân tiến bộ.
+
+Câu 30: Chế độ hôn nhân tiến bộ không dựa trên cơ sở nào sau đây?
+A. Bình đẳng.
+B. Pháp lý.
+C. Tự nguyện.
+*D. Kinh tế.
+Gt: Chế độ hôn nhân tiến bộ dựa trên cơ sở tự nguyện, bình đẳng, một vợ một chồng và đảm bảo pháp lý, không dựa trên cơ sở kinh tế.
+
+Câu 31: Trong xã hội hiện đại, quy mô gia đình Việt Nam đang có xu hướng
+A. đa thế hệ.
+B. mở rộng.
+*C. thu nhỏ.
+D. đơn thân.
+Gt: Quy mô gia đình Việt Nam ngày càng có xu hướng thu nhỏ hơn so với trước kia, số lượng thành viên trong gia đình ít đi.
+
+Câu 32: Gia đình Việt Nam hiện nay tiếp thu giá trị nào sau đây của gia đình hiện đại?
+A. Ít con trong việc sinh con.
+B. Tuyệt đối hóa tự do cá nhân.
+*C. Tôn trọng quyền tự do cá nhân.
+D. Thừa nhận hôn nhân đồng tính.
+Gt: Gia đình Việt Nam hiện nay tiếp thu giá trị nhân văn mới, tôn trọng quyền tự do cá nhân, khắc phục tư tưởng gia trưởng, áp đặt của gia đình cũ.
+
+Câu 33: Ở gia đình Việt Nam hiện nay, việc xây dựng gia đình văn hóa không dựa trên cơ sở nào?
+*A. Kế thừa mọi yếu tố của gia đình truyền thống.
+B. Tiếp thu giá trị tiến bộ của gia đình hiện đại.
+C. Xóa bỏ những yếu tố lạc hậu của gia đình cổ.
+D. Giữ gìn những giá trị tốt đẹp của dân tộc.
+Gt: Không phải mọi yếu tố của gia đình truyền thống đều phù hợp với hiện nay, nên xây dựng gia đình văn hóa cần chọn lọc, kế thừa những giá trị phù hợp.
+
+Câu 34: Xây dựng gia đình mới ở Việt Nam hiện nay phải kế thừa và phát huy giá trị nào sau đây của gia đình truyền thống?
+A. Phong tục cưới hỏi.
+*B. Sự yêu thương, đùm bọc lẫn nhau.
+C. Gia đình đông con.
+D. Đề cao vai trò của người đàn ông.
+Gt: Tính êm ấm, đoàn kết, yêu thương và đùm bọc lẫn nhau là nét đẹp của gia đình truyền thống Việt Nam cần được phát huy.
+
+Câu 35: Xây dựng và phát triển gia đình Việt Nam trong thời kỳ quá độ lên chủ nghĩa xã hội cần kế thừa giá trị nào sau đây của gia đình truyền thống?
+A. Gia đình đông con.
+B. Phong tục cưới hỏi.
+*C. Sự chung thủy, tình nghĩa vợ chồng.
+D. Đề cao vai trò của người đàn ông.
+Gt: Sự chung thủy, tình nghĩa vợ chồng là đạo lý, nền tảng đạo đức tốt đẹp cần được kế thừa để xây dựng hôn nhân bền vững.
+
+Câu 36: Gia đình Việt Nam hiện nay cần kế thừa giá trị nào sau đây của gia đình truyền thống?
+*A. Con cháu hiếu thảo với cha mẹ, ông bà.
+B. Phong tục cưới hỏi.
+C. Gia đình đông con.
+D. Đề cao vai trò của người đàn ông.
+Gt: Đạo hiếu, sự kính trọng thế hệ đi trước là giá trị tốt đẹp của gia đình truyền thống Việt Nam cần được giữ gìn.
+
+Câu 37: Gia đình Việt Nam hiện nay cần tiếp thu giá trị nào sau đây của mô hình gia đình mới?
+A. Ít con trong việc sinh con.
+B. Tuyệt đối hóa tự do cá nhân.
+*C. Bình đẳng giữa các thành viên.
+D. Thừa nhận hôn nhân đồng tính.
+Gt: Giá trị tiến bộ của gia đình hiện đại là đề cao mối quan hệ bình đẳng giữa các thành viên trong gia đình.
+
+Câu 38: Yếu tố nào sau đây tác động mạnh mẽ đến gia đình Việt Nam trong thời kỳ quá độ lên chủ nghĩa xã hội?
+A. Cách mạng khoa học kỹ thuật hiện đại.
+*B. Chính sách, pháp luật của Nhà nước.
+C. Xu thế toàn cầu hóa và hội nhập quốc tế.
+D. Sự phát triển kinh tế thị trường.
+Gt: Trong thời kỳ quá độ, chính sách của Đảng và Nhà nước về gia đình đóng vai trò tác động mạnh mẽ, quan trọng nhất đến sự biến đổi của gia đình Việt Nam.
+
+Câu 39: Xu hướng chuyển đổi từ chủ yếu là đơn vị kinh tế sang chủ yếu là đơn vị tình cảm là biểu hiện của biến đổi chức năng nào sau đây của gia đình Việt Nam hiện nay?
+A. Nuôi dưỡng, giáo dục.
+B. Kinh tế và tổ chức tiêu dùng.
+*C. Thoả mãn nhu cầu tâm sinh lý.
+D. Sản xuất ra con người.
+Gt: Trong gia đình Việt Nam hiện nay, nhu cầu tâm sinh lý, tình cảm được chú trọng, hạnh phúc của các thành viên được đề cao hơn.
+
+Câu 40: Đầu tư tài chính cho việc học hành của con cái tăng lên là biểu hiện của biến đổi chức năng nào sau đây của gia đình Việt Nam hiện nay?
+A. Thoả mãn nhu cầu tâm sinh lý.
+B. Tái sản xuất ra con người.
+C. Kinh tế và tổ chức tiêu dùng.
+*D. Nuôi dưỡng, giáo dục.
+Gt: Đầu tư tài chính cho việc học hành của con cái ngày càng tăng là biểu hiện của chức năng nuôi dưỡng, giáo dục.
+
+Câu 41: Ở gia đình Việt Nam, dưới ảnh hưởng mạnh mẽ của cách mạng khoa học công nghệ, việc sinh con của người phụ nữ có xu hướng
+*A. chủ động hơn.
+B. bị động hơn.
+C. bị chi phối bởi nhu cầu xã hội.
+D. bị chi phối bởi ý chí gia đình.
+Gt: Với thành tựu của y học hiện đại, việc sinh đẻ được các gia đình tiến hành chủ động, tự giác khi xác định số lượng và thời điểm sinh con.
+
+Câu 42: Xu hướng chính sách dân số ở Việt Nam hiện nay hướng đến việc thay đổi cách nhìn nhận nào sau đây về sinh con của gia đình?
+A. Thực hiện kế hoạch hóa gia đình.
+*B. Duy trì mức sinh thay thế.
+C. Chỉ nên có từ một đến hai con.
+D. Có thể sinh con theo ý muốn.
+Gt: Trong giai đoạn hiện nay, thông điệp mới trong chính sách dân số là mỗi cặp vợ chồng nên sinh đủ hai con nhằm duy trì mức sinh thay thế.
+
+Câu 43: Chức năng kinh tế của gia đình Việt Nam có điểm mới nào sau đây do tác động của kinh tế thị trường và hội nhập?
+A. Tổ chức kinh tế độc lập.
+B. Sản xuất tự cung tự cấp.
+C. Tổ chức tiêu dùng.
+*D. Sản xuất hàng hoá.
+Gt: Kinh tế gia đình đã chuyển mạnh từ kinh tế tự cung, tự cấp sang tham gia sản xuất hàng hóa để trao đổi trên thị trường.
+
+Câu 44: Một số gia đình ở Việt Nam bị suy giảm chức năng chăm sóc, thiếu tri thức khoa học dẫn đến sự phát triển lệch lạc về thể chất, tinh thần của trẻ. Đây là hạn chế trong việc thực hiện chức năng nào của gia đình?
+A. Kinh tế và tổ chức tiêu dùng.
+B. Tái sản xuất ra con người.
+*C. Nuôi dưỡng, giáo dục.
+D. Thoả mãn nhu cầu tâm sinh lý.
+Gt: Việc thiếu tri thức khoa học trong chăm sóc, giáo dục con dẫn đến trẻ phát triển lệch lạc là hạn chế trong chức năng nuôi dưỡng, giáo dục của gia đình.
+
+Câu 45: Nội dung giáo dục gia đình hiện nay ngoài giáo dục đạo đức, tri thức, kinh nghiệm còn chú trọng hướng đến giáo dục kiến thức khoa học hiện đại. Đây là biểu hiện của biến đổi yếu tố nào sau đây trong chức năng giáo dục ở gia đình Việt Nam hiện nay?
+*A. Nội dung giáo dục gia đình.
+B. Phương pháp giáo dục gia đình.
+C. Vai trò giáo dục gia đình.
+D. Đầu tư tài chính cho giáo dục ở gia đình Việt Nam hiện nay.
+Gt: Việc mở rộng sang giáo dục kiến thức khoa học hiện đại là biểu hiện của biến đổi nội dung giáo dục gia đình.
+
+Câu 46: Ở các gia đình Việt Nam hiện nay có tình trạng bố mẹ mải kiếm tiền, bỏ bê con cái, không quản lý con cái, chạy theo đồng tiền hơn quan tâm con. Đây là biểu hiện không tích cực trong thực hiện chức năng nào sau đây của gia đình?
+A. Kinh tế và tổ chức tiêu dùng.
+*B. Nuôi dưỡng, giáo dục.
+C. Thoả mãn nhu cầu tâm sinh lý tình cảm.
+D. Tái sản xuất ra con người.
+Gt: Việc bố mẹ mải kiếm tiền, bỏ bê, không quan tâm con cái là biểu hiện không tích cực trong chức năng nuôi dưỡng, giáo dục của gia đình.
+
+Câu 47: Những biến đổi trong quan hệ gia đình đặt ra thách thức nào sau đây cho gia đình Việt Nam hiện nay?
+A. Ít quan tâm, chăm sóc lẫn nhau.
+B. Tình cảm anh chị em bị phai nhạt.
+C. Trẻ em hư, bỏ học sớm.
+*D. Mâu thuẫn giữa các thế hệ tăng.
+Gt: Thách thức lớn đặt ra cho gia đình Việt Nam hiện nay là mâu thuẫn giữa các thế hệ tăng do sự khác biệt về tuổi tác khi cùng chung sống.
+
+Câu 48: Việc thực hiện chức năng giáo dục của gia đình Việt Nam hiện nay có xu hướng nào sau đây?
+A. Giáo dục chủ yếu dựa vào kinh nghiệm.
+*B. Tăng đầu tư tài chính cho giáo dục con cái.
+C. Chú trọng giáo dục đạo đức con cái.
+D. Tăng vai trò giáo dục của các thể chế gia đình.
+Gt: Giáo dục gia đình hiện nay phát triển theo xu hướng đầu tư tài chính của gia đình cho giáo dục con cái ngày càng tăng lên.
+
+Câu 49: Do xã hội ngày càng phát triển, gia đình Việt Nam hiện nay có xu hướng nào sau đây trong quan hệ giữa các thành viên?
+A. Tình cảm gia đình vơi bớt lạnh nhạt.
+B. Coi trọng kinh tế, đặt kinh tế lên hàng đầu.
+C. Thời gian dành cho gia đình ngày càng ít.
+*D. Mối quan hệ gia đình trở nên rời rạc, lỏng lẻo.
+Gt: Xã hội ngày càng phát triển, các thành viên có ít thời gian quan tâm nhau hơn, khiến mối quan hệ gia đình trở nên rời rạc, lỏng lẻo.
+
+Câu 50: Quan điểm tiếp tục chuyển trọng tâm chính sách dân số từ kế hoạch hóa gia đình sang dân số và phát triển ở Việt Nam hiện nay đòi hỏi phải chú trọng điều gì?
+A. Phát triển phong trào xây dựng gia đình văn hóa.
+B. Nâng cao đời sống vật chất, tinh thần cho gia đình.
+C. Kế thừa những giá trị tốt đẹp của gia đình truyền thống.
+*D. Tăng cường sự lãnh đạo của Đảng và quản lý của Nhà nước.
+Gt: Việc chuyển trọng tâm chính sách dân số là một quyết định quan trọng, cần có sự chỉ đạo và quản lý chặt chẽ của Đảng và Nhà nước.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3000;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath();
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

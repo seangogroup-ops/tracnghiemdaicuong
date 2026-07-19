@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 4: Dân chủ XHCN và Nhà nước XHCN - Phần 1 - Thi Trắc Nghiệm - SNG EDU</title>
+
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db;
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter {
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0;
+        }
+        .opt-text {
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s;
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box {
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue);
+            border-radius: 4px; display: none; font-size: 0.95rem;
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        .sidebar-col {
+            width: 320px;
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn {
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col {
+                width: 100%;
+                position: static;
+                order: 2;
+                max-height: none;
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+Câu 1: Theo quan điểm của chủ nghĩa Mác - Lênin, dân chủ là quyền lực thuộc về
+A. nhà nước.
+*B. nhân dân.
+C. giai cấp thống trị.
+D. lực lượng cầm quyền.
+Gt: Dân chủ được hiểu là quyền lực thuộc về nhân dân.
+
+Câu 2: Chế độ dân chủ đầu tiên trong lịch sử là chế độ nào sau đây?
+A. Phong kiến.
+B. Công xã nguyên thủy.
+*C. Chiếm hữu nô lệ.
+D. Tư bản chủ nghĩa.
+Gt: Ở xã hội cộng sản nguyên thủy chỉ mới xuất hiện hình thức manh nha của dân chủ, chưa phải chế độ dân chủ hoàn thiện.
+
+Câu 3: Với tư cách là một giá trị xã hội, dân chủ là một phạm trù
+A. bất biến.
+B. lịch sử.
+*C. vĩnh viễn.
+D. chính trị.
+Gt: Dân chủ với tư cách một giá trị xã hội là phạm trù vĩnh viễn, tồn tại cùng con người.
+
+Câu 4: Với tư cách là một thiết chế chính trị, dân chủ là một phạm trù
+*A. lịch sử.
+B. vĩnh viễn.
+C. bất biến.
+D. đại chúng.
+Gt: Với tư cách một thiết chế chính trị, dân chủ là phạm trù lịch sử, gắn với từng hình thức nhà nước.
+
+Câu 5: Nền dân chủ xã hội chủ nghĩa ra đời gắn với sự kiện giai cấp công nhân
+A. chuyển từ tự phát lên tự giác.
+B. có Đảng Cộng sản.
+C. bắt đầu đấu tranh cách mạng.
+*D. giành được chính quyền.
+Gt: Nền dân chủ xã hội chủ nghĩa chính thức xác lập khi giai cấp công nhân và nhân dân lao động giành được chính quyền.
+
+Câu 6: Nền dân chủ xã hội chủ nghĩa mang bản chất của giai cấp, tầng lớp nào sau đây?
+A. Doanh nhân.
+B. Nông dân.
+C. Trí thức.
+*D. Công nhân.
+Gt: Dân chủ xã hội chủ nghĩa mang bản chất giai cấp công nhân, có tính nhân dân rộng rãi và tính dân tộc sâu sắc.
+
+Câu 7: Cơ sở kinh tế của nền dân chủ xã hội chủ nghĩa là
+*A. chế độ công hữu về tư liệu sản xuất chủ yếu.
+B. chế độ tư hữu về tư liệu sản xuất.
+C. nền sản xuất thủ công.
+D. nền sản xuất nông nghiệp.
+Gt: Nền dân chủ xã hội chủ nghĩa dựa trên chế độ công hữu về những tư liệu sản xuất chủ yếu của toàn xã hội.
+
+Câu 8: Xét về bản chất, nền dân chủ xã hội chủ nghĩa là nền dân chủ của
+A. mọi tầng lớp.
+B. thiểu số.
+C. mọi giai cấp.
+*D. đa số.
+Gt: Dân chủ xã hội chủ nghĩa là chế độ dân chủ vì lợi ích của đa số nhân dân lao động.
+
+Câu 9: Nền dân chủ nào sau đây thực hiện dân chủ rộng rãi đối với quần chúng nhân dân?
+*A. Dân chủ vô sản.
+B. Dân chủ sơ khai.
+C. Dân chủ chủ nô.
+D. Dân chủ tư sản.
+Gt: Dân chủ vô sản thực hiện dân chủ rộng rãi đối với quần chúng nhân dân.
+
+Câu 10: Theo quan điểm của chủ nghĩa Mác - Lênin, dân chủ là một giá trị xã hội phản ánh
+A. quan điểm của giai cấp thống trị.
+*B. những quyền cơ bản của con người.
+C. truyền thống văn hóa của dân tộc.
+D. tính hoa văn hóa nhân loại.
+Gt: Dân chủ là một giá trị xã hội phản ánh những quyền cơ bản của con người.
+
+Câu 11: Theo quan điểm của chủ nghĩa Mác - Lênin, về phương diện chế độ xã hội, dân chủ là
+*A. hình thái nhà nước.
+B. phương thức đấu tranh.
+C. giá trị xã hội.
+D. giá trị văn hóa.
+Gt: Trên phương diện chế độ xã hội và trong lĩnh vực chính trị, dân chủ là một hình thái nhà nước.
+
+Câu 12: Theo quan điểm của chủ nghĩa Mác - Lênin, về phương diện quyền lực, dân chủ là
+A. giá trị xã hội.
+B. quyền lực thuộc về thiểu số.
+*C. quyền lực thuộc về nhân dân.
+D. giá trị văn hóa.
+Gt: Trên phương diện quyền lực, dân chủ là quyền lực thuộc về nhân dân.
+
+Câu 13: Theo quan điểm của chủ nghĩa Mác - Lênin, về phương diện tổ chức và quản lý xã hội, dân chủ là
+A. kiến thức.
+*B. nguyên tắc.
+C. giá trị xã hội.
+D. truyền thống văn hóa.
+Gt: Trên phương diện tổ chức và quản lý xã hội, dân chủ là một nguyên tắc - nguyên tắc dân chủ.
+
+Câu 14: Theo quan điểm của chủ nghĩa Mác - Lênin, dân chủ là một phạm trù chính trị gắn với hình thức tổ chức nhà nước của
+*A. giai cấp thống trị.
+B. giai cấp bị trị.
+C. đa số dân lao động.
+D. thiểu số có tư tưởng cấp tiến.
+Gt: Dân chủ là một phạm trù chính trị gắn với các hình thức tổ chức nhà nước của giai cấp cầm quyền.
+
+Câu 15: Theo quan điểm của chủ nghĩa Mác - Lênin, với tư cách là một phạm trù chính trị, dân chủ phải được thể chế hóa bằng
+A. văn hóa.
+*B. pháp luật.
+C. đạo đức.
+D. tư tưởng.
+Gt: Dân chủ phải được thể chế hóa bằng pháp luật và được pháp luật bảo đảm.
+
+Câu 16: Dân chủ xã hội chủ nghĩa là nền dân chủ thực hiện bằng hình thức nhà nước
+A. xã hội dân chủ.
+B. pháp quyền.
+C. thể quyền.
+*D. xã hội chủ nghĩa.
+Gt: Dân chủ xã hội chủ nghĩa được thực hiện bằng nhà nước pháp quyền xã hội chủ nghĩa.
+
+Câu 17: Nền dân chủ xã hội chủ nghĩa là nền dân chủ đặt dưới sự lãnh đạo của
+*A. Đảng Cộng sản.
+B. Đảng Cộng hòa.
+C. Đảng Dân chủ.
+D. Đảng Xã hội.
+Gt: Nền dân chủ xã hội chủ nghĩa do Đảng Cộng sản lãnh đạo.
+
+Câu 18: Nền dân chủ xã hội chủ nghĩa được xây dựng trên cơ sở của chế độ sở hữu nào sau đây?
+A. Hỗn hợp.
+B. Tư nhân.
+C. Cá thể.
+*D. Xã hội.
+Gt: Nền dân chủ xã hội chủ nghĩa dựa trên chế độ sở hữu xã hội về những tư liệu sản xuất chủ yếu của toàn xã hội.
+
+Câu 19: Bản chất kinh tế của nền dân chủ xã hội chủ nghĩa là thực hiện chế độ phân phối lợi ích dựa trên
+A. khu vực.
+B. hệ thống chính trị.
+*C. kết quả lao động.
+D. tài sản.
+Gt: Bản chất kinh tế của nền dân chủ xã hội chủ nghĩa là thực hiện chế độ phân phối lợi ích theo kết quả lao động.
+
+Câu 20: Theo Ph. Ăngghen, hình thức dân chủ nào sau đây tồn tại trong xã hội cộng sản nguyên thủy?
+A. dân chủ xã hội.
+*B. dân chủ quân sự.
+C. dân chủ quá độ.
+D. dân chủ nhân dân.
+Gt: Trong chế độ cộng sản nguyên thủy xuất hiện hình thức mà Ăngghen gọi là "dân chủ nguyên thủy" hay "dân chủ quân sự".
+
+Câu 21: Nền dân chủ tư sản được xây dựng trên nền tảng của chế độ sở hữu nào sau đây?
+A. Xã hội.
+*B. Tư nhân.
+C. Hỗn hợp.
+D. Tập thể.
+Gt: Dân chủ tư sản được xây dựng trên nền tảng kinh tế là chế độ tư hữu về tư liệu sản xuất.
+
+Câu 22: Lịch sử phát triển của xã hội loài người trải qua những nền dân chủ nào sau đây?
+*A. Dân chủ chủ nô, dân chủ tư sản, dân chủ xã hội chủ nghĩa.
+B. Dân chủ sơ khai, dân chủ quân sự, dân chủ tư sản.
+C. Dân chủ quân sự, dân chủ phong kiến, dân chủ tư sản.
+D. Dân chủ phong kiến, dân chủ tư sản, dân chủ xã hội chủ nghĩa.
+Gt: Trong lịch sử nhân loại có ba nền dân chủ: dân chủ chủ nô, dân chủ tư sản, dân chủ xã hội chủ nghĩa.
+
+Câu 23: Nhà tư tưởng nào sau đây từng cho rằng chế độ dân chủ vô sản dân chủ hơn gấp triệu lần dân chủ tư sản?
+A. C. Mác.
+B. Ph. Ăngghen.
+*C. V.I. Lênin.
+D. Xtalin.
+Gt: Lênin khẳng định chế độ dân chủ vô sản so với bất cứ chế độ dân chủ tư sản nào cũng dân chủ hơn gấp triệu lần.
+
+Câu 24: Theo quan điểm của chủ nghĩa Mác - Lênin, nền dân chủ xã hội chủ nghĩa mang tính
+A. đa nguyên chính trị.
+*B. nhất nguyên chính trị.
+C. đa dạng về hệ tư tưởng.
+D. đơn thuần về quan hệ xã hội.
+Gt: Dân chủ xã hội chủ nghĩa mang tính nhất nguyên về chính trị.
+
+Câu 25: Theo quan điểm của chủ nghĩa Mác - Lênin, nền dân chủ nào sau đây được xây dựng dựa trên quan điểm chính trị của giai cấp tiên tiến của thời đại?
+A. Dân chủ tương đối.
+B. Dân chủ tuyệt đối.
+*C. Dân chủ vô sản.
+D. Dân chủ tư sản.
+Gt: Dân chủ vô sản được xây dựng trên quan điểm chính trị tiên tiến của giai cấp công nhân.
+
+Câu 26: Nền dân chủ xã hội chủ nghĩa dựa trên chế độ
+*A. công hữu về tư liệu sản xuất chủ yếu.
+B. công hữu một phần về tư liệu sản xuất.
+C. sở hữu tập thể về tư liệu sản xuất.
+D. sở hữu hỗn hợp về tư liệu sản xuất.
+Gt: Nền dân chủ xã hội chủ nghĩa dựa trên chế độ sở hữu xã hội về những tư liệu sản xuất chủ yếu của toàn xã hội.
+
+Câu 27: Theo quan điểm của chủ nghĩa Mác - Lênin, nền dân chủ nào sau đây có sự kết hợp hài hòa lợi ích giữa cá nhân, tập thể và xã hội?
+*A. Dân chủ vô sản.
+B. Dân chủ xã hội.
+C. Dân chủ tự do.
+D. Dân chủ tư sản.
+Gt: Dân chủ xã hội chủ nghĩa có sự kết hợp hài hòa lợi ích giữa cá nhân, tập thể và toàn xã hội.
+
+Câu 28: Quan điểm cho rằng trong chế độ dân chủ xã hội chủ nghĩa, quyền lực đều thuộc về nhân dân là bàn về nội dung nào sau đây?
+A. Bản chất tư tưởng.
+B. Bản chất kinh tế.
+*C. Bản chất chính trị.
+D. Bản chất xã hội.
+Gt: Bàn về quyền làm chủ của nhân dân trên lĩnh vực chính trị chính là bản chất chính trị của nền dân chủ.
+
+Câu 29: Quan điểm cho rằng địa vị làm chủ của nhân dân lao động thể hiện là nội dung bàn về
+A. Bản chất tư tưởng.
+B. Bản chất kinh tế.
+*C. Bản chất chính trị.
+D. Bản chất xã hội.
+Gt: Khái niệm "nhân dân làm chủ" khẳng định quyền lực nhà nước là của dân, do dân và vì dân, thuộc bản chất chính trị.
+
+Câu 30: Quan điểm cho rằng ở Việt Nam, dân làm chủ, cán bộ làm đầy tớ của nhân dân là bàn về nội dung nào sau đây?
+*A. Bản chất chính trị.
+B. Bản chất kinh tế.
+C. Bản chất tư tưởng.
+D. Bản chất xã hội.
+Gt: Mối quan hệ "dân làm chủ, cán bộ làm đầy tớ" nói về cách thức tổ chức và hoạt động của bộ máy nhà nước phục vụ nhân dân, thuộc bản chất chính trị.
+
+Câu 31: Nhà nước xã hội chủ nghĩa là nhà nước mà ở đó sự thống trị chính trị thuộc về giai cấp, tầng lớp nào sau đây?
+A. Trí thức.
+*B. Công nhân.
+C. Nông dân.
+D. Doanh nhân.
+Gt: Nhà nước xã hội chủ nghĩa là kiểu nhà nước mà sự thống trị chính trị thuộc về giai cấp công nhân.
+
+Câu 32: Nhà nước xã hội chủ nghĩa ra đời là kết quả của cuộc cách mạng dưới sự lãnh đạo của tổ chức nào sau đây?
+A. Đảng cầm quyền.
+*B. Đảng Cộng sản.
+C. Đảng nhân dân.
+D. Đảng Xã hội.
+Gt: Nhà nước xã hội chủ nghĩa ra đời là kết quả cuộc cách mạng do giai cấp công nhân và nhân dân lao động tiến hành dưới sự lãnh đạo của Đảng Cộng sản.
+
+Câu 33: Nhà nước xã hội chủ nghĩa thực hiện chức năng trấn áp của đa số nhân dân lao động đối với thiểu số nào sau đây?
+A. lực lượng trung gian của xã hội.
+B. lực lượng tàn dư của xã hội cũ.
+C. thiểu số tư hữu.
+*D. thiểu số bóc lột.
+Gt: Nhà nước xã hội chủ nghĩa thực hiện trấn áp của đa số nhân dân lao động đối với thiểu số bóc lột.
+
+Câu 34: Nhà nước xã hội chủ nghĩa là cơ quan đại diện cho ý chí của
+A. nhóm lợi ích.
+B. giai cấp thống trị.
+*C. nhân dân lao động.
+D. tổ chức xã hội.
+Gt: Nhà nước xã hội chủ nghĩa là đại biểu cho ý chí chung của nhân dân lao động.
+
+Câu 35: Nhà nước xã hội chủ nghĩa mang bản chất của giai cấp, tầng lớp nào sau đây?
+*A. Công nhân.
+B. Nông dân.
+C. Trí thức.
+D. Doanh nhân.
+Gt: Nhà nước xã hội chủ nghĩa mang bản chất của giai cấp công nhân.
+
+Câu 36: Giai cấp, tầng lớp nào sau đây giữ vị trí trung tâm về chính trị trong nhà nước xã hội chủ nghĩa?
+A. Nông dân.
+*B. Công nhân.
+C. Trí thức.
+D. Tiểu tư sản.
+Gt: Nhà nước xã hội chủ nghĩa có hệ thống chính trị thuộc về giai cấp công nhân, giữ vị trí trung tâm.
+
+Câu 37: Cơ sở kinh tế của nhà nước xã hội chủ nghĩa dựa trên chế độ sở hữu nào sau đây?
+*A. tư liệu sản xuất chủ yếu.
+B. công cụ sản xuất chủ yếu.
+C. quan hệ sản xuất.
+D. lực lượng sản xuất.
+Gt: Nhà nước xã hội chủ nghĩa chịu sự quy định của cơ sở kinh tế là chế độ sở hữu xã hội về tư liệu sản xuất chủ yếu.
+
+Câu 38: Nhà nước xã hội chủ nghĩa được xây dựng trên nền tảng tư tưởng của giai cấp, tầng lớp nào sau đây?
+A. Trí thức.
+B. Nông dân.
+*C. Công nhân.
+D. Doanh nhân.
+Gt: Nhà nước xã hội chủ nghĩa mang bản chất giai cấp công nhân nên nền tảng tư tưởng dựa trên tư tưởng của giai cấp công nhân.
+
+Câu 39: Căn cứ vào tính chất của quyền lực nhà nước, nhà nước xã hội chủ nghĩa thực hiện các chức năng nào sau đây?
+A. Văn hóa và xã hội.
+B. Đối nội và đối ngoại.
+C. Chính trị và kinh tế.
+*D. Giai cấp và xã hội.
+Gt: Căn cứ vào tính chất của quyền lực nhà nước, nhà nước xã hội chủ nghĩa thực hiện các chức năng giai cấp và xã hội.
+
+Câu 40: Căn cứ vào phạm vi tác động của quyền lực nhà nước, nhà nước xã hội chủ nghĩa thực hiện các chức năng nào sau đây?
+*A. Đối nội và đối ngoại.
+B. Giai cấp và xã hội.
+C. Chính trị và kinh tế.
+D. Văn hóa và xã hội.
+Gt: Căn cứ vào phạm vi tác động của quyền lực nhà nước, nhà nước xã hội chủ nghĩa thực hiện các chức năng đối nội và đối ngoại.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 2400;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath();
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 3: Chủ nghĩa xã hội và thời kỳ quá độ lên CNXH - Thi Trắc Nghiệm - SNG EDU</title>
+
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db;
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter {
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0;
+        }
+        .opt-text {
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s;
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box {
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue);
+            border-radius: 4px; display: none; font-size: 0.95rem;
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        .sidebar-col {
+            width: 320px;
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn {
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col {
+                width: 100%;
+                position: static;
+                order: 2;
+                max-height: none;
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+Câu 1: Cấu trúc cơ bản của một hình thái kinh tế - xã hội gồm lực lượng sản xuất,
+*A. quan hệ sản xuất và kiến trúc thượng tầng.
+B. kiến trúc và chất và thiết chế xã hội.
+C. cơ sở hạ tầng và thể chế nhà nước.
+D. đời sống văn hóa và thể chế chính trị.
+
+Gt: Cấu trúc cơ bản của một hình thái kinh tế - xã hội gồm lực lượng sản xuất, quan hệ sản xuất và kiến trúc thượng tầng.
+
+Câu 2: Theo quan điểm của chủ nghĩa Mác - Lênin, thời kỳ quá độ, chủ nghĩa xã hội và chủ nghĩa cộng sản là các giai đoạn phát triển của
+A. văn minh công nghiệp.
+B. chủ nghĩa xã hội.
+*C. hình thái kinh tế - xã hội cộng sản chủ nghĩa.
+D. văn minh hậu công nghiệp.
+
+Gt: Theo chủ nghĩa Mác - Lênin, hình thái kinh tế - xã hội cộng sản chủ nghĩa gồm các giai đoạn phát triển: thời kỳ quá độ, chủ nghĩa xã hội và chủ nghĩa cộng sản.
+
+Câu 3: Sự thay thế chủ nghĩa tư bản bằng chủ nghĩa xã hội là quá trình lịch sử tự nhiên, được thực hiện thông qua cách mạng
+A. giải phóng dân tộc.
+*B. xã hội chủ nghĩa.
+C. dân chủ tư sản.
+D. dân chủ nhân dân.
+
+Gt: Học thuyết hình thái kinh tế - xã hội của chủ nghĩa Mác - Lênin chỉ rõ sự thay thế hình thái kinh tế - xã hội tư bản chủ nghĩa bằng hình thái kinh tế - xã hội cộng sản chủ nghĩa là quá trình lịch sử tự nhiên, được thực hiện thông qua cách mạng xã hội chủ nghĩa (giáo trình CNXHKH, 2021, tr.86).
+
+Câu 4: Cơ sở vật chất - kỹ thuật của chủ nghĩa xã hội là
+*A. nền đại công nghiệp phát triển cao.
+B. mô hình kinh tế kế hoạch hóa.
+C. sự chuyển hóa của lao động.
+D. việc xã hội hóa tư liệu sản xuất.
+
+Gt: Cơ sở vật chất - kỹ thuật của chủ nghĩa xã hội là nền đại công nghiệp phát triển cao (giáo trình CNXHKH, 2004, tr.94).
+
+Câu 5: Nguyên tắc phân phối của chủ nghĩa xã hội dựa trên yếu tố cơ bản nào sau đây?
+A. Tài sản cá nhân.
+B. Địa vị xã hội.
+*C. Kết quả lao động.
+D. Phúc lợi xã hội.
+
+Gt: Nguyên tắc phân phối chủ yếu của chủ nghĩa xã hội dựa trên kết quả lao động (giáo trình CNXHKH, 2021, tr.96).
+
+Câu 6: Mục tiêu của chủ nghĩa xã hội là xóa bỏ chế độ tư hữu tư bản chủ nghĩa, thiết lập chế độ công hữu về
+A. của cải xã hội.
+B. sở hữu công cộng.
+C. tài sản cá nhân.
+*D. những tư liệu sản xuất chủ yếu của xã hội.
+
+Gt: Mục tiêu của chủ nghĩa xã hội là xóa bỏ chế độ tư hữu tư bản chủ nghĩa, thiết lập chế độ công hữu về những tư liệu sản xuất chủ yếu của xã hội (giáo trình CNXHKH, 2004, tr.84).
+
+Câu 7: Một trong những đặc trưng của chủ nghĩa xã hội là
+*A. do nhân dân lao động làm chủ.
+B. dựa trên chế độ tư hữu về tư liệu sản xuất.
+C. quyền lực thuộc về thiểu số thống trị.
+D. nhà nước bảo vệ cho lợi ích của thiểu số.
+
+Gt: Chủ nghĩa xã hội có những đặc trưng cơ bản: giải phóng giai cấp, dân tộc, xã hội, con người; do nhân dân lao động làm chủ; có nền kinh tế phát triển cao dựa trên lực lượng sản xuất hiện đại và chế độ công hữu về tư liệu sản xuất chủ yếu (giáo trình CNXHKH, 2021, tr.93-98, 100-101).
+
+Câu 8: Giải phóng xã hội, giải phóng con người, tạo điều kiện cho con người phát triển toàn diện là mục tiêu của
+A. văn minh công nghiệp.
+B. thời kỳ quá độ.
+*C. chủ nghĩa xã hội.
+D. thời đại ngày nay.
+
+Gt: Giải phóng xã hội, giải phóng con người, tạo điều kiện cho con người phát triển toàn diện là mục tiêu cao nhất của chủ nghĩa xã hội.
+
+Câu 9: Giải phóng giai cấp, giải phóng dân tộc, giải phóng con người và giải phóng xã hội là mục tiêu cuối cùng của
+A. thời kỳ quá độ.
+B. văn minh công nghiệp.
+*C. chủ nghĩa xã hội.
+D. kinh tế tri thức.
+
+Gt: Giải phóng giai cấp, dân tộc, xã hội và con người là mục tiêu cuối cùng, cao nhất của chủ nghĩa xã hội (giáo trình CNXHKH, 2021, tr.93).
+
+Câu 10: Chủ nghĩa xã hội, giai đoạn đầu của hình thái kinh tế - xã hội cộng sản chủ nghĩa là
+*A. kinh tế thị trường - xã hội chủ nghĩa.
+B. chế độ dân chủ xã hội chủ nghĩa.
+C. văn minh công nghiệp.
+D. nền văn minh hậu công nghiệp.
+
+Gt: Chủ nghĩa xã hội, giai đoạn đầu của hình thái kinh tế - xã hội cộng sản chủ nghĩa (giáo trình CNXHKH, 2004, tr.85).
+
+Câu 11: Nội dung nào sau đây phản ánh bản chất của nhà nước kiểu mới trong chủ nghĩa xã hội?
+*A. Đại biểu cho lợi ích của nhân dân lao động.
+B. Đại biểu cho lợi ích của thiểu số.
+C. Thực hiện bạo lực trấn áp là chủ yếu.
+D. Thực hiện quản lý xã hội khi cần thiết.
+
+Gt: Nhà nước xã hội chủ nghĩa mang bản chất giai cấp công nhân, tính nhân dân rộng rãi và tính dân tộc sâu sắc, đại biểu cho lợi ích, quyền lực và ý chí của nhân dân lao động (giáo trình CNXHKH, 2021, tr.94).
+
+Câu 12: "Phát triển tự do của mỗi người là điều kiện phát triển tự do của tất cả mọi người" là khẳng định của C. Mác và Ph. Ăngghen trong tác phẩm nào sau đây?
+A. Phê phán Cương lĩnh Gôta.
+*B. Tuyên ngôn của Đảng Cộng sản.
+C. Hệ tư tưởng Đức.
+D. Tư bản.
+
+Gt: Trong tác phẩm Tuyên ngôn của Đảng Cộng sản, C. Mác và Ph. Ăngghen khẳng định: thay cho xã hội tư sản cũ với các giai cấp và đối kháng giai cấp, sẽ xuất hiện một liên hợp trong đó sự phát triển tự do của mỗi người là điều kiện cho sự phát triển tự do của tất cả mọi người (giáo trình CNXHKH, 2021, tr.93-94).
+
+Câu 13: Nguyên nhân sâu xa của cách mạng xã hội chủ nghĩa là
+*A. mâu thuẫn giữa lực lượng sản xuất và quan hệ sản xuất.
+B. sự trưởng thành vượt bậc của giai cấp công nhân.
+C. sự phát triển như vũ bão của khoa học công nghệ.
+D. mâu thuẫn giữa cơ sở hạ tầng và kiến trúc thượng tầng.
+
+Gt: Chủ nghĩa Mác - Lênin chỉ rõ nguyên nhân sâu xa của cách mạng xã hội chủ nghĩa là mâu thuẫn giữa lực lượng sản xuất và quan hệ sản xuất, khi lực lượng sản xuất phát triển nhưng quan hệ sản xuất cũ không còn phù hợp (giáo trình CNXHKH, 2004, tr.43).
+
+Câu 14: Hình thái kinh tế - xã hội cộng sản chủ nghĩa bắt đầu từ khi giành được chính quyền cho đến khi xây dựng thành công
+A. nền kinh tế thị trường.
+B. chủ nghĩa xã hội.
+*C. chủ nghĩa cộng sản.
+D. nền kinh tế tri thức.
+
+Gt: Theo C. Mác, Ph. Ăngghen, V.I. Lênin, hình thái kinh tế - xã hội cộng sản chủ nghĩa bắt đầu từ khi giai cấp công nhân và nhân dân lao động giành được chính quyền cho đến khi xây dựng thành công chủ nghĩa cộng sản (giáo trình CNXHKH, 2004, tr.85).
+
+Câu 15: Khát vọng về chủ nghĩa xã hội không thể được thỏa mãn nếu
+*A. xã hội dựa trên cơ sở chế độ tư hữu về tư liệu sản xuất.
+B. có phong trào đấu tranh của nhân dân lao động.
+C. có trào lưu tư tưởng giải phóng nhân dân lao động.
+D. có khoa học về sứ mệnh lịch sử của giai cấp công nhân.
+
+Gt: Chủ nghĩa xã hội được xây dựng trên cơ sở chế độ công hữu về tư liệu sản xuất, vì thế nếu xã hội còn dựa trên chế độ tư hữu thì khát vọng về chủ nghĩa xã hội không thể được thỏa mãn (giáo trình CNXHKH, 2021, tr.95).
+
+Câu 16: Theo V.I. Lênin, nhà nước xã hội chủ nghĩa là biểu hiện tập trung của
+A. nền tảng văn hóa của xã hội.
+*B. trình độ dân chủ của nhân dân.
+C. các nhóm lợi ích.
+D. tổ chức xã hội.
+
+Gt: Nhà nước xã hội chủ nghĩa, theo V.I. Lênin, là một công cụ, đặc biệt là biểu hiện tập trung trình độ dân chủ của nhân dân lao động (giáo trình CNXHKH, 2021, tr.99).
+
+Câu 17: Trong chủ nghĩa xã hội, văn hóa là nền tảng tinh thần của xã hội, là mục tiêu và
+*A. động lực của sự phát triển xã hội.
+B. cơ sở chính trị của giai cấp công nhân.
+C. nguyên tắc quản lý của nhà nước.
+D. phương thức sản xuất mới của xã hội.
+
+Gt: Trong chủ nghĩa xã hội, văn hóa là nền tảng tinh thần của xã hội, vừa là mục tiêu, vừa là động lực của quá trình phát triển xã hội (giáo trình CNXHKH, 2021, tr.102).
+
+Câu 18: Xóa bỏ tình trạng người bóc lột người thì tất yếu sẽ xóa bỏ tình trạng dân tộc này bóc lột dân tộc khác là khẳng định của C. Mác và Ph. Ăngghen trong nội dung nào sau đây?
+*A. Quan hệ giữa các dân tộc và các giai cấp.
+B. Quan hệ giữa quốc gia và khu vực.
+C. Tình thần cách mạng của giai cấp công nhân.
+D. Tình thần quốc tế của các Đảng Cộng sản.
+
+Gt: C. Mác và Ph. Ăngghen chỉ rõ, khi tình trạng người bóc lột người bị xóa bỏ thì tình trạng dân tộc này bóc lột dân tộc khác cũng sẽ bị xóa bỏ (giáo trình CNXHKH, 2021, tr.101).
+
+Câu 19: Quan hệ giữa các dân tộc trong chủ nghĩa xã hội được xác lập trên nguyên tắc cơ bản nào sau đây?
+A. Tập trung dân chủ.
+*B. Bình đẳng và đoàn kết.
+C. Mở rộng sự cách biệt.
+D. Phê bình và tự phê bình.
+
+Gt: Quan hệ giữa các dân tộc trong chủ nghĩa xã hội được xác lập và bảo đảm trên nguyên tắc bình đẳng, đoàn kết (giáo trình CNXHKH, 2021, tr.101-103).
+
+Câu 20: Theo V.I. Lênin, để giải quyết được mọi vấn đề từ kinh tế, chính trị đến xã hội, con người thì phải xây dựng được
+A. cơ sở vật chất - kỹ thuật.
+B. nền kinh tế tri thức.
+*C. nền văn hóa xã hội chủ nghĩa.
+D. cơ sở hạ tầng của chủ nghĩa xã hội.
+
+Gt: Theo V.I. Lênin, cần thiết phải xây dựng được nền văn hóa xã hội chủ nghĩa mới giải quyết được mọi vấn đề của xã hội (giáo trình CNXHKH, 2021, tr.103).
+
+Câu 21: Thời kỳ quá độ lên chủ nghĩa xã hội là thời kỳ
+*A. cải biến cách mạng trên tất cả các lĩnh vực của đời sống xã hội.
+B. đấu tranh giành chính quyền về tay giai cấp công nhân.
+C. hình thành và phát triển đầy đủ của hình thái kinh tế xã hội chủ nghĩa.
+D. xây dựng giai đoạn cao của hình thái kinh tế xã hội chủ nghĩa.
+
+Gt: Thời kỳ quá độ lên chủ nghĩa xã hội là thời kỳ cải biến cách mạng sâu sắc, triệt để, toàn diện trên tất cả các lĩnh vực của đời sống xã hội (giáo trình CNXHKH, 2021, tr.104).
+
+Câu 22: Theo chủ nghĩa Mác - Lênin, có hai kiểu quá độ lên chủ nghĩa xã hội là
+A. toàn bộ và cục bộ.
+*B. trực tiếp và gián tiếp.
+C. riêng lẻ và từng phần.
+D. đơn giản và phức tạp.
+
+Gt: Theo chủ nghĩa Mác - Lênin, quá độ lên chủ nghĩa xã hội có hai kiểu: quá độ trực tiếp và quá độ gián tiếp (giáo trình CNXHKH, 2021, tr.105).
+
+Câu 23: Theo chủ nghĩa Mác - Lênin, những nước chưa trải qua chủ nghĩa tư bản phát triển tiến lên chủ nghĩa xã hội thuộc kiểu quá độ nào sau đây?
+A. Đơn giản.
+B. Trực tiếp.
+*C. Gián tiếp.
+D. Phức tạp.
+
+Gt: Quá độ gián tiếp là quá độ từ những nước chưa trải qua chủ nghĩa tư bản phát triển, thẳng lên chủ nghĩa xã hội (giáo trình CNXHKH, 2021, tr.105).
+
+Câu 24: Theo chủ nghĩa Mác - Lênin, tiến lên chủ nghĩa xã hội từ những nước tư bản phát triển cao thuộc kiểu quá độ nào sau đây?
+*A. Trực tiếp.
+B. Gián tiếp.
+C. Đơn giản.
+D. Phức tạp.
+
+Gt: Quá độ trực tiếp là quá độ từ những nước tư bản chủ nghĩa phát triển cao lên chủ nghĩa xã hội (giáo trình CNXHKH, 2021, tr.105).
+
+Câu 25: Đặc điểm bao trùm của thời kỳ quá độ lên chủ nghĩa xã hội là sự
+A. xuất hiện các giai cấp bóc lột.
+B. đan xen giữa các thời kỳ trong lịch sử.
+*C. đan xen những yếu tố của xã hội cũ và mới trong cuộc đấu tranh.
+D. đấu tranh quyết liệt trên lĩnh vực văn hóa.
+
+Gt: Xã hội của thời kỳ quá độ là xã hội có sự đan xen của nhiều tàn dư về mọi phương diện kinh tế, đạo đức, tinh thần của chủ nghĩa tư bản với những yếu tố mới mang tính chất xã hội chủ nghĩa (giáo trình CNXHKH, 2021, tr.104).
+
+Câu 26: Một trong những đặc điểm kinh tế của thời kỳ quá độ lên chủ nghĩa xã hội là
+*A. tồn tại nền kinh tế nhiều thành phần.
+B. thiết lập chế độ công hữu tư liệu sản xuất toàn dân.
+C. chỉ tồn tại thành phần kinh tế nhà nước.
+D. duy trì kế hoạch hóa tập trung.
+
+Gt: Thời kỳ quá độ tất yếu tồn tại nền kinh tế nhiều thành phần, trong đó có thành phần đối lập, đan xen bên cạnh nhau, vừa liên kết vừa đấu tranh với nhau (giáo trình CNXHKH, 2021, tr.107).
+
+Câu 27: Trong lĩnh vực kinh tế - xã hội, giai đoạn nào chưa xóa bỏ hoàn toàn khi các dấu vết giai cấp vẫn còn tồn tại?
+A. Giai đoạn đầu của chủ nghĩa cộng sản.
+B. Chủ nghĩa cộng sản.
+*C. Thời kỳ quá độ.
+D. Chủ nghĩa xã hội.
+
+Gt: Trong xã hội của thời kỳ quá độ, còn tồn tại các giai cấp bóc lột, tàn dư giai cấp cũ, đây là điều tất yếu và khó tránh khỏi (giáo trình CNXHKH, 2021, tr.106).
+
+Câu 28: Chủ nghĩa tư bản phát triển ở trình độ cao sẽ tạo ra những điều kiện vật chất - kỹ thuật để dẫn tới
+*A. chủ nghĩa xã hội.
+B. chủ nghĩa cộng sản.
+C. nền kinh tế tri thức.
+D. nền kinh tế thị trường.
+
+Gt: Chủ nghĩa tư bản khi phát triển ở trình độ cao sẽ tạo ra đầy đủ những tiền đề vật chất - kỹ thuật cần thiết cho sự ra đời của chủ nghĩa xã hội. Vì thế, việc chuyển từ chủ nghĩa tư bản lên chủ nghĩa xã hội có thể diễn ra một cách trực tiếp (giáo trình CNXHKH, tr.106).
+
+Câu 29: Tính chất của thời kỳ quá độ lên chủ nghĩa xã hội là
+*A. lâu dài, khó khăn, phức tạp.
+B. tương đối dễ và thuận lợi.
+C. đơn giản và có thể bỏ qua.
+D. dễ dàng, thuận lợi, nhanh chóng.
+
+Gt: Thời kỳ quá độ lên chủ nghĩa xã hội là thời kỳ lâu dài, khó khăn, phức tạp vì đây là thời kỳ cải biến cách mạng sâu sắc, triệt để trên tất cả các lĩnh vực đời sống xã hội để xây dựng từng bước cơ sở vật chất - kỹ thuật và đời sống tinh thần của chủ nghĩa xã hội (giáo trình CNXHKH, 2021, tr.107).
+
+Câu 30: Tuyên truyền tư tưởng khoa học và cách mạng của giai cấp công nhân trong xã hội cũ là một trong những nội dung của thời kỳ quá độ lên chủ nghĩa xã hội trong lĩnh vực
+A. chính trị.
+*B. tư tưởng - văn hóa.
+C. ngoại giao.
+D. kinh tế - xã hội.
+
+Gt: Trên lĩnh vực tư tưởng - văn hóa, thời kỳ quá độ thực hiện việc tuyên truyền phổ biến tư tưởng khoa học và cách mạng của giai cấp công nhân, khắc phục tư tưởng, tâm lý, tập quán lạc hậu (giáo trình CNXHKH, 2021, tr.108).
+
+Câu 31: Theo chủ nghĩa Mác - Lênin, thời kỳ quá độ bắt đầu khi giai cấp công nhân giành được chính quyền và kết thúc khi
+A. Đảng Cộng sản và nhà nước xã hội chủ nghĩa ra đời.
+*B. xây dựng xong về cơ bản cơ sở vật chất - kỹ thuật của chủ nghĩa xã hội.
+C. các thế lực phản cách mạng bị xóa bỏ hoàn toàn.
+D. xây dựng xong chủ nghĩa cộng sản.
+
+Gt: Thời kỳ quá độ lên chủ nghĩa xã hội bắt đầu từ khi giai cấp công nhân và nhân dân lao động giành được chính quyền, kết thúc khi xây dựng xong về cơ bản cơ sở vật chất - kỹ thuật của chủ nghĩa xã hội (giáo trình CNXHKH, 2021, tr.104-105).
+
+Câu 32: Theo chủ nghĩa Mác - Lênin, nước Nga đi lên chủ nghĩa xã hội từ một nước tư bản chủ nghĩa chưa phát triển thuộc kiểu quá độ nào sau đây?
+A. Đơn giản.
+B. Trực tiếp.
+*C. Gián tiếp.
+D. Phức tạp.
+
+Gt: Nước Nga đi lên chủ nghĩa xã hội trong điều kiện chủ nghĩa tư bản chưa phát triển đầy đủ, thuộc kiểu quá độ gián tiếp.
+
+Câu 33: Chính sách kinh tế mới do V.I. Lênin đề ra trong thời kỳ quá độ được viết tắt tiếng Anh là
+*A. NEP.
+B. NEW.
+C. IMF.
+D. EVN.
+
+Gt: Chính sách kinh tế mới của V.I. Lênin trong thời kỳ quá độ được viết tắt là NEP (giáo trình CNXHKH, 2021).
+
+Câu 34: Thời kỳ quá độ lên chủ nghĩa xã hội ở mỗi nước dài hay ngắn phụ thuộc yếu tố nào sau đây?
+*A. Trình độ phát triển kinh tế - xã hội.
+B. Diện tích và dân số.
+C. Lịch sử hình thành và phát triển.
+D. Chỉ số phát triển con người.
+
+Gt: Thời gian của thời kỳ quá độ ở mỗi nước phụ thuộc chủ yếu vào trình độ phát triển kinh tế - xã hội của nước đó khi bước vào thời kỳ quá độ (giáo trình CNXHKH, 2021, tr.108).
+
+Câu 35: Đặc điểm chính trị chủ yếu của thời kỳ quá độ lên chủ nghĩa xã hội là việc
+A. giành chính quyền về tay giai cấp công nhân.
+*B. thiết lập, tăng cường chuyên chính vô sản.
+C. xây dựng và phát triển các chủ trương của chính phủ.
+D. hình thành liên minh chính trị toàn cầu.
+
+Gt: Thời kỳ quá độ về phương diện chính trị, là việc thiết lập, tăng cường chuyên chính vô sản mà thực chất của nó là việc giai cấp công nhân nắm và sử dụng quyền lực nhà nước (giáo trình CNXHKH, 2021, tr.108).
+
+Câu 36: V.I. Lênin đã từng khẳng định thời kỳ quá độ lên chủ nghĩa xã hội trải qua
+A. thanh tố, tranh sáng.
+*B. những cơn đau đẻ kéo dài.
+C. cứu cánh của một cuộc cách mạng.
+D. điểm trước cuộc cách mạng.
+
+Gt: V.I. Lênin đã khẳng định "những cơn đau đẻ kéo dài" để nói về sự khó khăn, lâu dài của thời kỳ quá độ lên chủ nghĩa xã hội (giáo trình CNXHKH, tr.82).
+
+Câu 37: Trong thời kỳ quá độ lên chủ nghĩa xã hội, các thành phần kinh tế tồn tại trong quan hệ
+*A. thống nhất và đấu tranh.
+B. tách biệt.
+C. hợp nhất.
+D. bài trừ và thôn tính.
+
+Gt: Thời kỳ quá độ là thời kỳ tồn tại đan xen giữa các thành phần kinh tế của xã hội cũ và mới trong quan hệ vừa hợp tác, vừa cạnh tranh, đấu tranh với nhau.
+
+Câu 38: Chính sách kinh tế mới của V.I. Lênin là chính sách kinh tế phù hợp với việc tồn tại và vận hành quy luật thị trường trong thời kỳ nào sau đây?
+A. thời đại ngày nay.
+B. chủ nghĩa cộng sản.
+C. chủ nghĩa tư bản.
+*D. thời kỳ quá độ.
+
+Gt: Chính sách kinh tế mới (NEP) của V.I. Lênin trong thời kỳ quá độ là chính sách kinh tế vận dụng quy luật thị trường trong thời kỳ quá độ (giáo trình CNXHKH, 2021, tr.85).
+
+Câu 39: "Trong một nước tiểu nông, trước hết phải bắc những chiếc cầu nhỏ vững chắc, đi xuyên qua chủ nghĩa tư bản nhà nước, tiến lên chủ nghĩa xã hội" là câu nói của V.I. Lênin nhấn mạnh về thời kỳ nào?
+A. chủ nghĩa cộng sản.
+*B. thời kỳ quá độ.
+C. chủ nghĩa tư bản.
+D. thời đại ngày nay.
+
+Gt: Câu nói của V.I. Lênin nhấn mạnh vai trò của chủ nghĩa tư bản nhà nước như một hình thức trung gian, "chiếc cầu nhỏ" trong thời kỳ quá độ lên chủ nghĩa xã hội (giáo trình CNXHKH, 2021, tr.85).
+
+Câu 40: Thời kỳ quá độ là thời kỳ đấu tranh giữa
+*A. tàn dư của xã hội cũ với mầm mống của xã hội tương lai.
+B. niềm mong của xã hội tương lai.
+C. thuộc địa nửa phong kiến.
+D. các giai cấp trung gian.
+
+Gt: Thời kỳ quá độ lên chủ nghĩa xã hội, xét về mọi phương diện, là thời kỳ đan xen, đấu tranh giữa những yếu tố, tàn dư của xã hội cũ với những yếu tố, mầm mống của xã hội mới - xã hội xã hội chủ nghĩa (giáo trình CNXHKH, 2021, tr.109).
+
+Câu 41: Việt Nam quá độ lên chủ nghĩa xã hội từ một nước
+A. quan hệ mới hình thành.
+*B. phong kiến nửa thuộc địa.
+C. chiếm hữu nô lệ.
+D. tư bản chủ nghĩa.
+
+Gt: Việt Nam quá độ lên chủ nghĩa xã hội từ một nước thuộc địa nửa phong kiến, nông nghiệp lạc hậu, bỏ qua chế độ tư bản chủ nghĩa (giáo trình CNXHKH, 2021, tr.110).
+
+Câu 42: Chủ nghĩa xã hội mà Việt Nam xây dựng có nền kinh tế phát triển cao dựa trên
+*A. lực lượng sản xuất hiện đại, phù hợp với quan hệ sản xuất.
+B. sự ổn định, thống nhất.
+C. tiềm lực, vượt trước.
+D. sự đa dạng, phong phú.
+
+Gt: Chủ nghĩa xã hội mà Việt Nam xây dựng có nền kinh tế phát triển cao, dựa trên lực lượng sản xuất hiện đại và quan hệ sản xuất tiến bộ, phù hợp (giáo trình CNXHKH, 2021, tr.114).
+
+Câu 43: Ở Việt Nam, thời kỳ quá độ lên chủ nghĩa xã hội ở miền Bắc diễn ra trong giai đoạn nào sau đây?
+*A. 1954-1975.
+B. 1930-1945.
+C. 1945-1954.
+D. 1955-1963.
+
+Gt: Ở Việt Nam, thời kỳ quá độ lên chủ nghĩa xã hội ở miền Bắc diễn ra trong giai đoạn 1954-1975 (giáo trình CNXHKH, 2021, tr.116).
+
+Câu 44: Đảng Cộng sản Việt Nam đã xác định xây dựng chủ nghĩa xã hội và bảo vệ Tổ quốc Việt Nam xã hội chủ nghĩa là hai
+A. nguyên tắc cơ bản.
+B. nhiệm vụ tất yếu.
+*C. nhiệm vụ chiến lược.
+D. chính sách trọng tâm.
+
+Gt: Xây dựng chủ nghĩa xã hội và bảo vệ Tổ quốc Việt Nam xã hội chủ nghĩa là hai nhiệm vụ chiến lược của cách mạng Việt Nam (giáo trình CNXHKH, 2021, tr.116).
+
+Câu 45: Đảng ta xác định thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam bỏ qua yếu tố nào sau đây của chủ nghĩa tư bản?
+*A. Vị trí thống trị của quan hệ sản xuất và kiến trúc thượng tầng tư bản chủ nghĩa.
+B. Giá trị văn minh, chính trị và pháp luật.
+C. Thành tựu khoa học công nghệ và giáo dục đào tạo.
+D. Kinh nghiệm trong tổ chức quản lý và phát triển kinh tế.
+
+Gt: Đảng ta xác định bỏ qua chế độ tư bản chủ nghĩa tức là bỏ qua việc xác lập vị trí thống trị của quan hệ sản xuất và kiến trúc thượng tầng tư bản chủ nghĩa (giáo trình CNXHKH, 2021, tr.117).
+
+Câu 46: Mâu thuẫn cơ bản nhất, tồn tại hàng đầu trong xã hội Việt Nam dưới thời thực dân Pháp là
+A. công nhân và tư sản.
+*B. dân tộc Việt Nam với thực dân Pháp.
+C. nông dân với địa chủ.
+D. thực dân Pháp với tầng lớp trung gian.
+
+Gt: Dưới thời thực dân Pháp, mâu thuẫn cơ bản, hàng đầu trong xã hội Việt Nam là mâu thuẫn giữa toàn thể dân tộc Việt Nam với thực dân Pháp xâm lược (giáo trình CNXHKH, 2021, tr.109).
+
+Câu 47: Đảng Cộng sản Việt Nam đã nêu lên 8 đặc trưng cơ bản của xã hội xã hội chủ nghĩa mà nhân dân ta xây dựng trong Văn kiện nào sau đây?
+*A. Cương lĩnh xây dựng đất nước trong thời kỳ quá độ lên chủ nghĩa xã hội (bổ sung, phát triển năm 2011).
+B. Chiến lược phát triển kinh tế - xã hội 2011-2020.
+C. Điều lệ Đảng Cộng sản Việt Nam.
+D. Báo cáo chính trị tại Đại hội đại biểu toàn quốc lần thứ VI của Đảng (12/1986).
+
+Gt: Đảng ta nêu 8 đặc trưng cơ bản của xã hội xã hội chủ nghĩa mà nhân dân ta xây dựng trong Cương lĩnh xây dựng đất nước trong thời kỳ quá độ lên chủ nghĩa xã hội (bổ sung, phát triển năm 2011) (giáo trình CNXHKH, 2021, tr.113-114).
+
+Câu 48: Đảng ta khẳng định con đường xuyên suốt của cách mạng Việt Nam là
+A. tăng trưởng kinh tế và bền vững.
+B. khoa học công nghệ và giáo dục, đào tạo.
+*C. độc lập dân tộc và chủ nghĩa xã hội.
+D. phát huy nội lực và tranh thủ ngoại lực.
+
+Gt: Đảng ta khẳng định con đường của cách mạng Việt Nam là độc lập dân tộc gắn liền với chủ nghĩa xã hội.
+
+Câu 49: Con đường cách mạng nào sau đây đã không được thực hiện thành công ở Việt Nam?
+A. Giải phóng dân tộc.
+B. Dân chủ tư sản kiểu mới.
+*C. Dân chủ tư sản.
+D. Xã hội chủ nghĩa.
+
+Gt: Trước khi Đảng Cộng sản Việt Nam ra đời, các phong trào yêu nước theo khuynh hướng dân chủ tư sản (như Phan Bội Châu, Phan Châu Trinh) đều thất bại, không thực hiện thành công ở Việt Nam.
+
+Câu 50: Phương châm nào sau đây thể hiện tinh thần và truyền thống đối ngoại của Đảng và Nhà nước ta?
+*A. Quan hệ nghi thức và hợp tác với các nước trên thế giới.
+B. Tăng cường và mở rộng khối đại đoàn kết toàn dân tộc.
+C. Thiết lập quan hệ thị trường định hướng xã hội chủ nghĩa.
+D. Xây dựng nền văn hóa tiên tiến, đậm đà bản sắc dân tộc.
+
+Gt: Đảng và Nhà nước ta chủ trương thực hiện đường lối đối ngoại độc lập, tự chủ, hòa bình, hữu nghị, hợp tác và phát triển với các nước trên thế giới.
+
+Câu 51: Việt Nam quá độ lên chủ nghĩa xã hội từ một nước thuộc địa nửa phong kiến, bỏ qua chế độ tư bản chủ nghĩa là quá độ theo hình thức nào sau đây?
+A. Phức tạp.
+B. Trực tiếp.
+C. Đơn giản.
+*D. Gián tiếp.
+
+Gt: Việt Nam quá độ lên chủ nghĩa xã hội, bỏ qua chế độ tư bản chủ nghĩa, thuộc kiểu quá độ gián tiếp (giáo trình CNXHKH, 2021, tr.117).
+
+Câu 52: "Chính phủ kiến tạo, hành động, liêm chính, minh bạch" là một trong những mục tiêu của Việt Nam để thực hiện nội dung nào sau đây?
+A. Công nghiệp hóa, hiện đại hóa đất nước.
+*B. Xây dựng nhà nước pháp quyền xã hội chủ nghĩa.
+C. Phát triển khoa học và công nghệ.
+D. Đảm bảo vững chắc quốc phòng an ninh.
+
+Gt: "Chính phủ kiến tạo, hành động, liêm chính, minh bạch" là mục tiêu xây dựng nhà nước pháp quyền xã hội chủ nghĩa của dân, do dân, vì dân.
+
+Câu 53: Đảng ta xác định nội dung nào sau đây là mục tiêu tổng quát của cách mạng xã hội chủ nghĩa ở Việt Nam?
+A. Đảm bảo an sinh xã hội, nâng cao đời sống nhân dân.
+B. Xây dựng nền dân chủ xã hội chủ nghĩa.
+C. Phát huy tinh thần đoàn kết các dân tộc.
+*D. Dân giàu, nước mạnh, dân chủ, công bằng, văn minh.
+
+Gt: Đảng ta xác định mục tiêu tổng quát khi kết thúc thời kỳ quá độ ở Việt Nam là xây dựng được về cơ bản nền tảng kinh tế của chủ nghĩa xã hội với kiến trúc thượng tầng về chính trị, tư tưởng, văn hóa phù hợp, tạo cơ sở để nước ta trở thành một nước xã hội chủ nghĩa ngày càng phồn vinh, hạnh phúc, dân giàu, nước mạnh, dân chủ, công bằng, văn minh (giáo trình CNXHKH, 2021, tr.117).
+
+Câu 54: Đảng Cộng sản Việt Nam đã xác định nội dung nào sau đây là trọng tâm trong quá trình xây dựng chủ nghĩa xã hội ở Việt Nam?
+*A. Công nghiệp hóa, hiện đại hóa đất nước.
+B. Phát triển khoa học công nghệ.
+C. Tăng cường quốc phòng an ninh.
+D. Xây dựng Đảng trong sạch, vững mạnh.
+
+Gt: Công nghiệp hóa, hiện đại hóa đất nước gắn với phát triển kinh tế tri thức là nội dung trọng tâm trong sự nghiệp xây dựng chủ nghĩa xã hội ở Việt Nam (giáo trình CNXHKH, 2004, tr.95).
+
+Câu 55: "Người ta chỉ có thể trở thành người cộng sản khi biết làm giàu trí óc của mình bằng sự hiểu biết tất cả những kho tàng tri thức mà nhân loại đã tạo ra" là khẳng định của V.I. Lênin nói về nội dung nào sau đây?
+A. Phát triển kinh tế tri thức.
+*B. Xây dựng nền văn hóa xã hội chủ nghĩa.
+C. Xây dựng giáo dục và đào tạo.
+D. Xây dựng nền dân chủ xã hội chủ nghĩa.
+
+Gt: V.I. Lênin nói về ý nghĩa của việc tiếp thu tinh hoa văn hóa nhân loại trong xây dựng nền văn hóa xã hội chủ nghĩa, coi đây là nội dung căn bản của cách mạng văn hóa (giáo trình CNXHKH, 2021, tr.101).
+
+Câu 56: Đảng Cộng sản Việt Nam xác định quá độ lên chủ nghĩa xã hội ở nước ta không bao gồm nội dung nào sau đây của chủ nghĩa tư bản?
+A. Thành tựu về khoa học công nghệ và quản lý kinh tế.
+B. Kinh nghiệm trong tổ chức sản xuất và quản lý kinh tế.
+*C. Vị trí thống trị của quan hệ sản xuất và kiến trúc thượng tầng.
+D. Giá trị dân chủ, chính trị và pháp luật.
+
+Gt: Đảng ta xác định bỏ qua chế độ tư bản chủ nghĩa là bỏ qua việc xác lập vị trí thống trị của quan hệ sản xuất và kiến trúc thượng tầng tư bản chủ nghĩa (giáo trình CNXHKH, 2021, tr.117).
+
+Câu 57: "Xây dựng nền kinh tế độc lập, tự chủ, tham gia có hiệu quả vào mạng sản xuất và chuỗi giá trị toàn cầu" là khẳng định của Đảng Cộng sản Việt Nam về nội dung nào sau đây?
+A. Xây dựng chủ nghĩa cộng sản.
+*B. Xây dựng chủ nghĩa xã hội.
+C. Phát triển kinh tế toàn cầu.
+D. Phát triển kinh tế quan hệ.
+
+Gt: Đảng ta xác định đây là một trong những mục tiêu của quá trình xây dựng chủ nghĩa xã hội ở Việt Nam về mặt kinh tế.
+
+Câu 58: Ở Việt Nam hiện nay, thành phần kinh tế nào sau đây được xác định giữ vai trò chủ đạo?
+*A. Kinh tế nhà nước.
+B. Kinh tế tư bản tư nhân.
+C. Kinh tế tư bản nhà nước.
+D. Kinh tế có vốn đầu tư nước ngoài.
+
+Gt: Ở Việt Nam hiện nay, kinh tế nhà nước được xác định giữ vai trò chủ đạo trong nền kinh tế thị trường định hướng xã hội chủ nghĩa.
+
+Câu 59: "Muốn cứu nước và giải phóng dân tộc, không con đường nào khác con đường cách mạng vô sản" là khẳng định của Chủ tịch Hồ Chí Minh về nội dung nào sau đây?
+A. Đặc điểm.
+*B. Tính tất yếu.
+C. Tính chất.
+D. Nội dung.
+
+Gt: Câu nói của Chủ tịch Hồ Chí Minh khẳng định tính tất yếu của con đường cách mạng vô sản đối với sự nghiệp giải phóng dân tộc Việt Nam.
+
+Câu 60: Theo quan điểm của Đảng Cộng sản Việt Nam, một trong những nội dung chủ yếu của công nghiệp hóa, hiện đại hóa đất nước là
+*A. xây dựng cơ sở vật chất - kỹ thuật của chủ nghĩa xã hội.
+B. đô thị hóa nông thôn.
+C. tăng cường hợp tác với các nước xã hội chủ nghĩa.
+D. nâng cao năng lực cạnh tranh.
+
+Gt: Công nghiệp hóa, hiện đại hóa nhằm xây dựng cơ sở vật chất - kỹ thuật của chủ nghĩa xã hội, đây là nội dung chủ yếu, cốt lõi của quá trình này ở Việt Nam.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3600;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath();
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

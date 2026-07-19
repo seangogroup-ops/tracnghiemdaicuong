@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 4: Dân chủ XHCN và Nhà nước XHCN - Phần 2 - Thi Trắc Nghiệm - SNG EDU</title>
+
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db;
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter {
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0;
+        }
+        .opt-text {
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s;
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box {
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue);
+            border-radius: 4px; display: none; font-size: 0.95rem;
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        .sidebar-col {
+            width: 320px;
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn {
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col {
+                width: 100%;
+                position: static;
+                order: 2;
+                max-height: none;
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+Câu 1: Căn cứ vào lĩnh vực tác động của quyền lực nhà nước, nhà nước xã hội chủ nghĩa thực hiện các chức năng cơ bản nào sau đây?
+A. Thống trị, tổ chức, quản lý và trấn áp.
+*B. Chính trị, kinh tế, văn hóa và xã hội.
+C. Giai cấp và xã hội.
+D. Đối nội và đối ngoại.
+Gt: Căn cứ vào lĩnh vực tác động của quyền lực nhà nước, nhà nước xã hội chủ nghĩa thực hiện các chức năng cơ bản: chính trị, kinh tế, văn hóa và xã hội.
+
+Câu 2: Đối với việc xây dựng và hoạt động của nhà nước xã hội chủ nghĩa, nền dân chủ xã hội chủ nghĩa giữ vai trò
+A. trụ cột.
+B. phương tiện, công cụ.
+*C. cơ sở, nền tảng.
+D. động lực.
+Gt: Dân chủ xã hội chủ nghĩa là cơ sở, nền tảng cho việc xây dựng và hoạt động của nhà nước xã hội chủ nghĩa.
+
+Câu 3: Đối với việc xây dựng nền dân chủ xã hội chủ nghĩa, nhà nước xã hội chủ nghĩa đóng vai trò là
+A. mục tiêu.
+B. nền tảng.
+*C. công cụ.
+D. cơ sở.
+Gt: Nhà nước xã hội chủ nghĩa trở thành công cụ quan trọng cho việc thực thi quyền làm chủ của nhân dân.
+
+Câu 4: Trong chế độ xã hội chủ nghĩa, thiết chế nào sau đây có chức năng trực tiếp nhất trong việc thể chế hóa và tổ chức thực hiện những yêu cầu dân chủ chân chính của nhân dân?
+*A. Nhà nước.
+B. Tổ chức xã hội.
+C. Nhóm lợi ích.
+D. Đảng Cộng sản.
+Gt: Nhà nước là thiết chế có chức năng trực tiếp nhất trong việc thể chế hóa và tổ chức thực hiện những yêu cầu dân chủ chân chính của nhân dân.
+
+Câu 5: Trong chế độ xã hội chủ nghĩa, cơ quan nào sau đây là đại biểu cho ý chí của nhân dân?
+A. Nhóm lợi ích.
+B. Tổ chức xã hội.
+*C. Nhà nước.
+D. Đảng Cộng sản.
+Gt: Nhà nước xã hội chủ nghĩa là đại biểu cho ý chí chung của nhân dân lao động.
+
+Câu 6: Nhà nước nào sau đây được V.I. Lênin xem là nhà nước quá độ, không còn là nhà nước theo đúng nghĩa của nó?
+A. Pháp quyền.
+B. Tư bản chủ nghĩa.
+*C. Xã hội chủ nghĩa.
+D. Cộng hòa.
+Gt: Nhà nước xã hội chủ nghĩa được V.I. Lênin xem là nhà nước quá độ, không còn là nhà nước theo đúng nghĩa của nó.
+
+Câu 7: Nhà nước xã hội chủ nghĩa vừa là một bộ máy chính trị - hành chính, vừa là một cơ quan
+*A. cưỡng chế.
+B. liên đạo.
+C. từ thiện.
+D. bảo trợ.
+Gt: Nhà nước xã hội chủ nghĩa vừa là một bộ máy chính trị - hành chính, một cơ quan cưỡng chế, vừa là tổ chức quản lý kinh tế - xã hội của nhân dân lao động.
+
+Câu 8: Nhà nước xã hội chủ nghĩa vừa là một bộ máy chính trị - hành chính, vừa là một tổ chức
+A. trấn áp thiểu số nổi dậy.
+*B. quản lý kinh tế - xã hội.
+C. bảo vệ quyền lợi cho một nhóm người.
+D. duy trì chế độ tư hữu.
+Gt: Nhà nước xã hội chủ nghĩa vừa là một bộ máy chính trị - hành chính, một cơ quan cưỡng chế, vừa là tổ chức quản lý kinh tế - xã hội của nhân dân lao động.
+
+Câu 9: Theo quan điểm của chủ nghĩa Mác - Lênin, mục tiêu hàng đầu của nhà nước xã hội chủ nghĩa là chăm lo cho lợi ích của
+*A. đa số nhân dân lao động.
+B. đảng cầm quyền.
+C. thiểu số giai cấp thống trị.
+D. nhóm lợi ích.
+Gt: Việc chăm lo cho lợi ích của đại đa số nhân dân lao động trở thành mục tiêu hàng đầu của nhà nước xã hội chủ nghĩa.
+
+Câu 10: Giải phóng giai cấp công nhân và các tầng lớp nhân dân lao động ra khỏi tình trạng bị áp bức, bóc lột là mục tiêu nào sau đây của nhà nước xã hội chủ nghĩa?
+A. Văn hóa.
+B. Kinh tế.
+*C. Chính trị.
+D. Tư tưởng.
+Gt: Giải phóng giai cấp công nhân và các tầng lớp nhân dân lao động là mục tiêu chính trị của nhà nước xã hội chủ nghĩa.
+
+Câu 11: Nhân dân được tham gia bàn bạc về công việc của nhà nước và cộng đồng dân cư là thực hiện dân chủ theo hình thức nào sau đây?
+A. bỏ phiếu kín.
+B. gián tiếp.
+*C. trực tiếp.
+D. trưng cầu ý dân.
+Gt: Ở hình thức dân chủ trực tiếp, nhân dân được tham gia bàn bạc công việc của nhà nước và cộng đồng dân cư.
+
+Câu 12: Một trong những đặc điểm cơ bản của nhà nước pháp quyền xã hội chủ nghĩa ở Việt Nam hiện nay là tổ chức và hoạt động theo
+A. ý chí của thiểu số.
+*B. nguyên tắc tập trung dân chủ.
+C. cơ chế tam quyền phân lập.
+D. phương thức ủy quyền vĩnh viễn.
+Gt: Một trong những đặc điểm cơ bản của nhà nước pháp quyền xã hội chủ nghĩa ở Việt Nam hiện nay là tổ chức và hoạt động theo nguyên tắc tập trung dân chủ.
+
+Câu 13: Nhà nước xã hội chủ nghĩa Việt Nam là nhà nước mà ở đó sự thống trị chính trị thuộc về giai cấp, tầng lớp nào sau đây?
+A. Doanh nhân.
+B. Trí thức.
+C. Nông dân.
+*D. Công nhân.
+Gt: Nhà nước xã hội chủ nghĩa Việt Nam là nhà nước mà ở đó sự thống trị chính trị thuộc về giai cấp công nhân.
+
+Câu 14: Nhân dân ủy quyền cho những người đại diện do mình bầu ra là hình thức
+A. dân chủ trực tiếp.
+*B. dân chủ gián tiếp.
+C. bỏ phiếu kín.
+D. trưng cầu ý dân.
+Gt: Hình thức dân chủ gián tiếp là hình thức dân chủ đại diện, được thực hiện do nhân dân ủy quyền, giao quyền lực của mình cho tổ chức mà nhân dân trực tiếp bầu ra.
+
+Câu 15: Nền dân chủ xã hội chủ nghĩa ở Việt Nam ra đời trong điều kiện nào sau đây?
+A. Cơ cấu xã hội đơn nhất.
+B. Nền công nghiệp cơ khí.
+*C. Nền nông nghiệp lạc hậu.
+D. Cơ cấu giai cấp ổn định.
+Gt: Nền dân chủ xã hội chủ nghĩa ở Việt Nam ra đời trên cơ sở xuất phát từ một nước thuộc địa nửa phong kiến, kinh tế nghèo nàn, tàn dư chiến tranh nặng nề, với đặc điểm nền nông nghiệp còn lạc hậu.
+
+Câu 16: Đảng Cộng sản Việt Nam xác định để phát huy quyền làm chủ của nhân dân cần quán triệt tư tưởng nào sau đây?
+*A. Lấy dân làm gốc.
+B. Lấy trên áp lo đạo.
+C. Dựa trên dư luận xã hội.
+D. Dựa trên ý chí của giai cấp thống trị.
+Gt: Đảng Cộng sản Việt Nam xác định để phát huy quyền làm chủ của nhân dân cần quán triệt tư tưởng "lấy dân làm gốc".
+
+Câu 17: Ở Việt Nam, dân chủ gắn liền với kỷ luật, kỷ cương và phải được thể chế hóa bằng công cụ nào sau đây?
+A. Quy phạm xã hội.
+B. Khế ước.
+*C. Pháp luật.
+D. Quy phạm đạo đức.
+Gt: Dân chủ gắn liền với kỷ luật, kỷ cương và phải được thể chế hóa bằng pháp luật, được pháp luật bảo đảm.
+
+Câu 18: Việc nhân dân giao quyền lực của mình cho tổ chức mà mình bầu ra là thực hiện quyền dân chủ theo hình thức nào sau đây?
+*A. Gián tiếp.
+B. Tự do.
+C. Phổ thông.
+D. Bình đẳng.
+Gt: Hình thức dân chủ gián tiếp là hình thức dân chủ đại diện, được thực hiện do nhân dân ủy quyền, giao quyền lực của mình cho tổ chức mà nhân dân trực tiếp bầu ra.
+
+Câu 19: Việc nhân dân tham gia bàn bạc và quyết định các vấn đề kinh tế, xã hội ở địa phương là thực hiện dân chủ theo hình thức nào sau đây?
+A. Gián tiếp.
+*B. Trực tiếp.
+C. Phổ thông.
+D. Bình đẳng.
+Gt: Ở hình thức dân chủ trực tiếp, nhân dân được bàn bạc và quyết định trực tiếp những vấn đề kinh tế, xã hội của địa phương.
+
+Câu 20: Tổ chức nào sau đây là trụ cột của hệ thống chính trị xã hội chủ nghĩa ở Việt Nam?
+*A. Nhà nước.
+B. Đảng Cộng sản.
+C. Nhóm lợi ích.
+D. Tổ chức xã hội.
+Gt: Nhà nước là trụ cột của hệ thống chính trị xã hội chủ nghĩa ở Việt Nam.
+
+Câu 21: "Bảy sìn hiến pháp ban hành. Trăm điều phải có thần linh pháp quyền." Luận điểm trên của Hồ Chí Minh thể hiện tầm quan trọng của yếu tố nào sau đây trong xây dựng nhà nước pháp quyền?
+A. Thần linh.
+*B. Pháp luật.
+C. Con người.
+D. Dân chủ.
+Gt: Qua hai câu thơ, Hồ Chí Minh muốn nhấn mạnh: một xã hội tốt đẹp thì trước tiên phải được quản lý bằng pháp luật và mọi người đều phải tuân thủ pháp luật.
+
+Câu 22: "Nước ta là nước dân chủ, nghĩa là nước nhà do dân làm chủ." Nhận định trên của Hồ Chí Minh khẳng định nội dung nào sau đây?
+*A. Bản chất.
+B. Biểu hiện.
+C. Sự hình thành.
+D. Quá trình biến đổi.
+Gt: Bản chất của nền dân chủ xã hội chủ nghĩa là nhân dân làm chủ, do vậy Hồ Chí Minh khẳng định "nước ta do dân làm chủ" chính là bản chất của dân chủ xã hội chủ nghĩa.
+
+Câu 23: "Trong toàn bộ hoạt động của mình, Đảng phải quán triệt tư tưởng lấy dân làm gốc." Khẳng định này của Đảng Cộng sản Việt Nam đề cập đến nội dung nào sau đây?
+A. Sự hình thành.
+B. Chức năng.
+*C. Bản chất.
+D. Quá trình phát triển.
+Gt: Việc xác định quyền lực nhà nước và xã hội hoàn toàn thuộc về nhân dân chính là khẳng định bản chất tốt đẹp của nhà nước xã hội chủ nghĩa.
+
+Câu 24: Phương châm "dân biết, dân bàn, dân làm, dân kiểm tra, dân giám sát, dân thụ hưởng" của Đảng Cộng sản Việt Nam đề cập đến vấn đề nào sau đây?
+*A. Xây dựng nền dân chủ xã hội chủ nghĩa.
+B. Xây dựng nền kinh tế xã hội chủ nghĩa.
+C. Phát triển văn hóa xã hội chủ nghĩa.
+D. Phát triển giáo dục xã hội chủ nghĩa.
+Gt: Phương châm "dân biết, dân bàn, dân làm, dân kiểm tra, dân giám sát, dân thụ hưởng" của Đảng Cộng sản Việt Nam đề cập đến việc xây dựng nền dân chủ xã hội chủ nghĩa ở nước ta.
+
+Câu 25: Đảng Cộng sản Việt Nam khẳng định việc phát huy dân chủ xã hội chủ nghĩa phải luôn đi đôi với tăng cường yếu tố nào sau đây?
+A. Tập trung quyền lực.
+*B. Kỷ luật, kỷ cương, pháp luật.
+C. Chuyên chính vô sản.
+D. Sự lãnh đạo tuyệt đối của một cá nhân.
+Gt: Dân chủ phải đi đôi với kỷ luật, kỷ cương và phải được thể chế hóa bằng pháp luật, được pháp luật bảo đảm.
+
+Câu 26: "Bản chất giai cấp công nhân của nhà nước ta thể hiện tập trung nhất ở sự lãnh đạo của Đảng Cộng sản Việt Nam đối với Nhà nước." Khẳng định này nói về nội dung nào sau đây?
+A. Nhiệm vụ.
+B. Chức năng.
+*C. Bản chất.
+D. Biểu hiện.
+Gt: Khẳng định trên nói về bản chất của nhà nước xã hội chủ nghĩa Việt Nam - nhà nước mang bản chất giai cấp công nhân.
+
+Câu 27: Hiến pháp năm 2013 của Việt Nam quy định "Công dân đủ mười tám tuổi trở lên có quyền bầu cử" là thể hiện quyền dân chủ của công dân trong lĩnh vực nào sau đây?
+A. Giáo dục.
+B. Kinh tế.
+C. Văn hóa.
+*D. Chính trị.
+Gt: Quyền dân chủ trong lĩnh vực chính trị bao gồm quyền của công dân tham gia quản lý nhà nước và xã hội, quyền bầu cử và ứng cử. Do vậy, đáp án cần chọn là "Chính trị".
+
+Câu 28: Hiến pháp năm 2013 của Việt Nam quy định "Công dân đủ 21 tuổi trở lên có quyền ứng cử vào Quốc hội, Hội đồng nhân dân" là thể hiện quyền dân chủ của công dân trong lĩnh vực nào sau đây?
+A. Kinh tế.
+*B. Chính trị.
+C. Văn hóa.
+D. Xã hội.
+Gt: Quyền dân chủ trong lĩnh vực chính trị bao gồm quyền ứng cử vào các cơ quan quyền lực nhà nước. Do vậy, đáp án cần chọn là "Chính trị".
+
+Câu 29: Việc nhân dân ủy quyền cho đại biểu Quốc hội quyết định các công việc chung của đất nước là thực hiện dân chủ theo hình thức nào sau đây?
+*A. Gián tiếp.
+B. Trực tiếp.
+C. Phổ thông.
+D. Bình đẳng.
+Gt: Việc nhân dân ủy quyền cho đại biểu Quốc hội quyết định công việc chung của đất nước là thực hiện dân chủ theo hình thức gián tiếp (dân chủ đại diện).
+
+Câu 30: Việc nhân dân tham gia bàn bạc và quyết định những vấn đề kinh tế, xã hội của địa phương là thực hiện dân chủ theo hình thức nào sau đây?
+A. Phổ thông.
+B. Gián tiếp.
+*C. Trực tiếp.
+D. Bình đẳng.
+Gt: Việc nhân dân tham gia bàn bạc và quyết định trực tiếp những vấn đề kinh tế, xã hội của địa phương là thực hiện dân chủ trực tiếp.
+
+Câu 31: Theo quy định của pháp luật Việt Nam, hoạt động nào sau đây không phải là hình thức dân chủ trực tiếp?
+A. Ứng cử đại biểu Hội đồng nhân dân.
+*B. Ủy quyền cho đại biểu Hội đồng nhân dân.
+C. Bãi nhiệm, đóng góp ý kiến các vấn đề của địa phương.
+D. Tham gia thảo luận sửa đổi Hiến pháp.
+Gt: Ủy quyền cho đại biểu Hội đồng nhân dân là hình thức dân chủ gián tiếp (dân chủ đại diện), không phải dân chủ trực tiếp.
+
+Câu 32: Việc công dân tham gia bầu cử đại biểu Hội đồng nhân dân các cấp là thực hiện dân chủ theo hình thức nào sau đây?
+*A. Trực tiếp.
+B. Gián tiếp.
+C. Bình đẳng.
+D. Hiệp thương.
+Gt: Việc trực tiếp tham gia bỏ phiếu bầu cử của công dân là thực hiện dân chủ theo hình thức trực tiếp.
+
+Câu 33: Việc công dân trực tiếp tham gia biểu quyết tại nơi cư trú về các vấn đề quan tâm chung là thực hiện dân chủ theo hình thức nào sau đây?
+*A. Trực tiếp.
+B. Gián tiếp.
+C. Phổ thông.
+D. Hiệp thương.
+Gt: Việc công dân trực tiếp tham gia biểu quyết các vấn đề quan tâm chung của khu dân cư là thực hiện dân chủ trực tiếp.
+
+Câu 34: Việc công dân tham gia bầu trưởng thôn là thực hiện dân chủ theo hình thức nào sau đây?
+A. Phổ thông.
+B. Gián tiếp.
+*C. Trực tiếp.
+D. Hiệp thương.
+Gt: Việc công dân trực tiếp bỏ phiếu bầu trưởng thôn là thực hiện dân chủ theo hình thức trực tiếp.
+
+Câu 35: Việc công dân tham gia quyết định các vấn đề quan trọng liên quan trực tiếp đến đời sống thông qua trưng cầu ý dân là thực hiện dân chủ theo hình thức nào sau đây?
+A. Gián tiếp.
+*B. Trực tiếp.
+C. Phổ thông.
+D. Hiệp thương.
+Gt: Trưng cầu ý dân là hình thức công dân trực tiếp thể hiện ý chí của mình, thuộc dân chủ trực tiếp.
+
+Câu 36: Việc công dân tham gia quyết định các vấn đề quan trọng của đất nước thông qua đại biểu Quốc hội là thực hiện dân chủ theo hình thức nào sau đây?
+A. Hiệp thương.
+B. Trực tiếp.
+C. Phổ thông.
+*D. Gián tiếp.
+Gt: Việc quyết định thông qua đại biểu do dân bầu ra là thực hiện dân chủ theo hình thức gián tiếp (dân chủ đại diện).
+
+Câu 37: Công dân ứng cử đại biểu Hội đồng nhân dân các cấp là thực hiện dân chủ theo hình thức nào sau đây?
+*A. Trực tiếp.
+B. Gián tiếp.
+C. Phổ thông.
+D. Hiệp thương.
+Gt: Việc công dân trực tiếp ứng cử là thực hiện quyền dân chủ trực tiếp của công dân.
+
+Câu 38: Việc công dân tham gia biểu quyết khi Nhà nước tổ chức trưng cầu ý dân là thể hiện quyền dân chủ nào sau đây của công dân?
+A. Tự do ngôn luận.
+B. Nhân thân.
+*C. Dân chủ.
+D. Tự do báo chí.
+Gt: Quyền tham gia biểu quyết khi Nhà nước trưng cầu ý dân là quyền dân chủ của công dân trong việc tham gia quyết định các vấn đề quan trọng của đất nước.
+
+Câu 39: Công dân Việt Nam tham gia góp ý dự thảo Hiến pháp là thể hiện quyền dân chủ trong lĩnh vực nào sau đây?
+A. Kinh tế.
+*B. Chính trị.
+C. Văn hóa.
+D. Giáo dục.
+Gt: Hiến pháp là văn bản pháp lý quan trọng quy định về tổ chức quyền lực nhà nước, việc công dân tham gia góp ý xây dựng Hiến pháp thể hiện quyền dân chủ trong lĩnh vực chính trị.
+
+Câu 40: Công dân Việt Nam tham gia góp ý dự thảo Bộ luật Dân sự năm 2015 là thể hiện quyền dân chủ trong lĩnh vực nào sau đây?
+*A. Chính trị.
+B. Kinh tế.
+C. Văn hóa.
+D. Xã hội.
+Gt: Việc công dân tham gia góp ý xây dựng pháp luật là thể hiện quyền dân chủ trong lĩnh vực chính trị.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 2400;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath();
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

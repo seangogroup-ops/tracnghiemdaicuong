@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 2: Sứ mệnh lịch sử của giai cấp công nhân - Thi Trắc Nghiệm - SNG EDU</title>
+
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db;
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter {
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0;
+        }
+        .opt-text {
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s;
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box {
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue);
+            border-radius: 4px; display: none; font-size: 0.95rem;
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        .sidebar-col {
+            width: 320px;
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn {
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col {
+                width: 100%;
+                position: static;
+                order: 2;
+                max-height: none;
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+Câu 1: Giai cấp, tầng lớp nào sau đây là những người lao động trực tiếp hay gián tiếp tham gia vào quá trình sản xuất công nghiệp hiện đại?
+*A. Công nhân.
+B. Trí thức.
+C. Doanh nhân.
+D. Tiểu tư sản.
+
+Gt: Giai cấp công nhân là những người lao động trực tiếp hay gián tiếp tham gia vào quá trình sản xuất, tái sản xuất ra của cải vật chất và cải tạo các quan hệ xã hội, là lực lượng đại biểu cho phương thức sản xuất tiên tiến (giáo trình CNXHKH, 2021, tr.52).
+
+Câu 2: Về vị trí trong quan hệ sản xuất tư bản chủ nghĩa, giai cấp công nhân là những người không có hoặc có rất ít
+A. quan hệ sản xuất.
+*B. tư liệu sản xuất.
+C. công cụ sản xuất.
+D. đối tượng sản xuất.
+
+Gt: Ở các nước tư bản chủ nghĩa, giai cấp công nhân là những người không có hoặc về cơ bản không có tư liệu sản xuất chủ yếu của xã hội, phải bán sức lao động cho nhà tư bản để sống (giáo trình CNXHKH, 2019, tr.29).
+
+Câu 3: Đặc điểm nổi bật của giai cấp công nhân trong phương thức lao động là làm việc với máy móc, thiết bị hiện đại nên lao động
+A. mang tính chất thủ công hóa.
+B. cải tạo các quan hệ sở hữu.
+*C. mang tính chất xã hội hóa.
+D. cải tạo các quan hệ phân phối.
+
+Gt: Đặc điểm nổi bật của giai cấp công nhân là lao động bằng phương thức công nghiệp với công cụ lao động là máy móc, tạo ra năng suất lao động cao, quá trình lao động mang tính chất xã hội hóa (giáo trình CNXHKH, 2021, tr.55).
+
+Câu 4: Xóa bỏ chủ nghĩa tư bản, xây dựng thành công chủ nghĩa xã hội là nội dung sứ mệnh lịch sử của
+A. tầng lớp trí thức.
+*B. giai cấp công nhân.
+C. giai cấp nông dân.
+D. tầng lớp tiểu tư sản.
+
+Gt: Xóa bỏ chủ nghĩa tư bản, xây dựng thành công chủ nghĩa xã hội là nội dung sứ mệnh lịch sử của giai cấp công nhân (giáo trình CNXHKH, 2021, tr.57).
+
+Câu 5: Điều kiện khách quan quy định sứ mệnh lịch sử của giai cấp công nhân là
+*A. địa vị kinh tế - xã hội, đặc điểm chính trị - xã hội.
+B. mức độ trưởng thành của giai cấp công nhân.
+C. sự phát triển về số lượng và chất lượng của giai cấp công nhân.
+D. sự ra đời của Đảng Cộng sản.
+
+Gt: Điều kiện khách quan quy định sứ mệnh lịch sử của giai cấp công nhân gồm địa vị kinh tế và địa vị chính trị - xã hội của giai cấp công nhân (giáo trình CNXHKH, 2021, tr.60-61).
+
+Câu 6: Giai cấp, tầng lớp nào sau đây là lực lượng đi tiên phong và cơ sở xã hội chủ yếu của cách mạng xã hội chủ nghĩa?
+A. Tầng lớp tiểu tư sản.
+B. Giai cấp nông dân.
+*C. Giai cấp công nhân.
+D. Tầng lớp trí thức.
+
+Gt: Giai cấp công nhân ngày càng tăng cả về số lượng và chất lượng, ngày càng gắn kết chặt chẽ lợi ích của mình với lợi ích của các giai cấp lao động khác trong cách mạng xã hội chủ nghĩa (giáo trình CNXHKH, 2004, tr.52).
+
+Câu 7: Giai cấp, tầng lớp nào sau đây là lực lượng lao động sản xuất mang tính xã hội hóa, có trình độ kỹ thuật và công nghệ hiện đại?
+A. Tầng lớp trí thức.
+*B. Giai cấp công nhân.
+C. Tầng lớp tiểu tư sản.
+D. Giai cấp nông dân.
+
+Gt: Giai cấp công nhân là lực lượng lao động sản xuất vật chất chủ yếu, mang tính xã hội hóa, có trình độ kỹ thuật và công nghệ ngày càng hiện đại (giáo trình CNXHKH, 2021).
+
+Câu 8: Về phương thức lao động, biểu hiện nào sau đây là đặc trưng cơ bản của giai cấp công nhân?
+A. Không có tư liệu sản xuất, phải bán sức lao động.
+B. Tự do bán sức lao động của mình để kiếm sống.
+C. Là giai cấp tư sản bóc lột giá trị thặng dư.
+*D. Lao động trong nền sản xuất công nghiệp hiện đại.
+
+Gt: Giai cấp công nhân là những người lao động bằng phương thức công nghiệp ngày càng hiện đại, gắn liền với quá trình sản xuất vật chất hiện đại, đại biểu cho phương thức sản xuất tiên tiến (giáo trình CNXHKH, 2021, tr.53).
+
+Câu 9: C. Mác và Ph. Ăngghen đã dựa vào những tiền đề nào sau đây để xây dựng luận thuyết về sứ mệnh lịch sử của giai cấp công nhân?
+A. Chủ nghĩa xã hội không tưởng - phê phán.
+B. Triết học cổ điển Đức và Kinh tế chính trị học cổ điển Anh.
+*C. Chủ nghĩa duy vật lịch sử và học thuyết giá trị thặng dư.
+D. Chủ nghĩa duy vật biện chứng và học thuyết hình thái kinh tế - xã hội.
+
+Gt: Trên cơ sở hai phát kiến vĩ đại là chủ nghĩa duy vật lịch sử và học thuyết giá trị thặng dư, C. Mác và Ph. Ăngghen đã có đầy đủ căn cứ khoa học để khẳng định sứ mệnh lịch sử thế giới của giai cấp công nhân (giáo trình CNXHKH, 2021, tr.20).
+
+Câu 10: Mục tiêu cuối cùng của giai cấp công nhân, của cách mạng xã hội chủ nghĩa là
+*A. giải phóng xã hội và giải phóng con người.
+B. giành chính quyền về tay giai cấp công nhân.
+C. xóa bỏ xã hội cũ và xây dựng xã hội mới.
+D. thiết lập nền chuyên chính vô sản của giai cấp công nhân.
+
+Gt: Giải phóng con người, giải phóng xã hội khỏi áp bức, bóc lột là mục tiêu cuối cùng và cao nhất của giai cấp công nhân và cách mạng xã hội chủ nghĩa (giáo trình CNXHKH, 2004, tr.49).
+
+Câu 11: Về bản chất, chủ nghĩa tư bản hiện đại là
+A. phương thức sản xuất tiến bộ nhất trong lịch sử.
+*B. giai đoạn phát triển mới của chủ nghĩa tư bản.
+C. phương thức sản xuất mới xuất hiện, sản xuất còn lạc hậu.
+D. giai đoạn phát triển cao nhất của chủ nghĩa tư bản tự do.
+
+Gt: Về bản chất, chủ nghĩa tư bản hiện đại vẫn là chủ nghĩa tư bản nhưng đã bước sang một giai đoạn phát triển mới so với chủ nghĩa tư bản tự do cạnh tranh trước đây.
+
+Câu 12: Quy luật hình thành và phát triển Đảng Cộng sản của giai cấp công nhân (nói chung) là
+*A. Chủ nghĩa Mác - Lênin kết hợp với phong trào công nhân.
+B. Chủ nghĩa Mác - Lênin kết hợp với phong trào công nhân và phong trào yêu nước.
+C. Chủ nghĩa Mác kết hợp với phong trào nông dân.
+D. Chủ nghĩa Mác kết hợp với phong trào công nhân và phong trào yêu nước.
+
+Gt: Quy luật chung, phổ biến cho sự ra đời của Đảng Cộng sản là sự kết hợp giữa chủ nghĩa Mác - Lênin với phong trào công nhân (giáo trình CNXHKH, tr.62). Riêng ở Việt Nam là sự kết hợp thêm với phong trào yêu nước.
+
+Câu 13: Nhận định nào sau đây khẳng định vai trò cơ bản của giai cấp công nhân trong lĩnh vực kinh tế hiện nay?
+A. Là chủ thể xây dựng chủ nghĩa xã hội.
+B. Là lực lượng quyết định phá vỡ quan hệ sản xuất tư bản chủ nghĩa.
+C. Là lực lượng sản xuất nhà nước xã hội chủ nghĩa.
+*D. Là chủ thể của quá trình sản xuất công nghiệp hiện đại.
+
+Gt: Giai cấp công nhân hiện nay là lực lượng sản xuất hàng đầu, trực tiếp tham gia vào quá trình sản xuất, tái sản xuất của cải vật chất, gắn với nền công nghiệp hiện đại (giáo trình CNXHKH, tr.65).
+
+Câu 14: Nguyên nhân cơ bản nào sau đây làm cho giai cấp công nhân trở thành đại biểu cho phương thức sản xuất tiến bộ, đối lập với giai cấp tư sản?
+A. Thực hiện mục tiêu xóa bỏ chế độ tư hữu, phát triển xã hội.
+*B. Là giai cấp không có tư liệu sản xuất, phải bán sức lao động.
+C. Là giai cấp bị áp bức, bóc lột nặng nề nhất.
+D. Thực hiện mục tiêu xóa bỏ áp bức, bóc lột.
+
+Gt: Giai cấp công nhân là những người lao động không sở hữu tư liệu sản xuất chủ yếu của xã hội, phải bán sức lao động cho nhà tư bản và bị bóc lột giá trị thặng dư; chính vì không có tư liệu sản xuất nên về phương diện xã hội họ là giai cấp bị trị, bị giai cấp tư sản áp bức, bóc lột (giáo trình CNXHKH, 2021, tr.62).
+
+Câu 15: Trong mối quan hệ với Đảng Cộng sản, giai cấp công nhân là cơ sở
+*A. xã hội - giai cấp của Đảng Cộng sản.
+B. tư tưởng của Đảng Cộng sản.
+C. kinh tế - xã hội của Đảng Cộng sản.
+D. văn hóa của Đảng Cộng sản.
+
+Gt: Giai cấp công nhân là cơ sở xã hội - giai cấp của Đảng Cộng sản (giáo trình CNXHKH, 2004, tr.78).
+
+Câu 16: Điều kiện nào sau đây có vai trò quyết định nhất trong việc hiện thực hóa sứ mệnh lịch sử của giai cấp công nhân?
+*A. Sự trưởng thành của giai cấp công nhân.
+B. Liên minh giữa giai cấp công nhân với giai cấp nông dân.
+C. Mâu thuẫn gay gắt với giai cấp tư sản.
+D. Được chính đảng Mác - Lênin dẫn đường.
+
+Gt: Đảng Cộng sản - đội tiền phong của giai cấp công nhân - ra đời và đảm nhận vai trò lãnh đạo khi mức độ trưởng thành về nhận thức, tổ chức của giai cấp công nhân đạt tới trình độ nhất định; đây là nhân tố chủ quan quan trọng nhất để giai cấp công nhân hoàn thành sứ mệnh lịch sử (giáo trình CNXHKH, 2021, tr.63-64).
+
+Câu 17: Đảng Cộng sản là đội tiền phong chiến đấu, là bộ tham mưu của
+A. tầng lớp tiểu tư sản.
+B. giai cấp nông dân.
+C. tầng lớp trí thức.
+*D. giai cấp công nhân.
+
+Gt: Đảng mang bản chất giai cấp công nhân, là đội tiền phong, bộ tham mưu chiến đấu của giai cấp công nhân (giáo trình CNXHKH, 2021, tr.64).
+
+Câu 18: Nội dung nào sau đây thể hiện sự khác nhau cơ bản giữa cách mạng dân chủ tư sản kiểu mới với cách mạng dân chủ tư sản kiểu cũ?
+A. Lực lượng tham gia.
+B. Tầng lớp trung gian.
+*C. Lực lượng lãnh đạo.
+D. Tầng lớp cách mạng.
+
+Gt: Cách mạng dân chủ tư sản kiểu cũ do giai cấp tư sản lãnh đạo, còn cách mạng dân chủ tư sản kiểu mới do giai cấp công nhân (thông qua chính đảng của mình) lãnh đạo. Đó là điểm khác nhau cơ bản về lực lượng lãnh đạo.
+
+Câu 19: Yếu tố nào sau đây quyết định sự liên minh giữa giai cấp công nhân với giai cấp nông dân và các tầng lớp lao động khác?
+*A. Có những lợi ích cơ bản thống nhất với nhau.
+B. Địa vị kinh tế giống nhau.
+C. Đều mâu thuẫn gay gắt với giai cấp tư sản.
+D. Địa vị xã hội như nhau.
+
+Gt: Mặc dù có vị trí và phương thức lao động khác nhau, giai cấp công nhân, giai cấp nông dân và các tầng lớp lao động khác đều cùng chung lợi ích và mục tiêu giải phóng, xây dựng, phát triển xã hội mới tiến bộ, đó là yếu tố quyết định sự liên minh giữa họ.
+
+Câu 20: Tiêu chí quan trọng nhất về phát triển chất lượng của giai cấp công nhân hiện đại là
+*A. trình độ học vấn và trình độ tay nghề.
+B. văn hóa sản xuất và văn hóa ứng xử.
+C. tinh thần cách mạng triệt để.
+D. bản chất giai cấp và bản chất cách mạng.
+
+Gt: Trình độ học vấn, bậc thợ, văn hóa lao động và ý thức tổ chức kỷ luật lao động của công nhân là những chỉ tiêu quan trọng nhất thể hiện sự phát triển về chất lượng của giai cấp công nhân hiện đại (giáo trình CNXHKH, 2019, tr.35).
+
+Câu 21: Ở các nước tư bản chủ nghĩa hiện nay, giai cấp công nhân
+A. đã làm chủ tư liệu sản xuất.
+*B. vẫn bị giai cấp tư sản bóc lột.
+C. đấu tranh đòi chính quyền của giai cấp tư sản.
+D. lãnh đạo nhân dân xây dựng chủ nghĩa xã hội.
+
+Gt: Ở các nước tư bản chủ nghĩa hiện nay, công nhân vẫn bị giai cấp tư sản và chủ nghĩa tư bản bóc lột giá trị thặng dư (giáo trình CNXHKH, 2021, tr.66).
+
+Câu 22: "Công nhân áo trắng" là khái niệm chỉ hiện tượng nào sau đây?
+A. Xã hội hóa sản xuất.
+B. Đa dạng hóa công nhân.
+C. Chuyên môn hóa lao động.
+*D. Trí thức hóa công nhân.
+
+Gt: "Công nhân áo trắng" là khái niệm chỉ xu hướng trí thức hóa công nhân trong nền sản xuất hiện đại.
+
+Câu 23: Trong nền sản xuất hiện đại, đội ngũ công nhân thay đổi nhanh về số lượng và chất lượng thể hiện qua
+*A. thay đổi lớn về cơ cấu.
+B. có xu hướng bần cùng hóa.
+C. trở thành tầng lớp trung gian.
+D. làm việc trong môi trường khép kín.
+
+Gt: Công nhân hiện đại có xu hướng thay đổi lớn về cơ cấu, về ngành nghề sản xuất theo hướng hiện đại (giáo trình CNXHKH, 2021, tr.69).
+
+Câu 24: Giai cấp công nhân hiện nay thể hiện vai trò lãnh đạo của mình thông qua tổ chức nào sau đây?
+*A. Đảng Cộng sản.
+B. Công đoàn.
+C. Nghiệp đoàn.
+D. Nhóm lợi ích.
+
+Gt: Giai cấp công nhân hiện nay thể hiện vai trò lãnh đạo cách mạng của mình thông qua đội tiền phong là Đảng Cộng sản (giáo trình CNXHKH, 2021, tr.68).
+
+Câu 25: Ở các nước xã hội chủ nghĩa hiện nay, giai cấp công nhân đã trở thành giai cấp lãnh đạo và Đảng Cộng sản trở thành
+A. Đảng đối lập.
+B. Đảng thống nhất.
+*C. Đảng cầm quyền.
+D. Đảng kiểu mới.
+
+Gt: Ở các nước xã hội chủ nghĩa hiện nay, giai cấp công nhân đã trở thành giai cấp lãnh đạo, Đảng Cộng sản trở thành Đảng cầm quyền (giáo trình CNXHKH, 2021, tr.68).
+
+Câu 26: Quan hệ lợi ích căn bản của giai cấp công nhân dưới chủ nghĩa xã hội là
+A. mâu thuẫn.
+*B. thống nhất về cơ bản.
+C. khác biệt.
+D. đối lập hoàn toàn.
+
+Gt: Dưới chủ nghĩa xã hội, giai cấp công nhân trở thành người làm chủ, không còn là giai cấp bị áp bức, bóc lột; khi giai cấp công nhân đấu tranh giải phóng mình đồng thời cũng giải phóng dân tộc, giải phóng xã hội nên lợi ích của họ về cơ bản thống nhất với lợi ích quốc gia - dân tộc, không đối kháng.
+
+Câu 27: Ở các nước tư bản chủ nghĩa hiện nay, mục tiêu đấu tranh trực tiếp trước mắt của giai cấp công nhân và công đoàn là
+*A. những đòi hỏi về kinh tế - xã hội.
+B. thay đổi quan hệ sở hữu.
+C. lật đổ chính quyền của giai cấp tư sản.
+D. xóa bỏ chế độ bóc lột giá trị thặng dư.
+
+Gt: Ở các nước tư bản chủ nghĩa hiện nay, mục tiêu đấu tranh trực tiếp, trước mắt của giai cấp công nhân và công đoàn là những đòi hỏi về kinh tế - xã hội (giáo trình CNXHKH, 2021, tr.70).
+
+Câu 28: Ở thời đại kinh tế tri thức, yếu tố nào sau đây giữ vai trò quyết định trình độ phát triển nhanh, mạnh, bền vững của xã hội?
+A. Công nghệ.
+B. Tài nguyên.
+*C. Tri thức.
+D. Nguồn vốn.
+
+Gt: Theo Báo cáo phát triển thiên niên kỷ đầu thế kỷ XXI (2002) của Ngân hàng Thế giới, tri thức là động lực quan trọng nhất của tăng trưởng kinh tế và phúc lợi con người, quyết định trình độ phát triển nhanh, mạnh, bền vững của xã hội (giáo trình CNXHKH, 2019, tr.37).
+
+Câu 29: Ở các nước tư bản phát triển hiện nay, giai cấp công nhân có xu hướng
+A. bần cùng hóa tuyệt đối.
+*B. trung lưu hóa và tri thức hóa.
+C. hoạt động chuyên môn thuần túy.
+D. gia tăng lực lượng lao động phổ thông.
+
+Gt: Ở các nước tư bản phát triển hiện nay, giai cấp công nhân có xu hướng trung lưu hóa về mức sống, thu nhập và ngày càng tri thức hóa (giáo trình CNXHKH, 2021, tr.67).
+
+Câu 30: Nguyên nhân cơ bản, sâu xa để giai cấp công nhân vẫn còn sứ mệnh lịch sử hiện nay là do tồn tại mâu thuẫn lợi ích cơ bản giữa
+*A. giai cấp tư sản và giai cấp công nhân.
+B. giai cấp tư sản và tầng lớp trí thức.
+C. cá nhân và xã hội.
+D. tư nhân và nhà nước.
+
+Gt: Xung đột lợi ích cơ bản giữa giai cấp tư sản và giai cấp công nhân (giữa tư bản và lao động) vẫn tồn tại, là nguyên nhân sâu xa để giai cấp công nhân vẫn có sứ mệnh lịch sử đấu tranh xóa bỏ chủ nghĩa tư bản (giáo trình CNXHKH, 2021, tr.66).
+
+Câu 31: Giai cấp công nhân Việt Nam ra đời là kết quả trực tiếp của quá trình
+A. phát triển nền công nghiệp Việt Nam.
+B. đấu tranh giải phóng dân tộc.
+*C. khai thác thuộc địa của thực dân Pháp.
+D. công nghiệp hóa, hiện đại hóa đất nước.
+
+Gt: Giai cấp công nhân Việt Nam ra đời và phát triển gắn liền với chính sách khai thác thuộc địa của thực dân Pháp ở Việt Nam (giáo trình CNXHKH, 2021, tr.72).
+
+Câu 32: Trong quá trình công nghiệp hóa, hiện đại hóa, giai cấp công nhân Việt Nam có xu hướng
+*A. tăng nhanh về số lượng và chất lượng.
+B. biến đổi cơ cấu và giảm về vị trí, vai trò.
+C. đa dạng ngành nghề và giảm ở lĩnh vực nông nghiệp.
+D. thay đổi cơ cấu và ngày càng bần cùng hóa.
+
+Gt: Giai cấp công nhân Việt Nam hiện nay đang tăng nhanh về số lượng và chất lượng, là giai cấp đi đầu trong sự nghiệp công nghiệp hóa, hiện đại hóa (giáo trình CNXHKH, 2021, tr.75).
+
+Câu 33: Giai cấp công nhân Việt Nam ra đời trực tiếp từ giai cấp nào sau đây?
+A. Tầng lớp trí thức Việt Nam.
+B. Giai cấp tư sản Việt Nam.
+*C. Giai cấp nông dân Việt Nam.
+D. Địa chủ phong kiến Việt Nam.
+
+Gt: Đại bộ phận công nhân Việt Nam xuất thân từ nông dân và các tầng lớp lao động khác (giáo trình CNXHKH, 2021, tr.74).
+
+Câu 34: Đảng Cộng sản Việt Nam ra đời là sự kết hợp của chủ nghĩa Mác - Lênin với phong trào công nhân và
+*A. phong trào yêu nước.
+B. chủ nghĩa dân tộc.
+C. chủ nghĩa yêu nước.
+D. phong trào dân tộc.
+
+Gt: Đảng Cộng sản Việt Nam là sản phẩm của sự kết hợp chủ nghĩa Mác - Lênin với phong trào công nhân và phong trào yêu nước của dân tộc (giáo trình CNXHKH, 2021, tr.64).
+
+Câu 35: Trong thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam, giai cấp, tầng lớp nào sau đây giữ vai trò lãnh đạo?
+A. Trí thức.
+B. Nông dân.
+C. Doanh nhân.
+*D. Công nhân.
+
+Gt: Trong thời kỳ quá độ lên chủ nghĩa xã hội ở Việt Nam, giai cấp công nhân giữ vai trò lãnh đạo (giáo trình CNXHKH, 2021, tr.76).
+
+Câu 36: Nội dung kinh tế nổi bật nhất trong thực hiện sứ mệnh lịch sử của giai cấp công nhân Việt Nam hiện nay là
+A. xây dựng nền dân chủ xã hội chủ nghĩa.
+*B. đẩy mạnh công nghiệp hóa, hiện đại hóa.
+C. hoàn thiện nhà nước pháp quyền xã hội chủ nghĩa.
+D. chủ động hội nhập văn hóa thế giới.
+
+Gt: Nội dung kinh tế nổi bật nhất trong thực hiện sứ mệnh lịch sử của giai cấp công nhân Việt Nam hiện nay là đẩy mạnh công nghiệp hóa, hiện đại hóa (giáo trình CNXHKH, 2021, tr.78).
+
+Câu 37: Nội dung văn hóa cơ bản trong thực hiện sứ mệnh lịch sử của giai cấp công nhân Việt Nam hiện nay là
+A. nâng cao hiệu quả quản lý của nhà nước.
+B. đấu tranh bảo vệ nền tảng tư tưởng của Đảng.
+C. hình thành tác phong công nghiệp hiện đại.
+*D. xây dựng con người mới xã hội chủ nghĩa.
+
+Gt: Nội dung văn hóa cơ bản trong thực hiện sứ mệnh lịch sử của giai cấp công nhân Việt Nam hiện nay là xây dựng con người mới xã hội chủ nghĩa; hình thành tác phong công nghiệp hiện đại chỉ là một khía cạnh nhỏ nằm trong nội dung này.
+
+Câu 38: Nội dung chính trị chủ yếu trong thực hiện sứ mệnh lịch sử của giai cấp công nhân Việt Nam hiện nay là
+*A. tăng cường sự lãnh đạo của Đảng Cộng sản.
+B. xây dựng con người mới xã hội chủ nghĩa.
+C. hình thành tác phong công nghiệp hiện đại.
+D. tạo dựng hệ giá trị văn hóa mới.
+
+Gt: Nội dung chính trị chủ yếu trong thực hiện sứ mệnh lịch sử của giai cấp công nhân Việt Nam hiện nay là giữ vững và tăng cường sự lãnh đạo của Đảng Cộng sản (giáo trình CNXHKH, 2021, tr.79).
+
+Câu 39: Giai cấp công nhân Việt Nam hiện nay đang giữ vai trò đi tiên phong trong lĩnh vực
+A. việc thực hiện và chuyển giao khoa học công nghệ.
+B. quá trình xây dựng nông thôn mới.
+*C. sự nghiệp công nghiệp hóa, hiện đại hóa đất nước.
+D. thực hiện chính sách tam nông.
+
+Gt: Giai cấp công nhân Việt Nam hiện nay là giai cấp đi đầu trong sự nghiệp công nghiệp hóa, hiện đại hóa đất nước (giáo trình CNXHKH, 2021, tr.75).
+
+Câu 40: Ở Việt Nam hiện nay, những người lao động chân tay và trí óc, làm công hưởng lương trong các loại hình sản xuất kinh doanh và dịch vụ có tính chất công nghiệp được gọi là
+A. giai cấp nông dân.
+B. tầng lớp trí thức.
+*C. giai cấp công nhân.
+D. tầng lớp doanh nhân.
+
+Gt: Giai cấp công nhân Việt Nam là tập đoàn xã hội hình thành, phát triển gắn với quá trình phát triển công nghiệp, gồm những người lao động chân tay và trí óc trong các loại hình sản xuất kinh doanh và dịch vụ có tính chất công nghiệp (giáo trình CNXHKH, 2021, tr.72).
+
+Câu 41: Ở Việt Nam hiện nay, yếu tố nào sau đây tác động chủ yếu để giai cấp công nhân phát triển cả về số lượng và chất lượng?
+A. Giữ gìn bản sắc văn hóa dân tộc.
+B. Xây dựng Đảng trong sạch, vững mạnh.
+*C. Đẩy mạnh công nghiệp hóa, hiện đại hóa.
+D. Phát huy dân chủ xã hội chủ nghĩa.
+
+Gt: Tham gia vào sự nghiệp công nghiệp hóa, hiện đại hóa, giai cấp công nhân có điều kiện khách quan thuận lợi để phát triển cả về số lượng và chất lượng (giáo trình CNXHKH, 2021, tr.76).
+
+Câu 42: Yếu tố nào sau đây phản ánh hao phí lao động khi thực hiện chức năng lao động sáng tạo trong sản xuất hiện đại?
+*A. Trí lực.
+B. Thể lực.
+C. Tâm lực.
+D. Vật lực.
+
+Gt: Hao phí lao động hiện đại chủ yếu là hao phí về trí lực chứ không thuần túy là hao phí sức lực cơ bắp (giáo trình CNXHKH, tr.67).
+
+Câu 43: Xây dựng giai cấp công nhân Việt Nam lớn mạnh là trách nhiệm của chủ thể nào sau đây?
+A. Đảng Cộng sản.
+*B. Hệ thống chính trị và toàn xã hội.
+C. Nhà nước.
+D. Tổ chức chính trị và tổ chức xã hội.
+
+Gt: Xây dựng giai cấp công nhân lớn mạnh, hiện đại là trách nhiệm chung của cả hệ thống chính trị và toàn xã hội (giáo trình CNXHKH, 2021, tr.84).
+
+Câu 44: Lực lượng nào sau đây là nguồn nhân lực chủ yếu tham gia phát triển kinh tế thị trường định hướng xã hội chủ nghĩa ở Việt Nam?
+A. Giai cấp nông dân.
+*B. Giai cấp công nhân.
+C. Tầng lớp trí thức.
+D. Tầng lớp doanh nhân.
+
+Gt: Giai cấp công nhân là nguồn nhân lực chủ yếu, có vai trò quan trọng tham gia phát triển kinh tế thị trường định hướng xã hội chủ nghĩa (giáo trình CNXHKH, 2021, tr.77).
+
+Câu 45: Tính chất xã hội hóa của lao động công nghiệp trong sản xuất hiện nay biểu hiện rõ nét ở xu hướng nào sau đây?
+*A. Liên kết nhiều công đoạn sản xuất của nhiều quốc gia.
+B. Phát triển công nghệ vi mạch, công nghệ số.
+C. Hội nhập quốc tế và cách mạng công nghiệp 4.0.
+D. Thay đổi lớn về cơ cấu trong sản xuất hiện đại.
+
+Gt: Tính chất xã hội hóa của lao động công nghiệp mang sắc thái mới, gắn với xu hướng "chuỗi giá trị toàn cầu": quá trình sản xuất một sản phẩm hiện nay được liên kết giữa nhiều nước, nhiều công đoạn khác nhau (giáo trình CNXHKH, tr.37-38).
+
+Câu 46: Trong thời đại ngày nay, quá trình sản xuất vật chất hiện đại với trình độ xã hội hóa cao là điều kiện cơ bản nào sau đây để thực hiện sứ mệnh lịch sử của giai cấp công nhân?
+A. Khoa học.
+B. Công nghệ.
+*C. Kinh tế.
+D. Xã hội.
+
+Gt: Quá trình sản xuất vật chất với trình độ xã hội hóa cao dựa trên nền tảng kinh tế là điều kiện cơ bản để thực hiện sứ mệnh lịch sử của giai cấp công nhân (giáo trình CNXHKH, 2021, tr.69).
+
+Câu 47: Đặc điểm nào sau đây thể hiện sự khác biệt giữa giai cấp công nhân Việt Nam với giai cấp công nhân ở các nước tư bản phương Tây?
+*A. Ra đời trước giai cấp tư sản dân tộc.
+B. Tăng nhanh về số lượng và chất lượng.
+C. Xuất thân từ nông dân và các tầng lớp lao động.
+D. Có mặt trong mọi thành phần kinh tế.
+
+Gt: Giai cấp công nhân Việt Nam ra đời trước giai cấp tư sản dân tộc, khác với giai cấp công nhân ở các nước tư bản phương Tây thường ra đời sau hoặc song song với giai cấp tư sản.
+
+Câu 48: Giai cấp, tầng lớp nào sau đây là lực lượng lãnh đạo cách mạng xã hội chủ nghĩa trong thời đại kinh tế tri thức?
+A. Tầng lớp trí thức hiện đại.
+B. Nông dân và trí thức.
+C. Công nhân và trí thức.
+*D. Giai cấp công nhân hiện đại.
+
+Gt: Dù trong thời đại kinh tế tri thức có sự tham gia ngày càng lớn của trí thức, giai cấp công nhân hiện đại vẫn giữ vai trò là lực lượng lãnh đạo cách mạng xã hội chủ nghĩa.
+
+Câu 49: Nhân tố nào sau đây quyết định thắng lợi của việc thực hiện sứ mệnh lịch sử của giai cấp công nhân?
+*A. Sự lãnh đạo của Đảng Cộng sản.
+B. Sự quản lý của Nhà nước.
+C. Số lượng công nhân.
+D. Chất lượng công nhân.
+
+Gt: Đảng Cộng sản là đội tiên phong, đại biểu cho trí tuệ và lợi ích của giai cấp công nhân, là nhân tố quyết định nhất để giai cấp công nhân thực hiện thắng lợi sứ mệnh lịch sử của mình.
+
+Câu 50: Dưới tác động của Cách mạng công nghiệp 4.0, giai cấp công nhân Việt Nam phải đối diện với thách thức nào sau đây?
+A. Nhiều ngành nghề mới xuất hiện.
+*B. Sự phân tầng xã hội và phân hóa giàu nghèo.
+C. Quá trình chuyển dịch cơ cấu kinh tế.
+D. Sự xuất hiện các giai cấp và tầng lớp trung lưu.
+
+Gt: Cách mạng công nghiệp 4.0 tạo ra sự chuyển dịch cơ cấu kinh tế mạnh mẽ, đặt ra thách thức về sự phân tầng xã hội và phân hóa giàu nghèo trong nội bộ giai cấp công nhân, đòi hỏi phải kiểm soát và điều tiết để đảm bảo công bằng.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 3000;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath();
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chương 6: Vấn đề dân tộc và tôn giáo - Phần 1 - Thi Trắc Nghiệm - SNG EDU</title>
+
+    <!-- Hỗ trợ công thức Toán học (KaTeX) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-body: #f0f2f5;
+            --white: #ffffff;
+            --text-main: #333333;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --azota-blue: #3258db;
+            --selected-bg: #eef2ff;
+            --selected-border: #6366f1;
+            --correct-color: #22c55e;
+            --wrong-color: #ef4444;
+            --explanation-bg: #f8fafc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-body); color: var(--text-main); line-height: 1.6; }
+
+        header {
+            background-color: var(--white); height: 60px; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: fixed; top: 0; width: 100%; z-index: 1000;
+        }
+        .header-left { display: flex; align-items: center; gap: 8px; color: var(--text-gray); font-size: 0.95rem; cursor: pointer; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .timer { font-weight: 700; color: var(--azota-blue); font-size: 1.1rem; }
+        .btn-submit { background-color: var(--azota-blue); color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .layout { display: flex; max-width: 1200px; margin: 80px auto 40px; padding: 0 20px; gap: 25px; align-items: flex-start; }
+        .questions-col { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .q-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .q-title { font-weight: 700; color: var(--azota-blue); margin-bottom: 8px; font-size: 1.1rem; }
+        .q-content { margin-bottom: 20px; font-size: 1.05rem; }
+
+        .options-wrapper { display: flex; flex-direction: column; gap: 10px; }
+        .option-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .option-item input { display: none; }
+        .opt-letter {
+            width: 36px; height: 36px; border: 1px solid #d1d5db; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 500; flex-shrink: 0;
+        }
+        .opt-text {
+            border: 1px solid #d1d5db; padding: 12px 15px; border-radius: 10px; flex: 1; transition: 0.2s;
+        }
+
+        .option-item input:checked ~ .opt-letter { background: var(--azota-blue); color: white; border-color: var(--azota-blue); }
+        .option-item input:checked ~ .opt-text { border-color: var(--selected-border); background-color: var(--selected-bg); }
+
+        .option-item.is-correct .opt-text { border-color: var(--correct-color) !important; background: #f0fdf4 !important; }
+        .option-item.is-wrong .opt-text { border-color: var(--wrong-color) !important; background: #fef2f2 !important; }
+
+        .explanation-box {
+            margin-top: 15px; padding: 15px; background: var(--explanation-bg); border-left: 4px solid var(--azota-blue);
+            border-radius: 4px; display: none; font-size: 0.95rem;
+        }
+        .explanation-box.show { display: block; animation: fadeIn 0.4s ease; }
+
+        .sidebar-col {
+            width: 320px;
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .sidebar-col::-webkit-scrollbar { width: 5px; }
+        .sidebar-col::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .nav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .nav-btn {
+            aspect-ratio: 1; border: 1px solid #e5e7eb; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.9rem; transition: 0.2s;
+        }
+        .nav-btn.answered { background: #eef2ff; color: var(--azota-blue); border-color: var(--azota-blue); }
+        .nav-btn.is-correct { background: var(--correct-color); color: white; border-color: var(--correct-color); }
+        .nav-btn.is-wrong { background: var(--wrong-color); color: white; border-color: var(--wrong-color); }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; text-align: center; width: 350px; }
+        .score-big { font-size: 4rem; color: var(--azota-blue); font-weight: 800; margin: 10px 0; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; }
+            .sidebar-col {
+                width: 100%;
+                position: static;
+                order: 2;
+                max-height: none;
+                overflow-y: visible;
+            }
+            .questions-col { order: 1; }
+            .nav-grid { grid-template-columns: repeat(8, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-left" onclick="location.reload()">
+        <i class="fa-solid fa-rotate-right"></i> <span>Làm lại bài</span>
+    </div>
+    <div class="header-right">
+        <div class="timer"><i class="fa-regular fa-clock"></i> <span id="timer-display">60:00</span></div>
+        <button class="btn-submit" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> Nộp bài</button>
+    </div>
+</header>
+
+<div class="layout">
+    <div class="questions-col" id="questions-container"></div>
+
+    <div class="sidebar-col">
+        <div class="nav-card">
+            <div style="font-weight:700; color: var(--text-gray); font-size: 0.85rem; text-transform: uppercase;">Câu hỏi đã làm</div>
+            <div class="nav-grid" id="nav-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <h2>Kết Quả</h2>
+        <div class="score-big" id="final-score">0.0</div>
+        <p style="color: var(--text-gray); margin-bottom: 25px;">Điểm số của bạn</p>
+        <button class="btn-submit" style="width:100%; justify-content:center; padding:12px;" onclick="closeModal()">Xem lời giải chi tiết</button>
+    </div>
+</div>
+
+<script>
+    // Dữ liệu câu hỏi (Có chứa LaTeX $...$)
+    const rawData = `
+Câu 1: Các hình thức cộng đồng từ thấp đến cao trong lịch sử phát triển của xã hội loài người là
+A. bộ lạc, thị tộc, dân tộc, bộ tộc.
+B. thị tộc, bộ tộc, bộ lạc, dân tộc.
+*C. thị tộc, bộ lạc, bộ tộc, dân tộc.
+D. bộ tộc, dân tộc, thị tộc, bộ lạc.
+Gt: Các hình thức cộng đồng phát triển từ thấp đến cao lần lượt là thị tộc, bộ lạc, bộ tộc rồi dân tộc.
+
+Câu 2: Nguyên nhân quyết định sự biến đổi của cộng đồng dân tộc là
+*A. phương thức sản xuất.
+B. kiến trúc thượng tầng.
+C. ý thức xã hội.
+D. công cụ lao động.
+Gt: Sự biến đổi của phương thức sản xuất là nguyên nhân quyết định sự biến đổi của cộng đồng dân tộc.
+
+Câu 3: Ở phương Tây, dân tộc xuất hiện khi phương thức sản xuất nào đã được xác lập?
+A. Phong kiến.
+*B. Tư bản chủ nghĩa.
+C. Chiếm hữu nô lệ.
+D. Cộng xã nguyên thủy.
+Gt: Ở phương Tây, dân tộc xuất hiện khi phương thức sản xuất tư bản chủ nghĩa được xác lập, thay thế phương thức sản xuất phong kiến.
+
+Câu 4: Dân tộc được hiểu theo hai nghĩa phổ biến là quốc gia dân tộc và
+A. bộ lạc.
+*B. tộc người.
+C. bộ tộc.
+D. thị tộc.
+Gt: Dân tộc được hiểu theo hai nghĩa phổ biến là quốc gia dân tộc và tộc người.
+
+Câu 5: Dân tộc được hiểu theo hai nghĩa phổ biến là tộc người và
+A. đại chủng tộc.
+B. cộng đồng dân cư.
+C. các nhóm địa phương.
+*D. quốc gia dân tộc.
+Gt: Dân tộc được hiểu theo hai nghĩa phổ biến là tộc người và quốc gia dân tộc.
+
+Câu 6: Một trong những đặc trưng của cộng đồng dân tộc hiểu theo nghĩa quốc gia dân tộc là có
+A. ý thức tự giác tộc người.
+B. tinh thần đoàn kết văn hóa.
+*C. sự quản lý của một nhà nước độc lập.
+D. một ngôn ngữ duy nhất được sử dụng.
+Gt: Cộng đồng dân tộc theo nghĩa quốc gia dân tộc có đặc trưng là chịu sự quản lý của một nhà nước độc lập.
+
+Câu 7: Một trong những đặc trưng của cộng đồng dân tộc hiểu theo nghĩa quốc gia dân tộc là có
+A. sự ổn định lãnh thổ.
+*B. chung phương thức sinh hoạt kinh tế.
+C. dân tộc đa số thống trị.
+D. một ngôn ngữ duy nhất được sử dụng.
+Gt: Cộng đồng dân tộc theo nghĩa quốc gia dân tộc có chung một phương thức sinh hoạt kinh tế.
+
+Câu 8: Một trong những đặc trưng của cộng đồng dân tộc hiểu theo nghĩa quốc gia dân tộc là có
+*A. lãnh thổ chung ổn định.
+B. sự đồng đều về số dân giữa các tộc người.
+C. tinh thần thống nhất về chủng tộc.
+D. một ngôn ngữ duy nhất.
+Gt: Cộng đồng dân tộc theo nghĩa quốc gia dân tộc có chung một vùng lãnh thổ ổn định.
+
+Câu 9: Một trong những đặc trưng của cộng đồng dân tộc hiểu theo nghĩa quốc gia dân tộc là có
+A. ý thức tự giác tộc người.
+B. tinh thần thống nhất về chủng tộc.
+*C. ngôn ngữ chung của quốc gia.
+D. một ngôn ngữ duy nhất được sử dụng.
+Gt: Cộng đồng dân tộc theo nghĩa quốc gia dân tộc có chung một ngôn ngữ làm công cụ giao tiếp.
+
+Câu 10: Trong một quốc gia có nhiều tộc người, căn cứ vào số lượng dân số của mỗi cộng đồng, có thể phân ra thành
+*A. đa số và thiểu số.
+B. phát triển và kém phát triển.
+C. miền núi và đồng bằng.
+D. da trắng và da màu.
+Gt: Căn cứ vào số lượng dân số, các tộc người trong một quốc gia có thể được phân thành tộc người đa số và tộc người thiểu số.
+
+Câu 11: Theo quan điểm của chủ nghĩa Mác - Lênin, một trong hai xu hướng khách quan của sự phát triển quan hệ dân tộc là các cộng đồng dân cư muốn
+A. tách khỏi khu vực quốc gia và quốc tế.
+B. thiết lập quan hệ thống nhất với liên minh.
+*C. tách ra để hình thành dân tộc độc lập.
+D. gắn bó với văn hóa dân tộc mình.
+Gt: Lênin phát hiện hai xu hướng khách quan: cộng đồng dân cư muốn tách ra để hình thành cộng đồng dân tộc độc lập, và các dân tộc muốn liên hiệp lại với nhau.
+
+Câu 12: Theo quan điểm của chủ nghĩa Mác - Lênin, một trong hai xu hướng khách quan của sự phát triển quan hệ dân tộc là các dân tộc trong từng quốc gia muốn
+A. phân chia địa bàn cư trú.
+B. áp đặt sự thống trị.
+C. thoát ly liên hiệp.
+*D. liên hiệp lại với nhau.
+Gt: Xu hướng thứ hai là các dân tộc trong từng quốc gia, thậm chí các dân tộc ở nhiều quốc gia muốn liên hiệp lại với nhau.
+
+Câu 13: Một trong những nguyên tắc giải quyết vấn đề dân tộc theo quan điểm của chủ nghĩa Mác - Lênin là
+A. giữ gìn bản sắc văn hóa các dân tộc.
+B. các dân tộc tương trợ lẫn nhau.
+*C. các dân tộc hoàn toàn bình đẳng.
+D. tôn trọng tín ngưỡng của các dân tộc.
+Gt: Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin gồm ba nguyên tắc: các dân tộc hoàn toàn bình đẳng, các dân tộc được quyền tự quyết, liên hiệp công nhân tất cả các dân tộc.
+
+Câu 14: Một trong những nguyên tắc giải quyết vấn đề dân tộc theo quan điểm của chủ nghĩa Mác - Lênin là
+A. các dân tộc giúp đỡ lẫn nhau.
+*B. các dân tộc được quyền tự quyết.
+C. giữ gìn tiếng nói, chữ viết các dân tộc.
+D. tôn trọng tự do tín ngưỡng của các dân tộc.
+Gt: Đây là một trong ba nguyên tắc của Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin.
+
+Câu 15: Một trong những nguyên tắc giải quyết vấn đề dân tộc theo quan điểm của chủ nghĩa Mác - Lênin là
+*A. liên hiệp công nhân tất cả các dân tộc.
+B. giữ gìn tiếng nói, chữ viết các dân tộc.
+C. các dân tộc đấu tranh lẫn nhau.
+D. tôn trọng tín ngưỡng của các dân tộc.
+Gt: Đây là nguyên tắc thứ ba trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin.
+
+Câu 16: Các dân tộc hoàn toàn bình đẳng, các dân tộc được quyền tự quyết và liên hiệp công nhân các dân tộc lại là nội dung của
+A. nguyên tắc trong quan hệ đối ngoại giữa các quốc gia.
+B. chính sách dân tộc của Đảng và Nhà nước Việt Nam.
+*C. Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin.
+D. quan điểm đại đoàn kết toàn dân tộc của nước ta.
+Gt: Ba nội dung này chính là Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin.
+
+Câu 17: Một trong những đặc điểm dân tộc Việt Nam là dân tộc có
+*A. có sự chênh lệch về số dân.
+B. tương đồng về trình độ phát triển.
+C. tách biệt hoàn toàn về địa bàn cư trú.
+D. đồng nhất về mặt tôn giáo.
+Gt: Đặc điểm dân tộc Việt Nam có sự chênh lệch về số dân giữa các tộc người, cùng nhiều đặc điểm khác như cư trú xen kẽ, trình độ phát triển không đồng đều.
+
+Câu 18: Một trong những đặc điểm dân tộc Việt Nam là các dân tộc
+A. có số dân bằng nhau.
+B. tương đồng về trình độ kinh tế.
+*C. cư trú xen kẽ nhau.
+D. đồng nhất về mặt tín ngưỡng.
+Gt: Các dân tộc ở Việt Nam cư trú xen kẽ nhau là một trong những đặc điểm nổi bật của dân tộc Việt Nam.
+
+Câu 19: Một trong những đặc điểm dân tộc Việt Nam là các dân tộc
+A. đều có số dân bằng nhau.
+*B. có trình độ phát triển không đồng đều.
+C. tách biệt hoàn toàn về địa bàn cư trú.
+D. đồng nhất về văn hóa, tín ngưỡng.
+Gt: Các dân tộc ở Việt Nam có trình độ phát triển không đồng đều là một đặc điểm quan trọng.
+
+Câu 20: Một trong những đặc điểm dân tộc Việt Nam là các dân tộc
+*A. có bản sắc văn hóa riêng.
+B. tương đồng về trình độ phát triển.
+C. có chung tiếng nói, chữ viết.
+D. đều có số dân tương đương nhau.
+Gt: Mỗi dân tộc Việt Nam có bản sắc văn hóa riêng, góp phần tạo nên sự phong phú, đa dạng của văn hóa Việt Nam thống nhất.
+
+Câu 21: Đặc trưng nào sau đây có vị trí quyết định đối với sự tồn tại và phát triển của mỗi tộc người?
+A. Đặc trưng về văn hóa.
+B. Cộng đồng về ngôn ngữ.
+*C. Ý thức tự giác tộc người.
+D. Địa bàn cư trú của tộc người.
+Gt: Ý thức tự giác tộc người là tiêu chí quan trọng nhất để phân định một tộc người và có vị trí quyết định với sự tồn tại, phát triển của tộc người đó.
+
+Câu 22: Các dân tộc có quyền lợi và nghĩa vụ ngang nhau trong tất cả các lĩnh vực của đời sống xã hội và nhà nước là nội dung nào sau đây trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin?
+A. Liên hiệp công nhân tất cả các dân tộc.
+B. Các dân tộc được quyền tự quyết.
+C. Đoàn kết tất cả các dân tộc lại với nhau.
+*D. Các dân tộc hoàn toàn bình đẳng.
+Gt: Đây chính là nội dung của nguyên tắc các dân tộc hoàn toàn bình đẳng.
+
+Câu 23: Các dân tộc có quyền lựa chọn con đường phát triển của dân tộc mình là nội dung nguyên tắc nào sau đây trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin?
+A. Các dân tộc hoàn toàn bình đẳng.
+*B. Các dân tộc được quyền tự quyết.
+C. Đoàn kết tất cả các dân tộc lại với nhau.
+D. Liên hiệp công nhân tất cả các dân tộc.
+Gt: Đây là nội dung của nguyên tắc các dân tộc được quyền tự quyết.
+
+Câu 24: Các dân tộc có quyền tách ra thành lập quốc gia dân tộc độc lập hoặc liên hiệp lại với các dân tộc khác là nội dung nguyên tắc nào sau đây trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin?
+A. Đoàn kết tất cả các dân tộc lại với nhau.
+B. Các dân tộc hoàn toàn bình đẳng.
+*C. Các dân tộc được quyền tự quyết.
+D. Liên hiệp công nhân tất cả các dân tộc.
+Gt: Quyền tách ra lập quốc gia độc lập hoặc liên hiệp với dân tộc khác thuộc nội dung nguyên tắc các dân tộc được quyền tự quyết.
+
+Câu 25: Nguyên tắc nào sau đây đóng vai trò liên kết cả ba nguyên tắc thành một giải pháp quan trọng để gắn kết các dân tộc lại với nhau trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin?
+*A. Liên hiệp công nhân tất cả các dân tộc.
+B. Các dân tộc hoàn toàn bình đẳng.
+C. Các dân tộc được quyền tự quyết.
+D. Đoàn kết tất cả các dân tộc lại với nhau.
+Gt: Liên hiệp công nhân tất cả các dân tộc đóng vai trò liên kết cả ba nội dung của Cương lĩnh dân tộc thành một chỉnh thể thống nhất.
+
+Câu 26: Việc các dân tộc có xu hướng muốn tách ra để hình thành cộng đồng dân tộc độc lập xuất phát từ nguyên nhân nào sau đây?
+A. Lực lượng sản xuất, khoa học kỹ thuật phát triển.
+B. Xu thế quốc tế hóa, toàn cầu hóa gia tăng.
+*C. Sự thức tỉnh, trưởng thành ý thức dân tộc.
+D. Khác biệt về văn hóa, ngôn ngữ giữa các dân tộc.
+Gt: Xu hướng tách ra hình thành dân tộc độc lập xuất phát từ sự trưởng thành ý thức dân tộc, sự thức tỉnh về quyền sống của cộng đồng dân cư đó.
+
+Câu 27: Đặc điểm nào sau đây của các dân tộc ở Việt Nam là kết quả của quá trình chuyển cư giữa các dân tộc?
+A. Có sự chênh lệch về số dân giữa các tộc người.
+*B. Các dân tộc cư trú xen kẽ nhau.
+C. Các dân tộc có trình độ phát triển không đồng đều.
+D. Mỗi dân tộc có bản sắc văn hóa riêng.
+Gt: Đặc điểm các dân tộc cư trú xen kẽ nhau ở Việt Nam hình thành do quá trình chuyển cư qua lại giữa các dân tộc trong lịch sử.
+
+Câu 28: Đặc trưng nào sau đây của các quốc gia đa tộc người là cơ sở liên kết các bộ phận, các thành viên của các dân tộc, tạo nên tính thống nhất của cộng đồng?
+A. Có văn hóa riêng của dân tộc.
+B. Có lãnh thổ chung ổn định không bị chia cắt.
+C. Có ngôn ngữ chung của quốc gia.
+*D. Có chung phương thức sinh hoạt kinh tế.
+Gt: Chung phương thức sinh hoạt kinh tế là đặc trưng quan trọng gắn kết các bộ phận, thành viên của dân tộc lại với nhau.
+
+Câu 29: Nguyên tắc nào sau đây trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin phản ánh sự thống nhất giữa giải phóng dân tộc và giải phóng giai cấp?
+*A. Liên hiệp công nhân tất cả các dân tộc.
+B. Các dân tộc hoàn toàn bình đẳng.
+C. Các dân tộc được quyền tự quyết.
+D. Đoàn kết tất cả các dân tộc lại với nhau.
+Gt: Liên hiệp công nhân các dân tộc phản ánh sự thống nhất giữa mục tiêu giải phóng dân tộc và giải phóng giai cấp.
+
+Câu 30: Nguyên tắc nào sau đây trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin là cơ sở để thực hiện quyền tự quyết và xây dựng mối quan hệ hữu nghị, hợp tác giữa các dân tộc?
+*A. Các dân tộc hoàn toàn bình đẳng.
+B. Các dân tộc được quyền tự quyết.
+C. Đoàn kết tất cả các dân tộc lại với nhau.
+D. Liên hiệp công nhân tất cả các dân tộc.
+Gt: Quyền bình đẳng giữa các dân tộc là cơ sở để thực hiện quyền tự quyết và xây dựng quan hệ hữu nghị, hợp tác giữa các dân tộc.
+
+Câu 31: Có quan điểm cho rằng, trong một quốc gia đa dân tộc, dân tộc nào chiếm đa số về dân số và có trình độ phát triển cao hơn thì được ưu tiên trong mọi lĩnh vực chính trị, kinh tế, văn hóa, xã hội. Quan điểm này vi phạm nguyên tắc nào sau đây trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin?
+A. Các dân tộc được quyền tự quyết.
+*B. Các dân tộc hoàn toàn bình đẳng.
+C. Đoàn kết tất cả các dân tộc lại với nhau.
+D. Liên hiệp công nhân tất cả các dân tộc.
+Gt: Nguyên tắc các dân tộc hoàn toàn bình đẳng quy định các dân tộc có quyền lợi, nghĩa vụ ngang nhau, không dân tộc nào có đặc quyền; quan điểm ưu tiên dân tộc đa số vi phạm nguyên tắc này.
+
+Câu 32: Ở các quốc gia đa dân tộc, có tình trạng các thế lực bên ngoài mua chuộc, lôi kéo, kích động chia rẽ trong nội bộ dân tộc và giữa dân tộc này với dân tộc khác. Tình trạng này đe dọa việc thực hiện nguyên tắc nào sau đây trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin?
+A. Liên hiệp công nhân tất cả các dân tộc.
+B. Các dân tộc hoàn toàn bình đẳng.
+C. Đoàn kết tất cả các dân tộc lại với nhau.
+*D. Các dân tộc được quyền tự quyết.
+Gt: Hành vi mua chuộc, kích động chia rẽ dân tộc từ bên ngoài đe dọa quyền tự quyết và sự thống nhất, độc lập của các dân tộc.
+
+Câu 33: Điều 5, Hiến pháp 2013 của Việt Nam quy định các dân tộc bình đẳng, đoàn kết, tôn trọng và giúp nhau cùng phát triển, nghiêm cấm mọi hành vi kỳ thị, chia rẽ dân tộc. Quy định này thể hiện sự vận dụng nguyên tắc nào trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin?
+*A. Các dân tộc hoàn toàn bình đẳng.
+B. Các dân tộc được quyền tự quyết.
+C. Đoàn kết tất cả các dân tộc lại với nhau.
+D. Liên hiệp công nhân tất cả các dân tộc.
+Gt: Quy định về bình đẳng, đoàn kết, nghiêm cấm kỳ thị chia rẽ dân tộc là sự vận dụng nguyên tắc các dân tộc hoàn toàn bình đẳng.
+
+Câu 34: Nhà nước Việt Nam có chính sách ưu tiên đầu tư phát triển kinh tế - xã hội ở miền núi, vùng đồng bào các dân tộc thiểu số. Chính sách này nhằm khắc phục vấn đề nào sau đây?
+A. Sự chênh lệch về số dân giữa các tộc người.
+*B. Trình độ phát triển không đồng đều giữa các dân tộc.
+C. Tình trạng phân bố không đồng đều về địa bàn cư trú.
+D. Mâu thuẫn, xung đột về văn hóa, tín ngưỡng.
+Gt: Do điều kiện tự nhiên khó khăn, kinh tế các dân tộc thiểu số thường phát triển thấp hơn, nên chính sách ưu tiên đầu tư nhằm khắc phục sự phát triển không đồng đều giữa các dân tộc.
+
+Câu 35: Pháp luật Việt Nam quy định phải đảm bảo tỷ lệ đại biểu dân tộc thiểu số hợp lý trong tổng số đại biểu Quốc hội và các cơ quan dân cử. Quy định này nhằm thực hiện nguyên tắc nào trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin?
+*A. Các dân tộc hoàn toàn bình đẳng.
+B. Các dân tộc được quyền tự quyết.
+C. Đoàn kết tất cả các dân tộc lại với nhau.
+D. Liên hiệp công nhân tất cả các dân tộc.
+Gt: Đảm bảo tỷ lệ đại biểu dân tộc thiểu số giúp các dân tộc đều có điều kiện tham gia vào cơ quan quyền lực nhà nước, thể hiện nguyên tắc các dân tộc hoàn toàn bình đẳng.
+
+Câu 36: Nhà nước Việt Nam có chính sách ưu tiên cho con em các dân tộc ít người như giảm học phí, cộng điểm ưu tiên khi thi vào các trường cao đẳng, đại học. Chính sách này nhằm thực hiện nguyên tắc nào trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin?
+*A. Các dân tộc hoàn toàn bình đẳng.
+B. Các dân tộc được quyền tự quyết.
+C. Đoàn kết tất cả các dân tộc lại với nhau.
+D. Liên hiệp công nhân tất cả các dân tộc.
+Gt: Chính sách ưu tiên giáo dục nhằm rút ngắn khoảng cách phát triển giữa các dân tộc, góp phần thực hiện nguyên tắc các dân tộc hoàn toàn bình đẳng.
+
+Câu 37: Trên thế giới, một số quốc gia thực hiện chính sách chia để trị, chia rẽ các dân tộc, phân biệt đối xử giữa các dân tộc. Chính sách này vi phạm nguyên tắc nào trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin?
+A. Đoàn kết tất cả các dân tộc lại với nhau.
+B. Các dân tộc được quyền tự quyết.
+*C. Các dân tộc hoàn toàn bình đẳng.
+D. Liên hiệp công nhân tất cả các dân tộc.
+Gt: Chính sách chia để trị, phân biệt đối xử giữa các dân tộc là hành vi vi phạm nguyên tắc các dân tộc hoàn toàn bình đẳng.
+
+Câu 38: Trên thế giới, một số dân tộc có xu hướng tách khỏi quốc gia đa dân tộc để thành lập quốc gia dân tộc độc lập. Xu hướng này thể hiện việc thực hiện nguyên tắc nào trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin?
+*A. Các dân tộc được quyền tự quyết.
+B. Các dân tộc hoàn toàn bình đẳng.
+C. Đoàn kết tất cả các dân tộc lại với nhau.
+D. Liên hiệp công nhân tất cả các dân tộc.
+Gt: Xu hướng tách ra để thành lập quốc gia dân tộc độc lập thể hiện việc thực hiện quyền tự quyết dân tộc.
+
+Câu 39: Trên thế giới, một số dân tộc trong từng quốc gia, thậm chí ở nhiều quốc gia, có xu hướng muốn liên hiệp lại với nhau trên cơ sở tôn trọng nguyên tắc bình đẳng dân tộc. Xu hướng này gắn với việc thực hiện nguyên tắc nào trong Cương lĩnh dân tộc của chủ nghĩa Mác - Lênin?
+A. Liên hiệp công nhân tất cả các dân tộc.
+B. Các dân tộc hoàn toàn bình đẳng.
+C. Đoàn kết tất cả các dân tộc lại với nhau.
+*D. Các dân tộc được quyền tự quyết.
+Gt: Xu hướng các dân tộc muốn liên hiệp lại với nhau trên cơ sở bình đẳng gắn liền với việc thực hiện quyền tự quyết dân tộc, khi các dân tộc tự nguyện lựa chọn con đường liên hiệp.
+
+Câu 40: Nhà nước Việt Nam có chính sách phát triển toàn diện đối với vùng dân tộc thiểu số, giúp các dân tộc này có điều kiện phát triển kinh tế - xã hội bình đẳng với các dân tộc khác. Chính sách này nhằm khắc phục vấn đề nào sau đây?
+*A. Sự chênh lệch về số dân giữa các tộc người.
+B. Trình độ phát triển không đồng đều giữa các dân tộc.
+C. Tình trạng phân bố không đồng đều về địa bàn cư trú.
+D. Mâu thuẫn, xung đột về văn hóa, tín ngưỡng.
+Gt: Đặc điểm nổi bật của 54 dân tộc Việt Nam là quy mô dân số rất không đồng đều, nên chính sách phát triển toàn diện nhằm khắc phục sự chênh lệch về số dân giữa các tộc người.
+`;
+
+    const questions = [];
+    const letters = ['A', 'B', 'C', 'D'];
+    let isSubmitted = false;
+    let timeLeft = 2400;
+
+    // Phân tích dữ liệu
+    rawData.trim().split(/(?=Câu \d+:)/).forEach(block => {
+        if (!block.trim()) return;
+        const lines = block.trim().split('\n');
+        const header = lines[0].split(':');
+        const options = [];
+        let correctIdx = -1;
+        let explanation = "";
+
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^[*]?([A-D]\.)/.test(l)) {
+                if (l.startsWith('*')) correctIdx = options.length;
+                options.push(l.replace('*', '').replace(/^[A-D]\.\s*/, '').trim());
+            } else if (l.startsWith('Gt:')) {
+                explanation = l.replace('Gt:', '').trim();
+            }
+        });
+        questions.push({ label: header[0].trim(), content: header.slice(1).join(':').trim(), options, correctIdx, explanation });
+    });
+
+    const qContainer = document.getElementById('questions-container');
+    const navGrid = document.getElementById('nav-grid');
+
+    // Render câu hỏi
+    questions.forEach((q, i) => {
+        const card = document.createElement('div');
+        card.className = 'q-card';
+        card.id = `q-${i}`;
+
+        let optsHtml = q.options.map((opt, oi) => `
+            <label class="option-item" id="L-${i}-${oi}">
+                <input type="radio" name="q${i}" value="${oi}" onchange="markAnswered(${i})">
+                <div class="opt-letter">${letters[oi]}</div>
+                <div class="opt-text">${opt}</div>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="q-title">${q.label}</div>
+            <div class="q-content">${q.content}</div>
+            <div class="options-wrapper">${optsHtml}</div>
+            <div class="explanation-box" id="ex-${i}">
+                <b><i class="fa-solid fa-lightbulb"></i> Giải thích:</b><br>${q.explanation}
+            </div>
+        `;
+        qContainer.appendChild(card);
+
+        const btn = document.createElement('div');
+        btn.className = 'nav-btn';
+        btn.id = `nav-${i}`;
+        btn.innerText = i + 1;
+        btn.onclick = () => window.scrollTo({ top: card.offsetTop - 80, behavior: 'smooth' });
+        navGrid.appendChild(btn);
+    });
+
+    // Render KaTeX cho công thức toán học
+    function renderMath() {
+        renderMathInElement(document.body, {
+            delimiters: [{left: "$", right: "$", display: false}],
+            throwOnError: false
+        });
+    }
+    window.onload = renderMath;
+
+    // Timer
+    const timerInterval = setInterval(() => {
+        if (isSubmitted) return;
+        timeLeft--;
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) submitExam();
+    }, 1000);
+
+    function markAnswered(i) {
+        if (!isSubmitted) document.getElementById(`nav-${i}`).classList.add('answered');
+    }
+
+    function submitExam() {
+        if (isSubmitted || (timeLeft > 0 && !confirm("Bạn muốn nộp bài?"))) return;
+        isSubmitted = true;
+        clearInterval(timerInterval);
+
+        let correctCount = 0;
+        questions.forEach((q, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            const correctLabel = document.getElementById(`L-${i}-${q.correctIdx}`);
+            const exBox = document.getElementById(`ex-${i}`);
+            const navBtn = document.getElementById(`nav-${i}`);
+
+            exBox.classList.add('show');
+            correctLabel.classList.add('is-correct');
+
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === q.correctIdx) {
+                    correctCount++;
+                    navBtn.className = 'nav-btn is-correct';
+                } else {
+                    document.getElementById(`L-${i}-${val}`).classList.add('is-wrong');
+                    navBtn.className = 'nav-btn is-wrong';
+                }
+            } else {
+                navBtn.className = 'nav-btn is-wrong';
+            }
+        });
+
+        const score = ((correctCount / questions.length) * 10).toFixed(1);
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('resultModal').style.display = 'flex';
+        renderMath();
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        window.scrollTo(0,0);
+    }
+</script>
+
+</body>
+</html>
