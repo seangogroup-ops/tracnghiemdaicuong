@@ -81,7 +81,7 @@
         padding-left:max(14px, env(safe-area-inset-left)); padding-right:max(14px, env(safe-area-inset-right));
         position:fixed; top:0; width:100%; z-index:1000; gap:10px;
     }
-    .header-left{ display:flex; align-items:center; gap:10px; min-width:0; flex-shrink:0; }
+    .header-left{ display:flex; align-items:center; gap:10px; min-width:0; flex-shrink:0; text-decoration:none; color:inherit; cursor:pointer; }
     .header-left .mark{
         width:32px; height:32px; border-radius:9px;
         background:linear-gradient(135deg, var(--brand), #7b8fff);
@@ -292,10 +292,10 @@
 <body>
 
 <header>
-    <div class="header-left">
+    <a href="/" class="header-left">
         <div class="mark">S</div>
         <div class="name">SNG EDU</div>
-    </div>
+    </a>
     <div class="header-title">CNXH Khoa Học<span>Ôn tập trắc nghiệm</span></div>
     <div class="header-right">
         <button class="theme-toggle" id="themeToggle" aria-label="Đổi giao diện sáng/tối" type="button">
@@ -331,7 +331,7 @@
         <span class="arrow">👉</span>
     </a>
 
-    <footer>SNG © H.N.TấnHải  ·  sngedu.site</footer>
+    <footer>SNG © H.N.TấnHải · sngedu.site</footer>
 </div>
 
 <script>
