@@ -868,13 +868,19 @@
     };
     const topbarTitle = document.querySelector('.topbar-title');
 
-    function goTab(key){
+    function goTab(key, opts){
+        opts = opts || {};
         Object.values(panels).forEach(id => document.getElementById(id).style.display = 'none');
         document.getElementById(panels[key]).style.display = '';
         document.querySelectorAll('.side-link[data-tab]').forEach(el => el.classList.toggle('active', el.dataset.tab === key));
         const [t, sub] = titles[key];
         topbarTitle.innerHTML = t + '<span>' + sub + '</span>';
         window.scrollTo({top:0, behavior:'smooth'});
+
+        if(!opts.fromPopState){
+            const url = key === 'home' ? location.pathname : location.pathname + '#' + key;
+            history.pushState({ tab: key }, '', url);
+        }
     }
 
     document.querySelectorAll('.side-link[data-tab]').forEach(el=>{
@@ -882,6 +888,20 @@
     });
     document.querySelectorAll('[data-go]').forEach(el=>{
         el.addEventListener('click', ()=> goTab(el.dataset.go));
+    });
+
+    // Thiết lập trạng thái ban đầu trong lịch sử trình duyệt
+    (function initHistory(){
+        const hashTab = location.hash.replace('#', '');
+        const startTab = panels[hashTab] ? hashTab : 'home';
+        history.replaceState({ tab: startTab }, '', location.pathname + (startTab === 'home' ? '' : '#' + startTab));
+        if(startTab !== 'home'){ goTab(startTab, { fromPopState:true }); }
+    })();
+
+    // Bấm nút "Quay lại" của trình duyệt sẽ chuyển tab thay vì thoát hẳn trang
+    window.addEventListener('popstate', e=>{
+        const key = (e.state && e.state.tab) || 'home';
+        goTab(key, { fromPopState:true });
     });
 
     const themeBtn = document.getElementById('themeToggle');
