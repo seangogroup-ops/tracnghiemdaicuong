@@ -15,17 +15,7 @@
         }
     }catch(e){}
 </script>
-<title>SNG EDU - Ôn Tập Kinh Tế Chính Trị Mác-Lênin</title>
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-JEGQGMQQQG"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-JEGQGMQQQG');
-</script>
-
+<title>Ôn Tập CNXH Khoa Học - SNG EDU</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -45,6 +35,8 @@
         --amber-bg:  #fef3e0;
         --brand:     #4f6bff;
         --brand-bg:  #eef1ff;
+        --cnxh:      #e4572e;
+        --cnxh-bg:   #ffece8;
         --shadow:    0 1px 2px rgba(20,22,40,.04), 0 8px 24px -12px rgba(20,22,40,.08);
         --shadow-hov:0 4px 10px rgba(20,22,40,.05), 0 20px 40px -16px rgba(20,22,40,.16);
     }
@@ -61,6 +53,8 @@
         --amber-bg:  #3a2e12;
         --brand:     #7b93ff;
         --brand-bg:  #232a4d;
+        --cnxh:      #ff8161;
+        --cnxh-bg:   #3a2018;
         --shadow:    0 1px 2px rgba(0,0,0,.2), 0 8px 24px -12px rgba(0,0,0,.5);
         --shadow-hov:0 4px 10px rgba(0,0,0,.25), 0 20px 40px -16px rgba(0,0,0,.6);
     }
@@ -87,7 +81,7 @@
         padding-left:max(14px, env(safe-area-inset-left)); padding-right:max(14px, env(safe-area-inset-right));
         position:fixed; top:0; width:100%; z-index:1000; gap:10px;
     }
-    .header-left{ display:flex; align-items:center; gap:10px; min-width:0; flex-shrink:0; text-decoration:none; }
+    .header-left{ display:flex; align-items:center; gap:10px; min-width:0; flex-shrink:0; text-decoration:none; color:inherit; cursor:pointer; }
     .header-left .mark{
         width:32px; height:32px; border-radius:9px;
         background:linear-gradient(135deg, var(--brand), #7b8fff);
@@ -116,6 +110,12 @@
     .theme-toggle .fa-sun{ display:none; }
     html[data-theme="dark"] .theme-toggle .fa-sun{ display:inline; }
     html[data-theme="dark"] .theme-toggle .fa-moon{ display:none; }
+    .back-btn{
+        width:36px; height:36px; border-radius:50%; border:1px solid var(--line); background:var(--card);
+        color:var(--ink-soft); display:flex; align-items:center; justify-content:center; text-decoration:none;
+        font-size:.85rem; transition:background .18s ease, color .18s ease, border-color .18s ease;
+    }
+    .back-btn:hover{ background:var(--brand-bg); color:var(--brand); border-color:transparent; }
 
     /* ---------------- wrap ---------------- */
     .chapter-screen{
@@ -125,49 +125,39 @@
         padding-right:max(clamp(16px, 4vw, 28px), env(safe-area-inset-right));
         padding-bottom:max(60px, env(safe-area-inset-bottom));
     }
-    @media (min-width: 1400px){ .chapter-screen{ max-width:1280px; } }
-
-    /* ---------------- promo pill ---------------- */
-    .promo-pill{
-        display:flex; align-items:center; justify-content:center; gap:8px;
-        background:var(--green-bg); color:var(--green);
-        font-weight:700; font-size:.78rem;
-        padding:8px 16px; border-radius:999px; width:fit-content; margin:0 auto 20px;
-        border:1px dashed var(--green);
-    }
 
     /* ---------------- hero ---------------- */
     .hero-card{
-        background: linear-gradient(135deg, #e7f9f0 0%, #f4fbf6 55%, #eef1ff 100%);
+        background: linear-gradient(135deg, #ffece8 0%, #fff4ef 55%, #eef1ff 100%);
         border:1px solid var(--line);
         border-radius:20px; padding:clamp(20px, 3.5vw, 30px); margin-bottom:clamp(20px, 3.5vw, 30px);
         display:flex; align-items:center; gap:18px; justify-content:space-between; flex-wrap:wrap;
         position:relative; overflow:hidden;
     }
     html[data-theme="dark"] .hero-card{
-        background: linear-gradient(135deg, #16281f 0%, #17222a 55%, #1a2035 100%);
+        background: linear-gradient(135deg, #2c1a15 0%, #241a2e 55%, #1a2035 100%);
     }
     .hero-text{ flex:1; min-width:220px; }
     .hero-eyebrow{
         font-size:.76rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
-        color:var(--green); margin-bottom:8px;
+        color:var(--cnxh); margin-bottom:8px;
     }
     .hero-card h1{ font-size:clamp(1.15rem, 1rem + 1.6vw, 1.6rem); font-weight:800; line-height:1.32; margin-bottom:8px; max-width:480px; }
     .hero-card p{ color:var(--ink-soft); font-size:.9rem; max-width:460px; }
     .hero-icon{
         width:clamp(56px, 8vw, 88px); height:clamp(56px, 8vw, 88px); border-radius:22px; flex-shrink:0;
-        background:var(--green-bg); color:var(--green);
+        background:var(--cnxh-bg); color:var(--cnxh);
         display:flex; align-items:center; justify-content:center; font-size:clamp(1.4rem, 3vw, 2.1rem);
     }
 
     /* ---------------- section heading ---------------- */
     .section-label{
         display:flex; align-items:center; gap:8px;
-        font-size:.78rem; font-weight:800; color:var(--green); text-transform:uppercase; letter-spacing:.06em;
+        font-size:.78rem; font-weight:800; color:var(--cnxh); text-transform:uppercase; letter-spacing:.06em;
         margin:clamp(24px, 4vw, 30px) 0 14px;
     }
     .section-label::before{
-        content:''; width:4px; height:14px; border-radius:3px; background:var(--green); display:inline-block;
+        content:''; width:4px; height:14px; border-radius:3px; background:var(--cnxh); display:inline-block;
     }
     .section-label:first-of-type{ margin-top:0; }
 
@@ -190,8 +180,8 @@
     .c-top{ display:flex; align-items:flex-start; justify-content:space-between; }
     .icon-chip{
         width:42px; height:42px; border-radius:12px; flex-shrink:0;
-        background:var(--green-bg); color:var(--green);
-        display:flex; align-items:center; justify-content:center; font-size:.78rem; font-weight:800; letter-spacing:.2px;
+        background:var(--cnxh-bg); color:var(--cnxh);
+        display:flex; align-items:center; justify-content:center; font-size:1.05rem;
     }
     .card-arrow{
         width:26px; height:26px; border-radius:50%;
@@ -202,7 +192,7 @@
     }
     html[data-theme="dark"] .card-arrow{ background:#262a38; }
     @media (hover:hover){
-        .chapter-card:hover .card-arrow{ opacity:1; transform:translateX(0); background:var(--green); color:#fff; }
+        .chapter-card:hover .card-arrow{ opacity:1; transform:translateX(0); background:var(--cnxh); color:#fff; }
     }
     @media (hover:none){
         .card-arrow{ opacity:.55; transform:translateX(0); }
@@ -213,7 +203,7 @@
     .c-count i{ font-size:.76rem; }
 
     .chapter-card.special{
-        border:1.5px dashed var(--green); background:var(--green-bg);
+        border:1.5px dashed var(--cnxh); background:var(--cnxh-bg);
     }
     .chapter-card.special .icon-chip{ background:var(--card); }
 
@@ -259,13 +249,20 @@
         text-align:center; color:var(--ink-mute); font-size:.8rem;
         padding-top:26px; margin-top:34px; border-top:1px solid var(--line);
     }
-    footer a{ color:var(--green); text-decoration:none; font-weight:600; }
-    footer a:hover{ text-decoration:underline; }
 
     /* ---------------- responsive ---------------- */
+
+    /* Màn hình rất lớn: giới hạn độ rộng nội dung để dòng chữ khỏi quá dài */
+    @media (min-width: 1400px){
+        .chapter-screen{ max-width:1280px; }
+    }
+
+    /* Tablet */
     @media (max-width: 900px){
         .chapter-list{ grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); }
     }
+
+    /* Điện thoại lớn / tablet dọc */
     @media (max-width: 640px){
         header{ height:58px; }
         .chapter-screen{ padding-top:80px; }
@@ -280,12 +277,13 @@
         .section-label{ font-size:.72rem; }
         .report-banner{ padding:12px 18px; }
         .report-banner span:not(.icon):not(.arrow){ font-size:11.5px; }
-        .promo-pill{ font-size:.72rem; padding:7px 14px; }
     }
+
+    /* Điện thoại nhỏ */
     @media (max-width: 400px){
         .chapter-screen{ padding-left:14px; padding-right:14px; }
         .chapter-list{ grid-template-columns:1fr 1fr; gap:10px; }
-        .icon-chip{ width:38px; height:38px; font-size:.7rem; }
+        .icon-chip{ width:38px; height:38px; font-size:.95rem; }
         .hero-card h1{ font-size:1.1rem; }
         .card-arrow{ display:none; }
     }
@@ -298,7 +296,7 @@
         <div class="mark">S</div>
         <div class="name">SNG EDU</div>
     </a>
-    <div class="header-title">Kinh Tế Chính Trị<span>Ôn tập trắc nghiệm</span></div>
+    <div class="header-title">CNXH Khoa Học<span>Ôn tập trắc nghiệm</span></div>
     <div class="header-right">
         <button class="theme-toggle" id="themeToggle" aria-label="Đổi giao diện sáng/tối" type="button">
             <i class="fa-solid fa-moon"></i>
@@ -309,15 +307,13 @@
 
 <div class="chapter-screen">
 
-    <div class="promo-pill">🎁 Thêm trắc nghiệm miễn phí — không mua bán</div>
-
     <div class="hero-card">
         <div class="hero-text">
-            <div class="hero-eyebrow">Mác – Lênin</div>
-            <h1>Ôn tập trắc nghiệm Kinh tế Chính trị Mác-Lênin</h1>
+            <div class="hero-eyebrow">Học phần lý luận chính trị</div>
+            <h1>Ôn tập trắc nghiệm Chủ nghĩa xã hội khoa học</h1>
             <p>Chọn một chương bên dưới để bắt đầu ôn tập — mỗi chương có bộ câu hỏi riêng, giải thích đáp án chi tiết.</p>
         </div>
-        <div class="hero-icon"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="hero-icon"><i class="fa-solid fa-scale-balanced"></i></div>
     </div>
 
     <div class="section-label">Nội dung chính</div>
@@ -335,45 +331,43 @@
         <span class="arrow">👉</span>
     </a>
 
-    <footer>SNG &copy; <a href="https://www.sngedu.site/">H.N.TấnHải</a> &nbsp;·&nbsp; sngedu.site</footer>
+    <footer>SNG © H.N.TấnHải · sngedu.site</footer>
 </div>
 
 <script>
     const main = [
-        { label: "Chương 1", sub: "Câu 1 – 60",   num: "C1",  file: "1-60" },
-        { label: "Chương 2 · P1", sub: "Câu 61 – 110",  num: "C2A", file: "61-110" },
-        { label: "Chương 2 · P2", sub: "Câu 111 – 160", num: "C2B", file: "111-160" },
-        { label: "Chương 3 · P1", sub: "Câu 161 – 200", num: "C3A", file: "161-200" },
-        { label: "Chương 3 · P2", sub: "Câu 201 – 240", num: "C3B", file: "201-240" },
-        { label: "Chương 3 · P3", sub: "Câu 241 – 280", num: "C3C", file: "241-280" },
-        { label: "Chương 4", sub: "Câu 281 – 340", num: "C4",  file: "281-340" },
-        { label: "Chương 5", sub: "Câu 341 – 370", num: "C5",  file: "341-370" },
-        { label: "Chương 6", sub: "Câu 371 – 400", num: "C6",  file: "371-400" },
+        { title: "1 – 30", sub: "", file: "chuong1_cau1-30.html" },
+        { title: "31 – 80", sub: "", file: "chuong2_cau31-80.html" },
+        { title: "81 – 140", sub: "", file: "chuong3_cau81-140.html" },
+        { title: "141 – 180", sub: "", file: "chuong4_p1_cau141-180.html" },
+        { title: "181 – 220", sub: "", file: "chuong4_p2_cau181-220.html" },
+        { title: "221 – 270", sub: "", file: "chuong5_cau221-270.html" },
+        { title: "271 – 310", sub: "", file: "chuong6_p1_cau271-310.html" },
+        { title: "311 – 350", sub: "", file: "chuong6_p2_cau311-350.html" },
+        { title: "351 – 400", sub: "", file: "chuong7_cau351-400.html" },
     ];
     const bosung = [
-        { label: "Bổ sung Câu 401 – 440", sub: "", num: "B1", file: "401-440" },
-        { label: "Bổ sung Câu 441 – 480", sub: "", num: "B2", file: "441-480" },
-        { label: "Bổ sung Câu 481 – 520", sub: "", num: "B3", file: "481-520" },
-        { label: "Bổ sung Câu 521 – 560", sub: "", num: "B4", file: "521-560" },
+        { title: "401 – 440", sub: "", file: "bosung_2022-2023_cau401-440.html" },
+        { title: "441 – 480", sub: "", file: "bosung_2023-2024_cau441-480.html" },
+        { title: "1 – 40", sub: "", file: "bosung_2024-2025_cau1-40.html" },
+        { title: "1 – 40", sub: "", file: "bosung_2025-2026_cau1-40.html" },
     ];
     const dethi = [
-        { label: "Luyện tập câu hỏi tính toán", sub: "Tính toán KTCT", num: "🎲", file: "cauhoitinhtoan", special: true, isNew: true },
-        { label: "Đề thi thử Tổng hợp", sub: "Random – Toàn bộ câu hỏi", num: "🎲", file: "DETHITHU radomDe", special: true },
+        { title: "Đề thi thử Tổng hợp CNXH KH", sub: "560 câu", file: "DETHITHU_CNXHKH_560cau.html", special: true, isNew: true },
     ];
 
     function buildList(containerId, items) {
         const el = document.getElementById(containerId);
         items.forEach(ch => {
             const a = document.createElement('a');
-            a.className = 'chapter-card' + (ch.special || ch.url ? ' special' : '');
-            a.href = ch.url ? ch.url : (ch.href ? ch.href : ch.file + '.htm');
-            if (ch.url) { a.target = '_blank'; a.rel = 'noopener'; }
+            a.className = 'chapter-card' + (ch.special ? ' special' : '');
+            a.href = ch.file;
             a.innerHTML = `
                 <div class="c-top">
-                    <div class="icon-chip">${ch.num}</div>
+                    <div class="icon-chip"><i class="fa-solid fa-list-check"></i></div>
                     <div class="card-arrow"><i class="fa-solid fa-arrow-right"></i></div>
                 </div>
-                <div class="c-name">${ch.label}${ch.isNew ? '<span class="badge-new">Mới</span>' : ''}</div>
+                <div class="c-name">${ch.title}${ch.isNew ? '<span class="badge-new">Mới</span>' : ''}</div>
                 ${ch.sub ? `<div class="c-count"><i class="fa-regular fa-circle-question"></i> ${ch.sub}</div>` : ''}
             `;
             el.appendChild(a);
@@ -392,5 +386,6 @@
         try{ localStorage.setItem('sng-theme', next); }catch(e){}
     });
 </script>
+
 </body>
 </html>
