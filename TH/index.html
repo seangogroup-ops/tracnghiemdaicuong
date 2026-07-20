@@ -1,480 +1,346 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNG EDU - Ôn Tập Triết Học Mác-Lênin</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#14151c" media="(prefers-color-scheme: dark)">
+<script>
+    try{
+        var savedTheme = localStorage.getItem('sng-theme');
+        if(savedTheme === 'dark' || savedTheme === 'light'){
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }else if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    }catch(e){}
+</script>
+<title>SNG EDU - Ôn Tập Triết Học Mác-Lênin</title>
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JEGQGMQQQG"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-JEGQGMQQQG');
-    </script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JEGQGMQQQG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JEGQGMQQQG');
+</script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-        :root {
-            --maroon:      #1c2b52;
-            --maroon-deep: #0c1530;
-            --maroon-soft: #2f437c;
-            --gold:        #af8a52;
-            --gold-light:  #dcc494;
-            --gold-dark:   #7a5f34;
-            --paper:       #eef0e9;
-            --paper-edge:  #dbe0d2;
-            --ink:         #1a1e29;
-            --ink-soft:    #565c6e;
-            --line:        #ccd2c4;
-        }
+<style>
+    :root{
+        --bg:        #f5f7fb;
+        --card:      #ffffff;
+        --line:      #e8eaf1;
+        --ink:       #1f2433;
+        --ink-soft:  #6b7180;
+        --ink-mute:  #9aa0b1;
+        --green:     #17b26a;
+        --green-bg:  #e7f9f0;
+        --amber:     #f5a524;
+        --amber-bg:  #fef3e0;
+        --brand:     #4f6bff;
+        --brand-bg:  #eef1ff;
+        --tri:       #7c5cfc;
+        --tri-bg:    #f1ecff;
+        --shadow:    0 1px 2px rgba(20,22,40,.04), 0 8px 24px -12px rgba(20,22,40,.08);
+        --shadow-hov:0 4px 10px rgba(20,22,40,.05), 0 20px 40px -16px rgba(20,22,40,.16);
+    }
+    html[data-theme="dark"]{
+        --bg:        #14151c;
+        --card:      #1c1e28;
+        --line:      #2c2f3c;
+        --ink:       #f0f1f6;
+        --ink-soft:  #a2a7ba;
+        --ink-mute:  #6f7488;
+        --green:     #2ed392;
+        --green-bg:  #163a2c;
+        --amber:     #ffbd4a;
+        --amber-bg:  #3a2e12;
+        --brand:     #7b93ff;
+        --brand-bg:  #232a4d;
+        --tri:       #a78bff;
+        --tri-bg:    #2a2246;
+        --shadow:    0 1px 2px rgba(0,0,0,.2), 0 8px 24px -12px rgba(0,0,0,.5);
+        --shadow-hov:0 4px 10px rgba(0,0,0,.25), 0 20px 40px -16px rgba(0,0,0,.6);
+    }
+    html{ transition: background .25s ease; }
+    *{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+    body, header, .chapter-card, .hero-card, .report-banner{
+        transition: background .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease;
+    }
+    body{
+        background: var(--bg);
+        color: var(--ink);
+        font-family:'Be Vietnam Pro', sans-serif;
+        min-height:100vh;
+        line-height:1.6;
+    }
+    @media (prefers-reduced-motion: reduce){
+        *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+    }
 
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
-        }
+    /* ---------------- header ---------------- */
+    header{
+        background:var(--card); height:64px; display:flex; align-items:center; justify-content:space-between;
+        padding:0 clamp(14px, 4vw, 24px); border-bottom:1px solid var(--line);
+        padding-left:max(14px, env(safe-area-inset-left)); padding-right:max(14px, env(safe-area-inset-right));
+        position:fixed; top:0; width:100%; z-index:1000; gap:10px;
+    }
+    .header-left{ display:flex; align-items:center; gap:10px; min-width:0; flex-shrink:0; text-decoration:none; }
+    .header-left .mark{
+        width:32px; height:32px; border-radius:9px;
+        background:linear-gradient(135deg, var(--brand), #7b8fff);
+        display:flex; align-items:center; justify-content:center;
+        color:#fff; font-weight:800; font-size:.88rem; flex-shrink:0;
+    }
+    .header-left .name{ font-weight:800; font-size:.92rem; color:var(--ink); white-space:nowrap; }
+    .header-title{
+        font-weight:700; color:var(--ink); font-size:.98rem; text-align:center;
+        min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;
+    }
+    .header-title span{
+        display:block; font-size:.72rem; font-weight:500; color:var(--ink-mute); margin-top:1px;
+        overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .header-right{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .theme-toggle{
+        width:40px; height:40px; border-radius:50%;
+        border:1px solid var(--line); background:var(--card); cursor:pointer;
+        display:flex; align-items:center; justify-content:center;
+        color:var(--ink-soft); font-size:.9rem; flex-shrink:0;
+        transition:background .2s ease, color .2s ease, border-color .2s ease, transform .12s ease;
+    }
+    @media (hover:hover){ .theme-toggle:hover{ background:var(--brand-bg); color:var(--brand); } }
+    .theme-toggle:active{ transform:scale(.9); }
+    .theme-toggle .fa-sun{ display:none; }
+    html[data-theme="dark"] .theme-toggle .fa-sun{ display:inline; }
+    html[data-theme="dark"] .theme-toggle .fa-moon{ display:none; }
 
-        html { scroll-behavior: smooth; }
+    /* ---------------- wrap ---------------- */
+    .chapter-screen{
+        max-width:1180px; width:100%; margin:0 auto;
+        padding:88px clamp(16px, 4vw, 28px) 60px;
+        padding-left:max(clamp(16px, 4vw, 28px), env(safe-area-inset-left));
+        padding-right:max(clamp(16px, 4vw, 28px), env(safe-area-inset-right));
+        padding-bottom:max(60px, env(safe-area-inset-bottom));
+    }
+    @media (min-width: 1400px){ .chapter-screen{ max-width:1280px; } }
 
-        body {
-            font-family: 'Be Vietnam Pro', 'Segoe UI', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 16px 56px;
-            color: var(--ink);
-            background:
-                radial-gradient(circle at 50% -10%, var(--maroon-soft) 0%, var(--maroon) 38%, var(--maroon-deep) 100%);
-            background-attachment: fixed;
-            position: relative;
-            overflow-x: hidden;
-        }
+    /* ---------------- promo pill ---------------- */
+    .promo-pill{
+        display:flex; align-items:center; justify-content:center; gap:8px;
+        background:var(--tri-bg); color:var(--tri);
+        font-weight:700; font-size:.78rem;
+        padding:8px 16px; border-radius:999px; width:fit-content; margin:0 auto 20px;
+        border:1px dashed var(--tri);
+    }
 
-        /* fine guilloché-style hairline texture, evokes an official seal/certificate paper */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            opacity: 0.5;
-            background-image:
-                repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 1px, transparent 1px, transparent 9px),
-                repeating-linear-gradient(25deg, rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 9px);
-            z-index: 0;
-        }
+    /* ---------------- hero ---------------- */
+    .hero-card{
+        background: linear-gradient(135deg, #f1ecff 0%, #f7f4ff 55%, #eef1ff 100%);
+        border:1px solid var(--line);
+        border-radius:20px; padding:clamp(20px, 3.5vw, 30px); margin-bottom:clamp(20px, 3.5vw, 30px);
+        display:flex; align-items:center; gap:18px; justify-content:space-between; flex-wrap:wrap;
+        position:relative; overflow:hidden;
+    }
+    html[data-theme="dark"] .hero-card{
+        background: linear-gradient(135deg, #241c38 0%, #1e1a30 55%, #1a2035 100%);
+    }
+    .hero-text{ flex:1; min-width:220px; }
+    .hero-eyebrow{
+        font-size:.76rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+        color:var(--tri); margin-bottom:8px;
+    }
+    .hero-card h1{ font-size:clamp(1.15rem, 1rem + 1.6vw, 1.6rem); font-weight:800; line-height:1.32; margin-bottom:8px; max-width:480px; }
+    .hero-card p{ color:var(--ink-soft); font-size:.9rem; max-width:460px; }
+    .hero-icon{
+        width:clamp(56px, 8vw, 88px); height:clamp(56px, 8vw, 88px); border-radius:22px; flex-shrink:0;
+        background:var(--tri-bg); color:var(--tri);
+        display:flex; align-items:center; justify-content:center; font-size:clamp(1.4rem, 3vw, 2.1rem);
+    }
 
-        /* ── LOGO / EMBLEM ─────────────────────── */
-        .logo-wrap {
-            position: fixed;
-            top: 20px; left: 20px;
-            z-index: 999;
-        }
-        .logo-box {
-            width: 54px; height: 54px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 35% 30%, var(--gold-light), var(--gold) 55%, var(--gold-dark) 100%);
-            color: var(--maroon-deep);
-            font-size: 16px;
-            font-weight: 900;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            border: 2px solid rgba(255,255,255,0.55);
-            box-shadow: 0 6px 18px rgba(0,0,0,.35), inset 0 0 0 3px rgba(74,12,20,.18);
-            transition: transform .25s ease, box-shadow .25s ease;
-            font-family: 'Playfair Display', serif;
-        }
-        .logo-box:hover { transform: translateY(-2px) rotate(-4deg); box-shadow: 0 10px 22px rgba(0,0,0,.4), inset 0 0 0 3px rgba(74,12,20,.18); }
+    /* ---------------- section heading ---------------- */
+    .section-label{
+        display:flex; align-items:center; gap:8px;
+        font-size:.78rem; font-weight:800; color:var(--tri); text-transform:uppercase; letter-spacing:.06em;
+        margin:clamp(24px, 4vw, 30px) 0 14px;
+    }
+    .section-label::before{
+        content:''; width:4px; height:14px; border-radius:3px; background:var(--tri); display:inline-block;
+    }
+    .section-label:first-of-type{ margin-top:0; }
 
-        /* ── WRAPPER ──────────────────────────── */
-        .wrap {
-            width: 100%;
-            max-width: 660px;
-            position: relative;
-            z-index: 1;
-            animation: rise .6s cubic-bezier(.16,.8,.3,1) both;
-        }
-        @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    /* ---------------- chapter cards ---------------- */
+    .chapter-list{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:clamp(12px, 2vw, 16px); }
+    .chapter-card{
+        background:var(--card); border:1px solid var(--line); border-radius:18px;
+        padding:18px 20px; text-decoration:none; color:var(--ink);
+        display:flex; flex-direction:column; gap:14px;
+        box-shadow:var(--shadow);
+        transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+        cursor:pointer; position:relative;
+        -webkit-tap-highlight-color:transparent;
+    }
+    @media (hover:hover){
+        .chapter-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow-hov); border-color:#dfe2ee; }
+    }
+    .chapter-card:active{ transform:scale(.98); box-shadow:var(--shadow); }
 
-        /* ── TOP BANNER (gold ribbon) ─────────── */
-        .top-banner {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 9px;
-            background: linear-gradient(180deg, #fff3cf, #ffd24a);
-            border: 2px solid #ffe27a;
-            border-radius: 999px;
-            padding: 11px 24px;
-            margin: 0 auto 12px;
-            width: fit-content;
-            max-width: 100%;
-            text-decoration: none;
-            position: relative;
-            box-shadow: 0 4px 14px rgba(0,0,0,.25), 0 0 0 0 rgba(255,210,74,.6);
-            transition: transform .18s ease, box-shadow .18s ease;
-            animation: bannerGlow 2s ease-in-out infinite;
-        }
-        .top-banner:hover { transform: translateY(-1px) scale(1.015); }
-        .bottom-banner { margin: 22px auto 0; }
-        .top-banner .icon {
-            font-size: 16px;
-            flex-shrink: 0;
-            display: inline-block;
-            animation: iconShake 1.8s ease-in-out infinite;
-        }
-        .top-banner span:not(.icon):not(.arrow) {
-            color: var(--maroon-deep);
-            font-size: 12.5px;
-            font-weight: 800;
-            letter-spacing: .3px;
-            text-transform: uppercase;
-            text-align: center;
-        }
-        .top-banner span u { text-decoration-thickness: 2px; }
-        .top-banner .arrow {
-            font-size: 15px;
-            flex-shrink: 0;
-            animation: arrowNudge 1s ease-in-out infinite;
-        }
-        @keyframes arrowNudge {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(4px); }
-        }
-        @keyframes bannerGlow {
-            0%, 100% { box-shadow: 0 4px 14px rgba(0,0,0,.25), 0 0 0 0 rgba(255,82,82,.55); }
-            50% { box-shadow: 0 4px 18px rgba(0,0,0,.3), 0 0 0 9px rgba(255,82,82,0); }
-        }
-        @keyframes iconShake {
-            0%, 60%, 100% { transform: rotate(0deg); }
-            65% { transform: rotate(-14deg); }
-            75% { transform: rotate(11deg); }
-            85% { transform: rotate(-7deg); }
-            92% { transform: rotate(4deg); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .top-banner, .top-banner .icon { animation: none; }
-        }
+    .c-top{ display:flex; align-items:flex-start; justify-content:space-between; }
+    .icon-chip{
+        width:42px; height:42px; border-radius:12px; flex-shrink:0;
+        background:var(--tri-bg); color:var(--tri);
+        display:flex; align-items:center; justify-content:center; font-size:.78rem; font-weight:800; letter-spacing:.2px;
+    }
+    .card-arrow{
+        width:26px; height:26px; border-radius:50%;
+        display:flex; align-items:center; justify-content:center;
+        background:#f2f3f8; color:var(--ink-mute); font-size:.7rem;
+        opacity:0; transform:translateX(-4px);
+        transition:opacity .2s ease, transform .2s ease, background .2s ease, color .2s ease;
+    }
+    html[data-theme="dark"] .card-arrow{ background:#262a38; }
+    @media (hover:hover){
+        .chapter-card:hover .card-arrow{ opacity:1; transform:translateX(0); background:var(--tri); color:#fff; }
+    }
+    @media (hover:none){
+        .card-arrow{ opacity:.55; transform:translateX(0); }
+    }
 
-        /* ── PROMO STRIP ───────────────────────── */
-        .promo {
-            text-align: center;
-            background: rgba(255,255,255,.08);
-            border: 1px dashed rgba(236,209,137,.55);
-            border-radius: 10px;
-            padding: 9px 16px;
-            margin: 0 auto 26px;
-            width: fit-content;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--gold-light);
-            letter-spacing: .4px;
-        }
+    .c-name{ font-weight:700; font-size:.98rem; line-height:1.4; display:flex; align-items:center; flex-wrap:wrap; gap:6px; }
+    .c-count{ color:var(--ink-mute); font-size:.82rem; display:flex; align-items:center; gap:6px; }
+    .c-count i{ font-size:.76rem; }
 
-        /* ── MAIN CARD: the dossier folder ────── */
-        .main-card {
-            background: var(--paper);
-            border-radius: 6px;
-            position: relative;
-            box-shadow: 0 22px 50px rgba(0,0,0,.35), 0 2px 0 rgba(255,255,255,.05) inset;
-            padding-left: 34px;
-        }
-        /* die-cut tab spine on the left, like a folder binding */
-        .main-card::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 34px;
-            background: linear-gradient(180deg, var(--maroon-soft), var(--maroon) 60%, var(--maroon-deep));
-            border-radius: 6px 0 0 6px;
-            box-shadow: inset -4px 0 8px rgba(0,0,0,.25);
-        }
-        .spine-label {
-            position: absolute;
-            left: 0; top: 0;
-            width: 34px; height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gold-light);
-            font-family: 'Playfair Display', serif;
-            font-weight: 800;
-            font-size: 13px;
-            letter-spacing: 4px;
-            writing-mode: vertical-rl;
-            text-transform: uppercase;
-            z-index: 2;
-        }
+    .chapter-card.special{
+        border:1.5px dashed var(--tri); background:var(--tri-bg);
+    }
+    .chapter-card.special .icon-chip{ background:var(--card); }
 
-        .card-header {
-            padding: 34px 28px 22px;
-            text-align: center;
-            border-bottom: 1px dashed var(--line);
-        }
-        .card-header .eyebrow {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 1.6px;
-            color: var(--gold-dark);
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-        .card-header .eyebrow::before,
-        .card-header .eyebrow::after { content: '✦'; font-size: 9px; }
-        .card-header h1 {
-            font-family: 'Playfair Display', serif;
-            color: var(--maroon);
-            font-size: 25px;
-            font-weight: 900;
-            letter-spacing: .3px;
-            line-height: 1.35;
-        }
-        .card-header .subtitle {
-            margin-top: 8px;
-            color: var(--ink-soft);
-            font-size: 12.5px;
-            font-weight: 600;
-            letter-spacing: .3px;
-        }
+    .badge-new{
+        display:inline-flex; align-items:center; padding:2px 8px; font-size:9.5px; font-weight:800;
+        letter-spacing:.4px; text-transform:uppercase; color:#fff;
+        background:linear-gradient(135deg, #ff6b52, #e4372a); border-radius:999px;
+    }
 
-        .card-body {
-            padding: 6px 22px 28px;
-        }
+    /* ---------------- report banner ---------------- */
+    .report-banner{
+        display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
+        background:var(--amber-bg); border:1.5px solid var(--amber);
+        border-radius:20px; padding:13px 22px; margin:clamp(28px, 5vw, 36px) auto 0; width:fit-content; max-width:100%;
+        text-decoration:none; position:relative;
+        box-shadow:var(--shadow);
+        animation: bannerGlow 2s ease-in-out infinite;
+    }
+    @media (hover:hover){ .report-banner:hover{ transform:translateY(-1px) scale(1.015); box-shadow:var(--shadow-hov); } }
+    .report-banner:active{ transform:scale(.98); }
+    .report-banner .icon{ font-size:16px; flex-shrink:0; display:inline-block; animation: iconShake 1.8s ease-in-out infinite; }
+    .report-banner span:not(.icon):not(.arrow){
+        color:#8a5a06; font-size:12.5px; font-weight:800; letter-spacing:.3px; text-transform:uppercase; text-align:center;
+    }
+    html[data-theme="dark"] .report-banner span:not(.icon):not(.arrow){ color:var(--amber); }
+    .report-banner span u{ text-decoration-thickness:2px; }
+    .report-banner .arrow{ font-size:15px; flex-shrink:0; animation: arrowNudge 1s ease-in-out infinite; }
+    @keyframes arrowNudge{ 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(4px); } }
+    @keyframes bannerGlow{
+        0%,100%{ box-shadow:var(--shadow), 0 0 0 0 rgba(245,165,36,.4); }
+        50%{ box-shadow:var(--shadow-hov), 0 0 0 9px rgba(245,165,36,0); }
+    }
+    @keyframes iconShake{
+        0%,60%,100%{ transform:rotate(0deg); }
+        65%{ transform:rotate(-14deg); } 75%{ transform:rotate(11deg); }
+        85%{ transform:rotate(-7deg); } 92%{ transform:rotate(4deg); }
+    }
+    @media (prefers-reduced-motion: reduce){
+        .report-banner, .report-banner .icon, .report-banner .arrow{ animation:none; }
+    }
 
-        /* ── SECTION LABEL (folder tab) ───────── */
-        .section-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--maroon);
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            margin: 26px 0 12px;
-        }
-        .section-label .tag {
-            background: var(--maroon);
-            color: var(--gold-light);
-            padding: 3px 10px 4px;
-            border-radius: 4px 4px 0 0;
-            font-family: 'Playfair Display', serif;
-        }
-        .section-label::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: repeating-linear-gradient(to right, var(--line) 0, var(--line) 4px, transparent 4px, transparent 8px);
-        }
+    footer{
+        text-align:center; color:var(--ink-mute); font-size:.8rem;
+        padding-top:26px; margin-top:34px; border-top:1px solid var(--line);
+    }
+    footer a{ color:var(--tri); text-decoration:none; font-weight:600; }
+    footer a:hover{ text-decoration:underline; }
 
-        /* ── CHAPTER ITEMS ─────────────────────── */
-        .chapter-list {
-            display: flex;
-            flex-direction: column;
-            gap: 9px;
-        }
-
-        .chapter-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 12px 16px;
-            border: 1px solid var(--paper-edge);
-            background: #fffdf7;
-            border-radius: 10px;
-            text-decoration: none;
-            position: relative;
-            overflow: hidden;
-            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-        }
-        .chapter-item::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 3px;
-            background: var(--gold);
-            transform: scaleY(0);
-            transition: transform .2s ease;
-        }
-        .chapter-item:hover {
-            border-color: var(--maroon-soft);
-            transform: translateX(5px);
-            box-shadow: 0 6px 16px rgba(122,18,38,.16);
-        }
-        .chapter-item:hover::before { transform: scaleY(1); }
-
-        .ch-num {
-            width: 38px; height: 38px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11.5px;
-            font-weight: 800;
-            flex-shrink: 0;
-            color: var(--maroon);
-            background: #fff;
-            border: 2px solid var(--gold);
-            box-shadow: inset 0 0 0 2px rgba(255,255,255,.6);
-            transition: transform .25s ease, background .2s ease, color .2s ease;
-            font-family: 'Playfair Display', serif;
-        }
-        .chapter-item:hover .ch-num {
-            background: var(--maroon);
-            color: var(--gold-light);
-            transform: rotate(-8deg) scale(1.06);
-        }
-
-        .ch-info { flex: 1; min-width: 0; }
-        .ch-name {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--ink);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .badge-new {
-            display: inline-block;
-            margin-left: 6px;
-            padding: 2px 7px;
-            font-size: 9.5px;
-            font-weight: 800;
-            letter-spacing: .4px;
-            text-transform: uppercase;
-            color: #fff;
-            background: linear-gradient(135deg, #e0392b, #b3101f);
-            border-radius: 999px;
-            vertical-align: middle;
-            box-shadow: 0 2px 6px rgba(179,16,31,.5);
-            animation: badgePulse 1.6s ease-in-out infinite;
-        }
-        @keyframes badgePulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 2px 6px rgba(179,16,31,.5); }
-            50% { transform: scale(1.12); box-shadow: 0 2px 10px rgba(179,16,31,.75); }
-        }
-        .chapter-item:hover .ch-name { color: var(--maroon); }
-
-        .ch-range {
-            font-size: 11px;
-            color: var(--ink-soft);
-            font-weight: 600;
-            margin-top: 2px;
-        }
-
-        .btn-mo-ngay {
-            background: var(--maroon);
-            color: var(--gold-light);
-            font-size: 11px;
-            font-weight: 800;
-            padding: 7px 14px;
-            border-radius: 999px;
-            white-space: nowrap;
-            flex-shrink: 0;
-            letter-spacing: .4px;
-            text-transform: uppercase;
-            transition: background .2s ease, color .2s ease;
-        }
-        .chapter-item:hover .btn-mo-ngay { background: var(--gold); color: var(--maroon-deep); }
-
-        /* ── SPECIAL ITEMS (ticket style) ──────── */
-        .chapter-item.special {
-            background: #fffaf0;
-            border: 1.5px dashed var(--gold-dark);
-        }
-        .chapter-item.special::before { background: var(--maroon); }
-        .chapter-item.special .ch-num {
-            background: var(--gold-light);
-            border-color: var(--maroon-soft);
-            color: var(--maroon-deep);
-        }
-        .chapter-item.special:hover .ch-num {
-            background: var(--maroon);
-            color: var(--gold-light);
-        }
-        .chapter-item.special .btn-mo-ngay { background: var(--gold-dark); color: #fff8e8; }
-        .chapter-item.special:hover .btn-mo-ngay { background: var(--maroon); color: var(--gold-light); }
-        .chapter-item.special:hover { border-color: var(--maroon); }
-
-        /* ── FOOTER ───────────────────────────── */
-        footer {
-            margin-top: 26px;
-            text-align: center;
-            color: rgba(255,255,255,.65);
-            font-size: 12px;
-            font-weight: 600;
-            position: relative;
-            z-index: 1;
-        }
-        footer a { color: var(--gold-light); text-decoration: none; }
-        footer a:hover { text-decoration: underline; }
-
-        /* ── RESPONSIVE ───────────────────────── */
-        @media (max-width: 480px) {
-            .main-card { padding-left: 22px; }
-            .main-card::before { width: 22px; }
-            .spine-label { display: none; }
-            .card-header { padding: 26px 18px 18px; }
-            .card-header h1 { font-size: 20px; }
-            .card-body { padding: 6px 14px 22px; }
-            .chapter-item { padding: 10px 12px; gap: 10px; }
-            .ch-num { width: 32px; height: 32px; font-size: 10px; }
-            .ch-name { font-size: 13px; }
-            .top-banner { padding: 9px 16px; border-radius: 18px; }
-            .top-banner span:not(.icon) { font-size: 11px; }
-        }
-
-        a:focus-visible, .top-banner:focus-visible {
-            outline: 2px solid var(--gold);
-            outline-offset: 2px;
-        }
-    </style>
+    /* ---------------- responsive ---------------- */
+    @media (max-width: 900px){
+        .chapter-list{ grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); }
+    }
+    @media (max-width: 640px){
+        header{ height:58px; }
+        .chapter-screen{ padding-top:80px; }
+        .hero-card{ flex-direction:column; align-items:flex-start; text-align:left; gap:14px; }
+        .hero-icon{ align-self:flex-start; }
+        .hero-card h1, .hero-card p{ max-width:none; }
+        .header-title span{ display:none; }
+        .header-left .name{ display:none; }
+        .chapter-list{ grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:12px; }
+        .chapter-card{ padding:16px; gap:12px; }
+        .c-name{ font-size:.92rem; }
+        .section-label{ font-size:.72rem; }
+        .report-banner{ padding:12px 18px; }
+        .report-banner span:not(.icon):not(.arrow){ font-size:11.5px; }
+        .promo-pill{ font-size:.72rem; padding:7px 14px; }
+    }
+    @media (max-width: 400px){
+        .chapter-screen{ padding-left:14px; padding-right:14px; }
+        .chapter-list{ grid-template-columns:1fr 1fr; gap:10px; }
+        .icon-chip{ width:38px; height:38px; font-size:.7rem; }
+        .hero-card h1{ font-size:1.1rem; }
+        .card-arrow{ display:none; }
+    }
+</style>
 </head>
 <body>
 
-<a href="https://www.sngedu.site/" class="logo-box logo-wrap">SNG</a>
+<header>
+    <a href="https://www.sngedu.site/" class="header-left">
+        <div class="mark">S</div>
+        <div class="name">SNG EDU</div>
+    </a>
+    <div class="header-title">Triết Học Mác-Lênin<span>Ôn tập trắc nghiệm</span></div>
+    <div class="header-right">
+        <button class="theme-toggle" id="themeToggle" aria-label="Đổi giao diện sáng/tối" type="button">
+            <i class="fa-solid fa-moon"></i>
+            <i class="fa-solid fa-sun"></i>
+        </button>
+    </div>
+</header>
 
-<div class="wrap">
+<div class="chapter-screen">
 
-    <p class="promo">🎁 Thêm trắc nghiệm miễn phí — không mua bán</p>
+    <div class="promo-pill">🎁 Thêm trắc nghiệm miễn phí — không mua bán</div>
 
-    <div class="main-card">
-        <div class="spine-label">Ôn Thi</div>
-        <div class="card-header">
-            <div class="eyebrow">Mác&nbsp;–&nbsp;Lênin</div>
-            <h1>Ôn Tập Triết Học<br>Mác‑Lênin</h1>
-            <p class="subtitle">Chọn chương để bắt đầu ôn tập</p>
+    <div class="hero-card">
+        <div class="hero-text">
+            <div class="hero-eyebrow">Mác – Lênin</div>
+            <h1>Ôn tập trắc nghiệm Triết học Mác-Lênin</h1>
+            <p>Chọn một chương bên dưới để bắt đầu ôn tập — mỗi chương có bộ câu hỏi riêng, giải thích đáp án chi tiết.</p>
         </div>
-        <div class="card-body">
-            <div class="section-label"><span class="tag">Nội dung chính</span></div>
-            <div class="chapter-list" id="mainList"></div>
-
-            <div class="section-label"><span class="tag">Bổ sung</span></div>
-            <div class="chapter-list" id="boSungList"></div>
-
-            <div class="section-label"><span class="tag">Đề thi thử</span></div>
-            <div class="chapter-list" id="deThiList"></div>
-        </div>
+        <div class="hero-icon"><i class="fa-solid fa-scale-balanced"></i></div>
     </div>
 
-    <a href="https://forms.gle/CMZj35G3BMGfo1AZ8" target="_blank" rel="noopener" class="top-banner bottom-banner">
+    <div class="section-label">Nội dung chính</div>
+    <div class="chapter-list" id="mainList"></div>
+
+    <div class="section-label">Bổ sung</div>
+    <div class="chapter-list" id="boSungList"></div>
+
+    <div class="section-label">Đề thi thử</div>
+    <div class="chapter-list" id="deThiList"></div>
+
+    <a href="https://forms.gle/CMZj35G3BMGfo1AZ8" target="_blank" rel="noopener" class="report-banner">
         <span class="icon">🔔</span>
         <span>Gặp câu hỏi sai? <u>Click vào đây</u> góp ý giúp tôi!</span>
         <span class="arrow">👉</span>
     </a>
 
+    <footer>SNG &copy; <a href="https://www.sngedu.site/">H.N.TấnHải</a> &nbsp;·&nbsp; sngedu.site</footer>
 </div>
-
-<footer>SNG &copy; <a href="https://www.sngedu.site/">H.N.TấnHải</a> &nbsp;·&nbsp; sngedu.site</footer>
 
 <script>
     const main = [
@@ -501,16 +367,16 @@
         const el = document.getElementById(containerId);
         items.forEach(ch => {
             const a = document.createElement('a');
-            a.className = 'chapter-item' + (ch.special || ch.url ? ' special' : '');
+            a.className = 'chapter-card' + (ch.special || ch.url ? ' special' : '');
             a.href = ch.url ? ch.url : (ch.href ? ch.href : ch.file);
             if (ch.url) { a.target = '_blank'; a.rel = 'noopener'; }
             a.innerHTML = `
-                <div class="ch-num">${ch.num}</div>
-                <div class="ch-info">
-                    <div class="ch-name">${ch.label}${ch.isNew ? '<span class="badge-new">Mới</span>' : ''}</div>
-                    ${ch.sub ? `<div class="ch-range">${ch.sub}</div>` : ''}
+                <div class="c-top">
+                    <div class="icon-chip">${ch.num}</div>
+                    <div class="card-arrow"><i class="fa-solid fa-arrow-right"></i></div>
                 </div>
-                <div class="btn-mo-ngay">Mở ngay</div>
+                <div class="c-name">${ch.label}${ch.isNew ? '<span class="badge-new">Mới</span>' : ''}</div>
+                ${ch.sub ? `<div class="c-count"><i class="fa-regular fa-circle-question"></i> ${ch.sub}</div>` : ''}
             `;
             el.appendChild(a);
         });
@@ -519,6 +385,14 @@
     buildList('mainList', main);
     buildList('boSungList', bosung);
     buildList('deThiList', dethi);
+
+    const themeBtn = document.getElementById('themeToggle');
+    themeBtn.addEventListener('click', ()=>{
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const next = isDark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try{ localStorage.setItem('sng-theme', next); }catch(e){}
+    });
 </script>
 </body>
 </html>
